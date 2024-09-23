@@ -15,23 +15,48 @@
     </properties>
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>9.7</version>
-        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-collections4 -->
         <dependency>
-        <groupId>org.apache.commons</groupId>
-        <artifactId>commons-collections4</artifactId>
-        <version>4.5.0-M2</version>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+            <version>4.5.0-M2</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.17.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.ow2.asm/asm -->
+        <dependency>
+            <groupId>org.ow2.asm</groupId>
+            <artifactId>asm</artifactId>
+            <version>9.7</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.uma.jmetal/jmetal -->
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal</artifactId>
+            <version>6.6</version>
+            <type>pom</type>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.uma.jmetal/jmetal-core -->
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-core</artifactId>
+            <version>6.6</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.uma.jmetal/jmetal-algorithm -->
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-algorithm</artifactId>
+            <version>6.6</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.uma.jmetal/jmetal-problem -->
+        <dependency>
+            <groupId>org.uma.jmetal</groupId>
+            <artifactId>jmetal-problem</artifactId>
+            <version>6.6</version>
         </dependency>
     </dependencies>
 
