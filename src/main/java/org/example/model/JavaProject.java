@@ -1,6 +1,7 @@
 package org.example.model;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.ClassReader;
@@ -70,8 +71,7 @@ public class JavaProject implements Serializable {
     public JavaPackage getOrCreatePackage(String packageName) {
         JavaPackage pack = this.getPackageByName(packageName);
         if (pack == null) {
-            pack = new JavaPackage(packageName);
-            this.addPackage(pack);
+            this.addPackage(new JavaPackage(packageName));
         }
 
         return pack;
@@ -80,8 +80,7 @@ public class JavaProject implements Serializable {
     public JavaClass getOrCreateClass(String className) {
         JavaClass cls = this.getClassByName(className);
         if (cls == null) {
-            cls = new JavaClass(className);
-            this.addClass(cls);
+            this.addClass(new JavaClass(className));
         }
 
         return cls;
@@ -92,7 +91,7 @@ public class JavaProject implements Serializable {
     }
 
     private void addPackage(JavaPackage pack) {
-        this.packageList.add(new JavaPackage(pack));
+        this.packageList.add(pack);
     }
 
     public JavaPackage getPackage(JavaPackage pack) {
@@ -273,6 +272,7 @@ public class JavaProject implements Serializable {
                 pathList.add(f.getAbsolutePath());
             }
         }
+
 
         return pathList;
     }
