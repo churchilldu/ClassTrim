@@ -30,7 +30,7 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
      * @param args Command line arguments.
      */
     public static void main(String[] args) throws JMetalException {
-        String problemName = "org.uma.jmetal.problem.multiobjective.CodeRefactoring";
+        String problemName = "org.example.CodeRefactoringProblem";
 
         Problem<IntegerSolution> problem = ProblemFactory.<IntegerSolution>loadProblem(problemName);
 
@@ -70,10 +70,6 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
             refactorProj.setName(originalProj.getName());
             List<Integer> packIDList = solution.variables();
             for (int i = 0; i < packIDList.size(); i++) {
-                originalProj.getClassList().forEach(
-                        cls -> {
-                        }
-                );
                 Integer packID = packIDList.get(i);
                 JavaPackage pack = refactorProj.getOrCreatePackage(packageList.get(packID).getName());
                 pack.addClass(classList.get(i));

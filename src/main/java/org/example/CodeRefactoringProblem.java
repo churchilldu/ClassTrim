@@ -10,14 +10,14 @@ import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import java.util.*;
 
 
-public class CodeRefactoring extends AbstractIntegerProblem {
+public class CodeRefactoringProblem extends AbstractIntegerProblem {
 
     private static final String dataSetPath = "C:/codeRefactoring/datasource/xom-1.2.1/output";
     //    private static final String dataSetPath = "C:/codeRefactoring/datasource/mango/output";
 
     private final JavaProject project = new JavaProject();
 
-    public CodeRefactoring() {
+    public CodeRefactoringProblem() {
         this.project.addSource(dataSetPath);
         project.save(project.getName());
 
@@ -36,8 +36,6 @@ public class CodeRefactoring extends AbstractIntegerProblem {
             lowerLimit.add(0);
             upperLimit.add(numberOfPackage - 1);
         }
-
-        JavaProject nu = JavaProject.load("nu");
 
         super.variableBounds(lowerLimit, upperLimit);
 

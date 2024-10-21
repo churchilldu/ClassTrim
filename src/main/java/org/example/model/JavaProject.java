@@ -1,7 +1,6 @@
 package org.example.model;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.ClassReader;
@@ -14,12 +13,9 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class JavaProject implements Serializable {
-    private static final long serialVersionUID = 6640945341857405094L;
-
+public class JavaProject extends JavaObject {
     private List<JavaPackage> packageList = new LinkedList<>();
     private List<JavaClass> classList = new LinkedList<>();
-    private String name;
 
     /**
      * Constructor
@@ -40,14 +36,6 @@ public class JavaProject implements Serializable {
     /**
      * Getter and Setter
      **/
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     public List<JavaPackage> getPackageList() {
         return packageList;
     }
@@ -71,7 +59,8 @@ public class JavaProject implements Serializable {
     public JavaPackage getOrCreatePackage(String packageName) {
         JavaPackage pack = this.getPackageByName(packageName);
         if (pack == null) {
-            this.addPackage(new JavaPackage(packageName));
+            pack = new JavaPackage(packageName);
+            this.addPackage(pack);
         }
 
         return pack;
@@ -80,7 +69,8 @@ public class JavaProject implements Serializable {
     public JavaClass getOrCreateClass(String className) {
         JavaClass cls = this.getClassByName(className);
         if (cls == null) {
-            this.addClass(new JavaClass(className));
+            cls = new JavaClass(className);
+            this.addClass(cls);
         }
 
         return cls;
@@ -139,43 +129,35 @@ public class JavaProject implements Serializable {
 
         StringBuilder diff = new StringBuilder(this.getName());
 
-        this.getPackageList().forEach(
-                pack -> {
-                    JavaPackage thatPack = that.getPackage(pack);
-                    diff.append(pack.getName());
-                    diff.append("\n");
+        this.getPackageList().forEach(pack -> {
+            JavaPackage thatPack = that.getPackage(pack);
+            diff.append(pack.getName());
+            diff.append("\n");
 
-                    diff.append(pack.getClassList().size());
-                    diff.append(" -> ");
-                    diff.append(thatPack.getClassList().size());
+            diff.append(pack.getClassList().size());
+            diff.append(" -> ");
+            diff.append(thatPack.getClassList().size());
 
-                    diff.append(System.lineSeparator());
-                    diff.append("\n");
-                    diff.append("--------\n");
+            diff.append(System.lineSeparator());
+            diff.append("\n");
+            diff.append("--------\n");
 
-                    CollectionUtils.retainAll(thatPack.getClassList(), pack.getClassList()).forEach(
-                            c -> {
-                                diff.append(c.getName());
-                                diff.append("\n");
-                            }
-                    );
-                    CollectionUtils.removeAll(thatPack.getClassList(), pack.getClassList()).forEach(
-                            c -> {
-                                diff.append("+ ");
-                                diff.append(c.getName());
-                                diff.append("\n");
-                            }
-                    );
-                    CollectionUtils.removeAll(pack.getClassList(), thatPack.getClassList()).forEach(
-                            c -> {
-                                diff.append("- ");
-                                diff.append(c.getName());
-                                diff.append("\n");
-                            }
-                    );
-                    diff.append("\n");
-                }
-        );
+            CollectionUtils.retainAll(thatPack.getClassList(), pack.getClassList()).forEach(c -> {
+                diff.append(c.getName());
+                diff.append("\n");
+            });
+            CollectionUtils.removeAll(thatPack.getClassList(), pack.getClassList()).forEach(c -> {
+                diff.append("+ ");
+                diff.append(c.getName());
+                diff.append("\n");
+            });
+            CollectionUtils.removeAll(pack.getClassList(), thatPack.getClassList()).forEach(c -> {
+                diff.append("- ");
+                diff.append(c.getName());
+                diff.append("\n");
+            });
+            diff.append("\n");
+        });
 
         return diff.toString();
     }
@@ -189,9 +171,7 @@ public class JavaProject implements Serializable {
         if (direcotry.exists() && direcotry.isDirectory() && direcotry.listFiles() != null && direcotry.listFiles().length > 0) {
             this.setName(direcotry.listFiles()[0].getName());
 
-            this.getFilePath(direcotry.listFiles()).forEach(
-                    clsPath -> getClassInfo(clsPath, this)
-            );
+            this.getFilePath(direcotry.listFiles()).forEach(clsPath -> getClassInfo(clsPath, this));
         }
 
     }
@@ -240,7 +220,7 @@ public class JavaProject implements Serializable {
                             // Filter class own method
                             // Method didn't belong to this project
                             // Method is a constructor
-                            if (owner.equals(cls.getName()) || !owner.startsWith(project.getName()) || owner.contains("$")) {
+                            if ("<init>".equals(name) || owner.equals(cls.getName()) || !owner.startsWith(project.getName()) || owner.contains("$")) {
                                 return;
                             }
 
@@ -248,10 +228,14 @@ public class JavaProject implements Serializable {
                             // Update edge between class
                             cls.getDependClass().put(dependClass, cls.getDependClass().getOrDefault(dependClass, 0) + 1);
                             dependClass.getDerivedClass().put(cls, dependClass.getDerivedClass().getOrDefault(dependClass, 0) + 1);
+                            if (access == Opcodes.ACC_PUBLIC) {
+
+                            }
+
                         }
+
                     };
                 }
-
             }, 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
