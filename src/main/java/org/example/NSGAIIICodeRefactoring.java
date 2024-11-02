@@ -30,9 +30,10 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
      * @param args Command line arguments.
      */
     public static void main(String[] args) throws JMetalException {
-        String problemName = "org.example.CodeRefactoringProblem";
+//        String problemName = "org.example.ClassRefactoringProblem";
+        String problemName = "org.example.MethodRefactoringProblem";
 
-        Problem<IntegerSolution> problem = ProblemFactory.<IntegerSolution>loadProblem(problemName);
+        Problem<IntegerSolution> problem = ProblemFactory.loadProblem(problemName);
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;
@@ -65,18 +66,6 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
 
         List<IntegerSolution> population = (List<IntegerSolution>) algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
-        for (IntegerSolution solution : population) {
-            JavaProject refactorProj = new JavaProject();
-            refactorProj.setName(originalProj.getName());
-            List<Integer> packIDList = solution.variables();
-            for (int i = 0; i < packIDList.size(); i++) {
-                Integer packID = packIDList.get(i);
-                JavaPackage pack = refactorProj.getOrCreatePackage(packageList.get(packID).getName());
-                pack.addClass(classList.get(i));
-            }
-            String diff = originalProj.diff(refactorProj);
-        }
-
 
         new SolutionListOutput(population)
                 .setVarFileOutputContext(new DefaultFileOutputContext("VAR.csv", ","))

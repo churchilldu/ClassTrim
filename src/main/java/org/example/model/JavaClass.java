@@ -1,18 +1,14 @@
 package org.example.model;
 
 
-import org.apache.commons.lang3.StringUtils;
+import com.fuzzylite.Op;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class JavaClass extends JavaObject{
 
     private JavaPackage pack;
-
-    private JavaClass superClass;
+    private Optional<JavaClass> superClass = Optional.empty();
 
     private List<JavaClass> extendedClass = new LinkedList<>();
 
@@ -22,6 +18,10 @@ public class JavaClass extends JavaObject{
     // <derivedClass, weight>
     private Map<JavaClass, Integer> derivedClass = new LinkedHashMap<>();
 
+    private List<JavaMethod> declaredMethodList = new LinkedList<>();
+    private List<JavaMethod> invokeMethodList = new LinkedList<>();
+
+
     /** Constructor **/
     public JavaClass() {}
 
@@ -29,12 +29,10 @@ public class JavaClass extends JavaObject{
         super(name);
     }
 
-    /** Getter and Setter **/
-    public JavaClass getSuperClass() {
-        if (superClass == null) {
-            return new JavaClass();
-        }
-
+    /**
+     * Getter and Setter
+     **/
+    public Optional<JavaClass> getSuperClass() {
         return superClass;
     }
 
@@ -53,6 +51,10 @@ public class JavaClass extends JavaObject{
     public void setDependClass(Map<JavaClass, Integer> dependClass) {
         this.dependClass = dependClass;
     }
+    public void addDependClass(JavaClass dependClass) {
+        this.dependClass.put(dependClass, this.dependClass.getOrDefault(dependClass, 0) + 1);
+        dependClass.getDerivedClass().put(this, dependClass.getDerivedClass().getOrDefault(dependClass, 0) + 1);
+    }
 
     public List<JavaClass> getExtendedClass() {
         return extendedClass;
@@ -63,7 +65,8 @@ public class JavaClass extends JavaObject{
     }
 
     public void setSuperClass(JavaClass superClass) {
-        this.superClass = superClass;
+        this.superClass = Optional.of(superClass);
+        superClass.addExtendedClass(this);
     }
 
     public JavaPackage getPackage() {
@@ -73,4 +76,41 @@ public class JavaClass extends JavaObject{
     public void setPackage(JavaPackage pack) {
         this.pack = pack;
     }
+
+    public void addDeclaredMethod(JavaMethod method) {
+        this.declaredMethodList.add(method);
+        method.setClass(this);
+    }
+
+    public void addInvokeMethod(JavaMethod method) {
+        this.invokeMethodList.add(method);
+        this.addDependClass(method.getCls());
+    }
+
+    public List<JavaMethod> getDeclaredMethodList() {
+        return declaredMethodList;
+    }
+
+    public List<JavaMethod> getInvokeMethodList() {
+        return invokeMethodList;
+    }
+
+    public void setInvokeMethodList(List<JavaMethod> invokeMethodList) {
+        this.invokeMethodList = invokeMethodList;
+    }
+
+    public void setDeclaredMethodList(List<JavaMethod> declaredMethodList) {
+        this.declaredMethodList = declaredMethodList;
+    }
+
+    public JavaMethod getMethodByName(String name, String descriptor) {
+        for (JavaMethod method : this.declaredMethodList) {
+            if (method.equals(name, descriptor)) {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
 }

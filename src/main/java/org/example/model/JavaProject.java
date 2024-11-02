@@ -1,21 +1,18 @@
 package org.example.model;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.example.visitor.MyClassVisitor;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaProject extends JavaObject {
+    private final List<JavaMethod> methodList = new LinkedList<>();
     private List<JavaPackage> packageList = new LinkedList<>();
     private List<JavaClass> classList = new LinkedList<>();
+    private List<JavaMethod> methodToRefactor = new LinkedList<>();
 
     /**
      * Constructor
@@ -52,6 +49,10 @@ public class JavaProject extends JavaObject {
         this.classList = classList;
     }
 
+    public List<JavaMethod> getMethodList() {
+        return methodList;
+    }
+
     /**
      * Custom method
      **/
@@ -64,6 +65,19 @@ public class JavaProject extends JavaObject {
         }
 
         return pack;
+    }
+
+    public JavaMethod getOrCreateMethod(JavaClass cls, String methodName, String descriptor) {
+        return this.getOrCreateMethod(cls.getName(), methodName, descriptor);
+    }
+
+    public JavaMethod getOrCreateMethod(String className, String methodName, String descriptor) {
+        JavaClass cls = this.getOrCreateClass(className);
+        return Optional.ofNullable(cls.getMethodByName(methodName, descriptor)).orElseGet(
+                () -> {
+                    return new JavaMethod(methodName, descriptor);
+                }
+        );
     }
 
     public JavaClass getOrCreateClass(String className) {
@@ -95,10 +109,6 @@ public class JavaProject extends JavaObject {
     }
 
     public JavaPackage getPackageByName(String name) {
-        if (StringUtils.isEmpty(name)) {
-            return null;
-        }
-
         for (JavaPackage pack : this.packageList) {
             if (name.equals(pack.getName())) {
                 return pack;
@@ -109,10 +119,6 @@ public class JavaProject extends JavaObject {
     }
 
     public JavaClass getClassByName(String name) {
-        if (StringUtils.isEmpty(name)) {
-            return null;
-        }
-
         for (JavaClass cls : this.classList) {
             if (name.equals(cls.getName())) {
                 return cls;
@@ -122,45 +128,6 @@ public class JavaProject extends JavaObject {
         return null;
     }
 
-    public String diff(JavaProject that) {
-        if (that == null) {
-            return null;
-        }
-
-        StringBuilder diff = new StringBuilder(this.getName());
-
-        this.getPackageList().forEach(pack -> {
-            JavaPackage thatPack = that.getPackage(pack);
-            diff.append(pack.getName());
-            diff.append("\n");
-
-            diff.append(pack.getClassList().size());
-            diff.append(" -> ");
-            diff.append(thatPack.getClassList().size());
-
-            diff.append(System.lineSeparator());
-            diff.append("\n");
-            diff.append("--------\n");
-
-            CollectionUtils.retainAll(thatPack.getClassList(), pack.getClassList()).forEach(c -> {
-                diff.append(c.getName());
-                diff.append("\n");
-            });
-            CollectionUtils.removeAll(thatPack.getClassList(), pack.getClassList()).forEach(c -> {
-                diff.append("+ ");
-                diff.append(c.getName());
-                diff.append("\n");
-            });
-            CollectionUtils.removeAll(pack.getClassList(), thatPack.getClassList()).forEach(c -> {
-                diff.append("- ");
-                diff.append(c.getName());
-                diff.append("\n");
-            });
-            diff.append("\n");
-        });
-
-        return diff.toString();
-    }
 
     public void addSource(String path) {
         if (path == null || path.isEmpty()) {
@@ -180,66 +147,14 @@ public class JavaProject extends JavaObject {
         try (InputStream classFileInputStream = new FileInputStream(classFilePath)) {
             // Use ASM ClassReader to read the class file
             ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new ClassVisitor(Opcodes.ASM9) {
-                JavaClass cls;
-
-                @Override
-                public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-                    super.visit(version, access, name, signature, superName, interfaces);
-                    // Filter non-public class
-
-                    cls = project.getOrCreateClass(name);
-
-                    int lastDotIndex = name.lastIndexOf('/');
-                    if (lastDotIndex != -1) {
-                        String packageName = name.substring(0, lastDotIndex);
-                        JavaPackage pack = project.getOrCreatePackage(packageName);
-
-                        // package --- class
-                        pack.addClass(cls);
-                        cls.setPackage(pack);
-                    }
-
-
-                    // Filter class not in project
-                    if (superName.startsWith(project.getName())) {
-                        JavaClass superClass = project.getOrCreateClass(superName);
-                        // superClass --- class
-                        cls.setSuperClass(superClass);
-                        superClass.addExtendedClass(cls);
-                    }
-                }
-
-
-                @Override
-                public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-                    return new MethodVisitor(Opcodes.ASM9) {
-                        @Override
-                        public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-                            super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-                            // Filter class own method
-                            // Method didn't belong to this project
-                            // Method is a constructor
-                            if ("<init>".equals(name) || owner.equals(cls.getName()) || !owner.startsWith(project.getName()) || owner.contains("$")) {
-                                return;
-                            }
-
-                            JavaClass dependClass = project.getOrCreateClass(owner);
-                            // Update edge between class
-                            cls.getDependClass().put(dependClass, cls.getDependClass().getOrDefault(dependClass, 0) + 1);
-                            dependClass.getDerivedClass().put(cls, dependClass.getDerivedClass().getOrDefault(dependClass, 0) + 1);
-                            if (access == Opcodes.ACC_PUBLIC) {
-
-                            }
-
-                        }
-
-                    };
-                }
-            }, 0);
+            classReader.accept(new MyClassVisitor(project), 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public boolean contain(String className) {
+        return className.startsWith(this.getName());
     }
 
     private List<String> getFilePath(File[] files) {
@@ -267,7 +182,6 @@ public class JavaProject extends JavaObject {
             if (file.isDirectory()) {
                 throw new IllegalArgumentException("cannot overwrite directory");
             }
-//            BufferedOutputStream str = new BufferedOutputStream(Files.newOutputStream(file.toPath()));
             FileOutputStream str = new FileOutputStream(file);
             SerializationUtils.serialize(this, str);
             str.close();
@@ -276,4 +190,58 @@ public class JavaProject extends JavaObject {
         }
     }
 
+    public List<JavaMethod> getMethodToRefactor() {
+        // Filter out method override method and getter setter
+        this.classList.parallelStream().forEach(
+                cls -> {
+                    Set<JavaMethod> overrideMethodSet = new HashSet<>();
+                    overrideMethodSet.addAll(this.getOverrideMethodSet(overrideMethodSet, cls));
+                    overrideMethodSet.addAll(cls.getDerivedClass().keySet().parallelStream()
+                            .flatMap(c -> c.getDeclaredMethodList().parallelStream())
+                            .filter(JavaMethod::CanRefactor)
+                            .collect(Collectors.toSet()));
+
+
+                    cls.getDeclaredMethodList().forEach(
+                            method -> {
+                                if (method.CanRefactor()) {
+                                    if (isOverrideMethod(overrideMethodSet, method)) {
+                                        method.setCanRefactor(false);
+                                    }
+                                }
+                            }
+                    );
+                }
+        );
+
+        this.methodToRefactor = this.classList.parallelStream()
+                .flatMap(c -> c.getDeclaredMethodList().parallelStream())
+                .filter(JavaMethod::CanRefactor)
+                .collect(Collectors.toList());
+
+        return methodToRefactor;
+    }
+
+    private Set<JavaMethod> getOverrideMethodSet(Set<JavaMethod> overrideMethodSet, JavaClass cls) {
+        cls.getSuperClass().ifPresent(
+                superClass -> {
+                    overrideMethodSet.addAll(superClass.getDeclaredMethodList());
+
+                    getOverrideMethodSet(overrideMethodSet, superClass);
+                }
+        );
+
+        return overrideMethodSet;
+
+    }
+
+    private boolean isOverrideMethod(Set<JavaMethod> methods, JavaMethod who) {
+        for (JavaMethod method : methods) {
+            if (method.equals(who.getName(), who.getDescriptor())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

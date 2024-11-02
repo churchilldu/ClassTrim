@@ -10,14 +10,14 @@ import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import java.util.*;
 
 
-public class CodeRefactoringProblem extends AbstractIntegerProblem {
+public class ClassRefactoringProblem extends AbstractIntegerProblem {
 
     private static final String dataSetPath = "C:/codeRefactoring/datasource/xom-1.2.1/output";
     //    private static final String dataSetPath = "C:/codeRefactoring/datasource/mango/output";
 
     private final JavaProject project = new JavaProject();
 
-    public CodeRefactoringProblem() {
+    public ClassRefactoringProblem() {
         this.project.addSource(dataSetPath);
         project.save(project.getName());
 

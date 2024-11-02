@@ -24,5 +24,6 @@ public class JavaPackage extends JavaObject {
 
     public void addClass(JavaClass cls) {
         this.classList.add(cls);
+        cls.setPackage(this);
     }
 }

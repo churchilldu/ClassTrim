@@ -1,12 +1,11 @@
 package org.example.util;
 
 import org.example.model.JavaClass;
+import org.example.model.JavaMethod;
 import org.example.model.JavaPackage;
 import org.example.model.JavaProject;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -34,11 +33,15 @@ public class MetricUtils {
                 JavaClass cls = classList.get(classID);
 
                 // Super class
-                if (pack.equals(cls.getSuperClass().getPackage())) {
-                    WPR.getAndIncrement();
-                } else {
-                    PRE.getAndIncrement();
-                }
+                cls.getSuperClass().ifPresent(
+                        superClass -> {
+                            if (pack.equals(superClass.getPackage())) {
+                                WPR.getAndIncrement();
+                            } else {
+                                PRE.getAndIncrement();
+                            }
+                        }
+                );
 
                 cls.getDependClass().forEach((dependedCls, weight) -> {
                     // Within same package
@@ -96,11 +99,15 @@ public class MetricUtils {
                 JavaClass cls = classList.get(classID);
 
                 // Super class
-                if (pack.equals(cls.getSuperClass().getPackage())) {
-                    EI.getAndIncrement();
-                } else {
-                    EX.getAndIncrement();
-                }
+                cls.getSuperClass().ifPresent(
+                        superClass -> {
+                            if (pack.equals(superClass.getPackage())) {
+                                EI.getAndIncrement();
+                            } else {
+                                EX.getAndIncrement();
+                            }
+                        }
+                );
 
                 cls.getExtendedClass().forEach(extendedCls -> {
                     if (!pack.equals(extendedCls.getPackage())) {
@@ -146,13 +153,46 @@ public class MetricUtils {
     // Metric related to size doesn't change after refactor.
 
     // WMC Weighted Method per Class
+    public static double evalWMC(JavaProject project, Map<Integer, List<Integer>> methodsByClass) {
+        return (double) methodsByClass.values().parallelStream().mapToInt(List::size).sum() / methodsByClass.size();
+    }
 
     // LCOM Lack of Cohesion in Methods
 
     // CBO Coupling Between Objects
+    public static double evalCBO(JavaProject project, List<Integer> solution) {
+        // ID, method
+        List<JavaMethod> methodList = project.getMethodList();
+        // ID, class
+        List<JavaClass> classList = project.getClassList();
+
+        Map<Integer, Set<Integer>> dependClassSet = new HashMap<>();
+        for (int clsId = 0; clsId < classList.size(); clsId++) {
+            int originalClassId = clsId;
+            classList.get(clsId).getInvokeMethodList().forEach(
+                    method -> {
+                        int methodId = methodList.indexOf(method);
+                        if (methodId < 0) {
+                            return;
+                        }
+                        int newClassId = solution.get(methodId);
+
+                        if (newClassId == originalClassId) {
+                            return;
+                        }
+
+                        dependClassSet.computeIfAbsent(originalClassId, k -> new HashSet<>()).add(newClassId);
+                    }
+            );
+        }
+
+        return (double) dependClassSet.values().stream().mapToInt(Set::size)
+                .sum() / classList.size();
+    }
 
     // DIT Depth of Inheritance Tree
 
     // NOC Number of Children
 }
+
 
