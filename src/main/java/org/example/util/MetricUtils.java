@@ -162,26 +162,35 @@ public class MetricUtils {
     // CBO Coupling Between Objects
     public static double evalCBO(JavaProject project, List<Integer> solution) {
         // ID, method
-        List<JavaMethod> methodList = project.getMethodList();
+        List<JavaMethod> methodList = project.getMethodToRefactor();
         // ID, class
         List<JavaClass> classList = project.getClassList();
 
-        Map<Integer, Set<Integer>> dependClassSet = new HashMap<>();
-        for (int clsId = 0; clsId < classList.size(); clsId++) {
-            int originalClassId = clsId;
-            classList.get(clsId).getInvokeMethodList().forEach(
+//        Map<Integer, Set<Integer>> dependClassSet = new HashMap<>();
+//        for (int clsId = 0; clsId < classList.size(); clsId++) {
+//            int originalClassId = clsId;
+//            classList.get(clsId).getInvokeMethodList().forEach(
+//                    method -> {
+//                        int methodId = methodList.indexOf(method);
+//                        if (methodId < 0) {
+//                            return;
+//                        }
+//                        int newClassId = solution.get(methodId);
+//
+//                        if (newClassId == originalClassId) {
+//                            return;
+//                        }
+//
+//                        dependClassSet.computeIfAbsent(originalClassId, k -> new HashSet<>()).add(newClassId);
+//                    }
+//            );
+//        }
+        Map<JavaClass, Set<JavaClass>> dependClassSet = new HashMap<>();
+        for (JavaClass cls : classList) {
+            cls.getInvokeMethodList().forEach(
                     method -> {
-                        int methodId = methodList.indexOf(method);
-                        if (methodId < 0) {
-                            return;
-                        }
-                        int newClassId = solution.get(methodId);
-
-                        if (newClassId == originalClassId) {
-                            return;
-                        }
-
-                        dependClassSet.computeIfAbsent(originalClassId, k -> new HashSet<>()).add(newClassId);
+                        JavaClass dependCls = method.getCls();
+                        dependClassSet.computeIfAbsent(cls, k -> new HashSet<>()).add(dependCls);
                     }
             );
         }

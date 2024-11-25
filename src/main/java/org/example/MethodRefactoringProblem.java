@@ -15,29 +15,31 @@ import java.util.Map;
 
 public class MethodRefactoringProblem extends AbstractIntegerProblem {
 
-    private static final String dataSetPath = "C:/codeRefactoring/datasource/xom-1.2.1/output";
-    //    private static final String dataSetPath = "C:/codeRefactoring/datasource/mango/output";
+//    private static final String dataSetPath = "C:/codeRefactoring/datasource/xom-1.2.1/output";
+//        private static final String dataSetPath = "C:/codeRefactoring/datasource/mango/output";
+    private static final String dataSetPath = "C:/codeRefactoring/datasource/jhotdraw-6.0b1/output";
 
     private final JavaProject project = new JavaProject();
 
     public MethodRefactoringProblem() {
         this.project.addSource(dataSetPath);
-        project.save(project.getName());
+//        project.save(project.getName());
 
-        int numberOfMethod = project.getMethodList().size();
+        int numberOfMethod = project.getMethodToRefactor().size();
+        int numberOfClass = project.getClassList().size();
 
         List<Integer> lowerLimit = new ArrayList<>(numberOfMethod);
         List<Integer> upperLimit = new ArrayList<>(numberOfMethod);
         for (int i = 0; i < numberOfMethod; i++) {
             lowerLimit.add(0);
-            upperLimit.add(numberOfMethod - 1);
+            upperLimit.add(numberOfClass - 1);
         }
         super.variableBounds(lowerLimit, upperLimit);
     }
 
     @Override
     public int numberOfObjectives() {
-        return 2;
+        return 1;
     }
 
     @Override
@@ -63,10 +65,8 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
             methodsByClas.computeIfAbsent(classId, k -> new ArrayList<>()).add(methodId);
         }
 
-        // cohesion
-        solution.objectives()[0] = MetricUtils.evalWMC(project, methodsByClas);
         // coupling
-        solution.objectives()[1] = MetricUtils.evalCBO(project, solution.variables());
+        solution.objectives()[0] = MetricUtils.evalCBO(project, solution.variables());
 
         return solution;
     }

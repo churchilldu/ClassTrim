@@ -10,6 +10,8 @@ public class JavaMethod extends JavaObject {
     private JavaClass cls;
     private int complexity = 0;
     private boolean canRefactor = true;
+    private int access;
+    private boolean isGetterOrSetter;
 
     // const
     public static Set<JavaMethod> objectMethodSet;
@@ -61,7 +63,11 @@ public class JavaMethod extends JavaObject {
         this.canRefactor = canRefactor;
     }
 
-    public boolean CanRefactor() {
+    public boolean canRefactor() {
         return this.canRefactor;
+    }
+
+    public boolean isOverride() {
+        return false;
     }
 }

@@ -1,7 +1,7 @@
 package org.example.model;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.example.visitor.MyClassVisitor;
+import org.example.visitor.ClassVisitor;
 import org.objectweb.asm.ClassReader;
 
 import java.io.*;
@@ -50,7 +50,9 @@ public class JavaProject extends JavaObject {
     }
 
     public List<JavaMethod> getMethodList() {
-        return methodList;
+        return this.classList.parallelStream().flatMap(c -> c.getDeclaredMethodList().parallelStream())
+                .filter(m -> !m.canRefactor())
+                .collect(Collectors.toList());
     }
 
     /**
@@ -74,9 +76,7 @@ public class JavaProject extends JavaObject {
     public JavaMethod getOrCreateMethod(String className, String methodName, String descriptor) {
         JavaClass cls = this.getOrCreateClass(className);
         return Optional.ofNullable(cls.getMethodByName(methodName, descriptor)).orElseGet(
-                () -> {
-                    return new JavaMethod(methodName, descriptor);
-                }
+                () -> new JavaMethod(methodName, descriptor)
         );
     }
 
@@ -147,7 +147,7 @@ public class JavaProject extends JavaObject {
         try (InputStream classFileInputStream = new FileInputStream(classFilePath)) {
             // Use ASM ClassReader to read the class file
             ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new MyClassVisitor(project), 0);
+            classReader.accept(new ClassVisitor(project), 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -191,33 +191,35 @@ public class JavaProject extends JavaObject {
     }
 
     public List<JavaMethod> getMethodToRefactor() {
-        // Filter out method override method and getter setter
-        this.classList.parallelStream().forEach(
-                cls -> {
-                    Set<JavaMethod> overrideMethodSet = new HashSet<>();
-                    overrideMethodSet.addAll(this.getOverrideMethodSet(overrideMethodSet, cls));
-                    overrideMethodSet.addAll(cls.getDerivedClass().keySet().parallelStream()
-                            .flatMap(c -> c.getDeclaredMethodList().parallelStream())
-                            .filter(JavaMethod::CanRefactor)
-                            .collect(Collectors.toSet()));
+        // Filter out method override method
+        if (this.methodToRefactor == null || this.methodToRefactor.isEmpty()) {
+            this.classList.parallelStream().forEach(
+                    cls -> {
+                        Set<JavaMethod> overrideMethodSet = new HashSet<>();
+                        overrideMethodSet.addAll(this.getOverrideMethodSet(overrideMethodSet, cls));
+                        overrideMethodSet.addAll(cls.getDerivedClass().keySet().parallelStream()
+                                .flatMap(c -> c.getDeclaredMethodList().parallelStream())
+                                .filter(JavaMethod::canRefactor)
+                                .collect(Collectors.toSet()));
 
 
-                    cls.getDeclaredMethodList().forEach(
-                            method -> {
-                                if (method.CanRefactor()) {
-                                    if (isOverrideMethod(overrideMethodSet, method)) {
-                                        method.setCanRefactor(false);
+                        cls.getDeclaredMethodList().forEach(
+                                method -> {
+                                    if (method.canRefactor()) {
+                                        if (isOverrideMethod(overrideMethodSet, method)) {
+                                            method.setCanRefactor(false);
+                                        }
                                     }
                                 }
-                            }
-                    );
-                }
-        );
+                        );
+                    }
+            );
 
-        this.methodToRefactor = this.classList.parallelStream()
-                .flatMap(c -> c.getDeclaredMethodList().parallelStream())
-                .filter(JavaMethod::CanRefactor)
-                .collect(Collectors.toList());
+            this.methodToRefactor = this.classList.parallelStream()
+                    .flatMap(c -> c.getDeclaredMethodList().parallelStream())
+                    .filter(JavaMethod::canRefactor)
+                    .collect(Collectors.toList());
+        }
 
         return methodToRefactor;
     }

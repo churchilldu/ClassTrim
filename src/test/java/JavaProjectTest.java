@@ -5,7 +5,7 @@ public class JavaProjectTest {
     @Test
     public void test() {
         JavaProject project = new JavaProject();
-        project.addSource("C:/codeRefactoring/RefactorByNSGA3/src/test/java/");
+        project.addSource("target/test-classes/file");
         project.getMethodToRefactor();
     }
 }

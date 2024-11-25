@@ -8,7 +8,7 @@ package file;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DemoClass1 extends SuperClass{
+public class DemoClass1 extends SuperClass implements Comparable{
     private String str;
 
     public DemoClass1(String str) {
@@ -36,5 +36,16 @@ public class DemoClass1 extends SuperClass{
     @Override
     public void method() {
         super.method();
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        return 0;
+    }
+
+    class InnerClass {
+        public void innerMethod() {
+            return;
+        }
     }
 }

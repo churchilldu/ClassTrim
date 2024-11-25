@@ -1,14 +1,12 @@
 package org.example.model;
 
 
-import com.fuzzylite.Op;
-
 import java.util.*;
 
 public class JavaClass extends JavaObject{
 
     private JavaPackage pack;
-    private Optional<JavaClass> superClass = Optional.empty();
+    private JavaClass superClass;
 
     private List<JavaClass> extendedClass = new LinkedList<>();
 
@@ -33,7 +31,7 @@ public class JavaClass extends JavaObject{
      * Getter and Setter
      **/
     public Optional<JavaClass> getSuperClass() {
-        return superClass;
+        return Optional.ofNullable(superClass);
     }
 
     public Map<JavaClass, Integer> getDerivedClass() {
@@ -65,7 +63,7 @@ public class JavaClass extends JavaObject{
     }
 
     public void setSuperClass(JavaClass superClass) {
-        this.superClass = Optional.of(superClass);
+        this.superClass = superClass;
         superClass.addExtendedClass(this);
     }
 

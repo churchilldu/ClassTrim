@@ -5,17 +5,18 @@ import org.example.model.JavaClass;
 import org.example.model.JavaMethod;
 import org.example.model.JavaPackage;
 import org.example.model.JavaProject;
-import org.objectweb.asm.*;
+import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.Opcodes;
 
 import java.util.HashSet;
 import java.util.Set;
 
-public class MyClassVisitor extends ClassVisitor {
+public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     private final Set<String> privateFieldNameSet = new HashSet<>();
     private final JavaProject project;
     private JavaClass cls;
 
-    public MyClassVisitor(JavaProject project) {
+    public ClassVisitor(JavaProject project) {
         super(Opcodes.ASM9);
         this.project = project;
     }
@@ -60,7 +61,7 @@ public class MyClassVisitor extends ClassVisitor {
 
             cls.addDeclaredMethod(method);
 
-            return new MyMethodVisitor(project, cls, method);
+            return new MethodVisitor(project, cls, method);
         }
 
         return null;
@@ -70,7 +71,8 @@ public class MyClassVisitor extends ClassVisitor {
     private boolean isGetterOrSetter(String methodName) {
         for (String field : privateFieldNameSet) {
             if (StringUtils.equalsIgnoreCase("get" + field, methodName)
-                    || StringUtils.equalsIgnoreCase("set" + field, methodName)) {
+                    || StringUtils.equalsIgnoreCase("set" + field, methodName)
+                    || StringUtils.equalsIgnoreCase("is" + field, methodName)) {
                 return true;
             }
         }

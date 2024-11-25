@@ -1,8 +1,5 @@
 package org.example;
 
-import org.example.model.JavaClass;
-import org.example.model.JavaPackage;
-import org.example.model.JavaProject;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;
@@ -30,7 +27,6 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
      * @param args Command line arguments.
      */
     public static void main(String[] args) throws JMetalException {
-//        String problemName = "org.example.ClassRefactoringProblem";
         String problemName = "org.example.MethodRefactoringProblem";
 
         Problem<IntegerSolution> problem = ProblemFactory.loadProblem(problemName);
@@ -58,11 +54,6 @@ public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
                         .build();
 
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
-
-        JavaProject originalProj = JavaProject.load("nu");
-        List<JavaPackage> packageList = originalProj.getPackageList();
-        List<JavaClass> classList = originalProj.getClassList();
-
 
         List<IntegerSolution> population = (List<IntegerSolution>) algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
