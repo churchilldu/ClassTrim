@@ -1,12 +1,13 @@
 package org.refactor.visitor;
 
-import org.refactor.model.JavaClass;
-import org.refactor.model.JavaMethod;
-import org.refactor.model.JavaProject;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.TypePath;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
+import org.refactor.model.JavaProject;
+import org.refactor.util.ASMUtils;
 
 public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     private final JavaProject project;
@@ -29,13 +30,13 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     public void visitJumpInsn(int opcode, Label label) {
         // Count conditional and branching instructions
         if (opcode == Opcodes.IFEQ || opcode == Opcodes.IFNE ||
-            opcode == Opcodes.IFLT || opcode == Opcodes.IFGE ||
-            opcode == Opcodes.IFGT || opcode == Opcodes.IFLE ||
-            opcode == Opcodes.IF_ICMPEQ || opcode == Opcodes.IF_ICMPNE ||
-            opcode == Opcodes.IF_ICMPLT || opcode == Opcodes.IF_ICMPGE ||
-            opcode == Opcodes.IF_ICMPGT || opcode == Opcodes.IF_ICMPLE ||
-            opcode == Opcodes.IF_ACMPEQ || opcode == Opcodes.IF_ACMPNE ||
-            opcode == Opcodes.GOTO) {
+                opcode == Opcodes.IFLT || opcode == Opcodes.IFGE ||
+                opcode == Opcodes.IFGT || opcode == Opcodes.IFLE ||
+                opcode == Opcodes.IF_ICMPEQ || opcode == Opcodes.IF_ICMPNE ||
+                opcode == Opcodes.IF_ICMPLT || opcode == Opcodes.IF_ICMPGE ||
+                opcode == Opcodes.IF_ICMPGT || opcode == Opcodes.IF_ICMPLE ||
+                opcode == Opcodes.IF_ACMPEQ || opcode == Opcodes.IF_ACMPNE ||
+                opcode == Opcodes.GOTO) {
             complexity++;
         }
     }
@@ -43,14 +44,14 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     @Override
     public void visitLookupSwitchInsn(Label dflt, int[] keys, Label[] labels) {
         super.visitLookupSwitchInsn(dflt, keys, labels);
-         // Each case in a lookup switch statement adds to the complexity
+        // Each case in a lookup switch statement adds to the complexity
         complexity += labels.length;
     }
 
     @Override
     public void visitTableSwitchInsn(int min, int max, Label dflt, Label... labels) {
         super.visitTableSwitchInsn(min, max, dflt, labels);
-          // Each case in a switch statement adds to the complexity
+        // Each case in a switch statement adds to the complexity
         complexity += labels.length;
     }
 
@@ -72,15 +73,12 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-        if ("<init>".equals(name)
-                || !project.contain(owner)
-                || owner.contains("$")) {
-            return;
-        }
 
-        JavaClass classCall = project.getOrCreateClass(owner);
-        JavaMethod invokeMethod = project.getOrCreateMethod(classCall, name, descriptor);
-        cls.addInvokeMethod(invokeMethod);
+        if (!ASMUtils.isConstructor(name) && project.contain(owner) && !owner.contains("$")) {
+            JavaClass classOnCall = project.getOrCreateClass(owner);
+            JavaMethod invokeMethod = project.getOrCreateMethod(classOnCall, name, descriptor);
+            cls.addInvokeMethod(invokeMethod);
+        }
     }
 
     @Override

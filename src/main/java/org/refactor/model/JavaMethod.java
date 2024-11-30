@@ -13,6 +13,8 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 public class JavaMethod extends JavaObject {
+    private final Logger logger = LoggerFactory.getLogger(JavaMethod.class);
+
     private final JavaClass clazz;
     private final String descriptor;
     private int access;
@@ -66,7 +68,7 @@ public class JavaMethod extends JavaObject {
 
     public boolean isOverride() {
         try {
-            URLClassLoader urlCL = URLClassLoader.newInstance(new URL[]{new URL("file:///" + DataSetConst.Ant.jar)});
+            URLClassLoader urlCL = URLClassLoader.newInstance(DataSetConst.Ant.URL);
             Class<?> aClass = urlCL.loadClass(this.getCls().getQualifiedName());
             Class<?> superclass = aClass.getSuperclass();
             if (superclass != null) {
@@ -86,7 +88,6 @@ public class JavaMethod extends JavaObject {
                 }
             }
         } catch (Exception e){
-            Logger logger = LoggerFactory.getLogger(JavaMethod.class);
             logger.error(this.getCls().getQualifiedName());
             e.printStackTrace();
         }

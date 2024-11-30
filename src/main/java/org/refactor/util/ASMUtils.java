@@ -60,4 +60,8 @@ public class ASMUtils {
 
         return false;
     }
+
+    public static boolean isConstructor(String name) {
+        return StringUtils.equals(name, "<init>");
+    }
 }

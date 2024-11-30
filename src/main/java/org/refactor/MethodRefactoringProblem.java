@@ -5,6 +5,8 @@ import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.MetricUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;
@@ -15,18 +17,23 @@ import java.util.stream.IntStream;
 
 
 public class MethodRefactoringProblem extends AbstractIntegerProblem {
+    private final Logger logger = LoggerFactory.getLogger(MethodRefactoringProblem.class);
+
     private final JavaProject project = new JavaProject(DataSetConst.Ant.THRESHOLD);
     private int[] fixedMethods;
 
     public MethodRefactoringProblem() {
+        project.setName("org");
         this.project.addSource(DataSetConst.Ant.output);
         this.setBounds();
         this.setFixedAssignments();
+        logger.info("Original WMC = {}, original CBO = {}", project.countWMC(), project.countCBO());
     }
 
     private void setBounds() {
         int numberOfMethod = project.getMethodList().size();
         int numberOfClass = project.getClassList().size();
+        logger.info("number of method = {}, number of class = {}", numberOfMethod, numberOfClass);
 
         List<Integer> lowerLimit = new ArrayList<>(numberOfMethod);
         List<Integer> upperLimit = new ArrayList<>(numberOfMethod);
@@ -95,6 +102,7 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         // CBO
         solution.objectives()[1] = MetricUtils.evalCBO(project, solution.variables());
 
+        logger.info("WMC = {}, CBO = {}", solution.objectives()[0], solution.objectives()[1]);
         return solution;
     }
 

@@ -1,18 +1,15 @@
 package org.refactor.model;
 
 import org.apache.commons.lang3.SerializationUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.objectweb.asm.ClassReader;
 import org.refactor.common.Threshold;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClassVisitor;
-import org.objectweb.asm.ClassReader;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class JavaProject extends JavaObject {
 
@@ -104,7 +101,39 @@ public class JavaProject extends JavaObject {
     }
 
     public boolean contain(String className) {
-        return StringUtils.equals(className.substring(0, className.indexOf("/")), this.getName());
+//        return StringUtils.equals(className.substring(0, className.indexOf("/")), this.getName());
+        return className.startsWith("org/apache/tools/ant");
+    }
+
+    public long countWMC() {
+        Map<JavaClass, Integer> wmcByClass = new HashMap<>();
+
+        classList.forEach(cls -> {
+            cls.getDeclaredMethodList().forEach(m -> {
+                        wmcByClass.merge(cls, m.getComplexity(), Integer::sum);
+                    }
+            );
+        });
+
+        return wmcByClass.values().parallelStream().filter(
+                wmc -> wmc > threshold.getWMC()
+        ).count();
+    }
+
+    public long countCBO() {
+        Map<JavaClass, Set<JavaClass>> cboByClass = new HashMap<>();
+        classList.forEach(cls -> {
+            cls.getInvokeMethodList().forEach(m -> {
+                JavaClass clsOnCall = m.getCls();
+                if (!cls.equals(clsOnCall)) {
+                    cboByClass.computeIfAbsent(cls, k -> new HashSet<>()).add(clsOnCall);
+                }
+            });
+        });
+
+        return cboByClass.values().parallelStream().map(Set::size).filter(
+                cbo -> cbo > threshold.getCBO()
+        ).count();
     }
 
     /**
