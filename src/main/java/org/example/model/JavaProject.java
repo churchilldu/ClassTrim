@@ -1,23 +1,30 @@
 package org.example.model;
 
 import org.apache.commons.lang3.SerializationUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.example.common.Threshold;
+import org.example.util.FileUtils;
 import org.example.visitor.ClassVisitor;
 import org.objectweb.asm.ClassReader;
 
 import java.io.*;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
 
 public class JavaProject extends JavaObject {
+
     private final List<JavaMethod> methodList = new LinkedList<>();
-    private List<JavaPackage> packageList = new LinkedList<>();
-    private List<JavaClass> classList = new LinkedList<>();
-    private List<JavaMethod> methodToRefactor = new LinkedList<>();
+    private final List<JavaClass> classList = new LinkedList<>();
+    private final Threshold threshold;
 
     /**
      * Constructor
      **/
-    public JavaProject() {
+    public JavaProject(Threshold threshold) {
+        this.threshold = threshold;
     }
 
     public static JavaProject load(String fileName) {
@@ -30,150 +37,19 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    /**
-     * Getter and Setter
-     **/
-    public List<JavaPackage> getPackageList() {
-        return packageList;
-    }
-
-    public void setPackageList(List<JavaPackage> packageList) {
-        this.packageList = packageList;
-    }
-
-    public List<JavaClass> getClassList() {
-        return classList;
-    }
-
-    public void setClassList(List<JavaClass> classList) {
-        this.classList = classList;
-    }
-
-    public List<JavaMethod> getMethodList() {
-        return this.classList.parallelStream().flatMap(c -> c.getDeclaredMethodList().parallelStream())
-                .filter(m -> !m.canRefactor())
-                .collect(Collectors.toList());
-    }
-
-    /**
-     * Custom method
-     **/
-
-    public JavaPackage getOrCreatePackage(String packageName) {
-        JavaPackage pack = this.getPackageByName(packageName);
-        if (pack == null) {
-            pack = new JavaPackage(packageName);
-            this.addPackage(pack);
+    public void addSource(String projectPath) {
+        for (String path : FileUtils.getAllClassFiles(projectPath)) {
+            this.parseClass(path);
         }
-
-        return pack;
     }
 
-    public JavaMethod getOrCreateMethod(JavaClass cls, String methodName, String descriptor) {
-        return this.getOrCreateMethod(cls.getName(), methodName, descriptor);
-    }
-
-    public JavaMethod getOrCreateMethod(String className, String methodName, String descriptor) {
-        JavaClass cls = this.getOrCreateClass(className);
-        return Optional.ofNullable(cls.getMethodByName(methodName, descriptor)).orElseGet(
-                () -> new JavaMethod(methodName, descriptor)
-        );
-    }
-
-    public JavaClass getOrCreateClass(String className) {
-        JavaClass cls = this.getClassByName(className);
-        if (cls == null) {
-            cls = new JavaClass(className);
-            this.addClass(cls);
-        }
-
-        return cls;
-    }
-
-    private void addClass(JavaClass cls) {
-        this.classList.add(cls);
-    }
-
-    private void addPackage(JavaPackage pack) {
-        this.packageList.add(pack);
-    }
-
-    public JavaPackage getPackage(JavaPackage pack) {
-        for (JavaPackage p : this.packageList) {
-            if (p.equals(pack)) {
-                return p;
-            }
-        }
-
-        return null;
-    }
-
-    public JavaPackage getPackageByName(String name) {
-        for (JavaPackage pack : this.packageList) {
-            if (name.equals(pack.getName())) {
-                return pack;
-            }
-        }
-
-        return null;
-    }
-
-    public JavaClass getClassByName(String name) {
-        for (JavaClass cls : this.classList) {
-            if (name.equals(cls.getName())) {
-                return cls;
-            }
-        }
-
-        return null;
-    }
-
-
-    public void addSource(String path) {
-        if (path == null || path.isEmpty()) {
-            return;
-        }
-
-        File direcotry = new File(path);
-        if (direcotry.exists() && direcotry.isDirectory() && direcotry.listFiles() != null && direcotry.listFiles().length > 0) {
-            this.setName(direcotry.listFiles()[0].getName());
-
-            this.getFilePath(direcotry.listFiles()).forEach(clsPath -> getClassInfo(clsPath, this));
-        }
-
-    }
-
-    private void getClassInfo(String classFilePath, JavaProject project) {
-        try (InputStream classFileInputStream = new FileInputStream(classFilePath)) {
-            // Use ASM ClassReader to read the class file
+    private void parseClass(String classFilePath) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
             ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new ClassVisitor(project), 0);
+            classReader.accept(new ClassVisitor(this), 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    public boolean contain(String className) {
-        return className.startsWith(this.getName());
-    }
-
-    private List<String> getFilePath(File[] files) {
-        if (files == null) {
-            return null;
-        }
-
-        List<String> pathList = new ArrayList<>();
-
-        for (File f : files) {
-            if (f.isDirectory()) {
-                pathList.addAll(getFilePath(f.listFiles()));
-            } else if (f.isFile() && f.getName().endsWith(".class") && !f.getName().contains("$")) {
-                pathList.add(f.getAbsolutePath());
-            }
-        }
-
-
-        return pathList;
     }
 
     public void save(String fileName) {
@@ -190,60 +66,60 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    public List<JavaMethod> getMethodToRefactor() {
-        // Filter out method override method
-        if (this.methodToRefactor == null || this.methodToRefactor.isEmpty()) {
-            this.classList.parallelStream().forEach(
-                    cls -> {
-                        Set<JavaMethod> overrideMethodSet = new HashSet<>();
-                        overrideMethodSet.addAll(this.getOverrideMethodSet(overrideMethodSet, cls));
-                        overrideMethodSet.addAll(cls.getDerivedClass().keySet().parallelStream()
-                                .flatMap(c -> c.getDeclaredMethodList().parallelStream())
-                                .filter(JavaMethod::canRefactor)
-                                .collect(Collectors.toSet()));
+    /**
+     * Custom method
+     **/
 
-
-                        cls.getDeclaredMethodList().forEach(
-                                method -> {
-                                    if (method.canRefactor()) {
-                                        if (isOverrideMethod(overrideMethodSet, method)) {
-                                            method.setCanRefactor(false);
-                                        }
-                                    }
-                                }
-                        );
-                    }
-            );
-
-            this.methodToRefactor = this.classList.parallelStream()
-                    .flatMap(c -> c.getDeclaredMethodList().parallelStream())
-                    .filter(JavaMethod::canRefactor)
-                    .collect(Collectors.toList());
-        }
-
-        return methodToRefactor;
-    }
-
-    private Set<JavaMethod> getOverrideMethodSet(Set<JavaMethod> overrideMethodSet, JavaClass cls) {
-        cls.getSuperClass().ifPresent(
-                superClass -> {
-                    overrideMethodSet.addAll(superClass.getDeclaredMethodList());
-
-                    getOverrideMethodSet(overrideMethodSet, superClass);
+    public JavaMethod getOrCreateMethod(JavaClass clazz, String name, String descriptor) {
+        return clazz.getMethod(name).orElseGet(
+                () -> {
+                    JavaMethod method = new JavaMethod(clazz, name, descriptor);
+                    clazz.addDeclaredMethod(method);
+                    this.addMethod(method);
+                    return method;
                 }
         );
-
-        return overrideMethodSet;
-
     }
 
-    private boolean isOverrideMethod(Set<JavaMethod> methods, JavaMethod who) {
-        for (JavaMethod method : methods) {
-            if (method.equals(who.getName(), who.getDescriptor())) {
-                return true;
-            }
-        }
+    public JavaClass getOrCreateClass(String className) {
+        return this.getClass(className).orElseGet(
+                () -> {
+                    JavaClass clazz = new JavaClass(className);
+                    this.addClass(clazz);
+                    return clazz;
+                }
+        );
+    }
 
-        return false;
+    private void addClass(JavaClass cls) {
+        this.classList.add(cls);
+    }
+
+    private void addMethod(JavaMethod m) {
+        this.methodList.add(m);
+    }
+
+    private Optional<JavaClass> getClass(String name) {
+        return classList.stream().filter(cls -> name.equals(cls.getName())).findFirst();
+    }
+
+    public boolean contain(String className) {
+        return StringUtils.equals(className.substring(0, className.indexOf("/")), this.getName());
+    }
+
+    /**
+     * Getter and Setter
+     **/
+
+    public List<JavaClass> getClassList() {
+        return classList;
+    }
+
+    public List<JavaMethod> getMethodList() {
+        return methodList;
+    }
+
+    public Threshold getThreshold() {
+        return threshold;
     }
 }

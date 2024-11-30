@@ -1,38 +1,28 @@
 package org.example.model;
 
 import org.apache.commons.lang3.StringUtils;
+import org.example.util.ASMUtils;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 
-import java.util.Set;
+import java.lang.reflect.Method;
 
 public class JavaMethod extends JavaObject {
-
+    private final JavaClass clazz;
     private final String descriptor;
-    private JavaClass cls;
-    private int complexity = 0;
-    private boolean canRefactor = true;
     private int access;
     private boolean isGetterOrSetter;
+    private int complexity = 0;
 
-    // const
-    public static Set<JavaMethod> objectMethodSet;
-
-    public JavaMethod(String name, String descriptor) {
+    public JavaMethod(JavaClass clazz, String name, String descriptor) {
         super(name);
+        this.clazz = clazz;
         this.descriptor = descriptor;
     }
 
     public JavaClass getCls() {
-        return cls;
+        return clazz;
     }
-
-    public void setClass(JavaClass cls) {
-        this.cls = cls;
-    }
-
-    public String getDescriptor() {
-        return descriptor;
-    }
-
 
     public int getComplexity() {
         return complexity;
@@ -47,27 +37,66 @@ public class JavaMethod extends JavaObject {
         if (this == o) return true;
         if (o instanceof JavaMethod) {
             return StringUtils.equals(this.getName(), ((JavaMethod) o).getName())
-                    && this.getCls().equals(((JavaMethod) o).getCls())
-                    && StringUtils.equals(this.getDescriptor(), ((JavaMethod) o).getDescriptor());
+                    && StringUtils.equals(this.descriptor, ((JavaMethod) o).getDescriptor())
+                    && this.getCls().equals(((JavaMethod) o).getCls());
         }
 
         return false;
-
     }
 
-    public boolean equals(String name, String descriptor) {
-        return StringUtils.equals(this.getName(), name) && StringUtils.equals(this.descriptor, descriptor);
-    }
-
-    public void setCanRefactor(boolean canRefactor) {
-        this.canRefactor = canRefactor;
+    @Override
+    public String toString() {
+        return this.getName();
     }
 
     public boolean canRefactor() {
-        return this.canRefactor;
+        return (access & Opcodes.ACC_PUBLIC) != 0
+                && !isGetterOrSetter
+                && !isOverride();
+    }
+
+    public void setAccess(int access) {
+        this.access = access;
     }
 
     public boolean isOverride() {
+        try {
+            Class<?> aClass = Class.forName(this.getCls().getQulifiedName());
+
+            for (Method m : aClass.getSuperclass().getMethods()) {
+                if (ASMUtils.isMethodEqual(m, this)) {
+                    return true;
+                }
+            }
+
+            Class<?>[] interfaces = aClass.getInterfaces();
+            for (Class<?> aInterface : interfaces) {
+                for (Method m : aInterface.getMethods()) {
+                    if (ASMUtils.isMethodEqual(m, this)) {
+                        return true;
+                    }
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
         return false;
+    }
+
+    public String getDescriptor() {
+        return descriptor;
+    }
+
+    public void setGetterOrSetter(boolean getterOrSetter) {
+        isGetterOrSetter = getterOrSetter;
+    }
+
+    public Type getReturnType() {
+        return Type.getMethodType(descriptor).getReturnType();
+    }
+
+    public Type[] getArgumentTypes() {
+        return Type.getMethodType(descriptor).getArgumentTypes();
     }
 }

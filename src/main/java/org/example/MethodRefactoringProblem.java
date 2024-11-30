@@ -1,45 +1,61 @@
 package org.example;
 
+import org.example.common.DataSetConst;
 import org.example.model.JavaClass;
-import org.example.model.JavaPackage;
+import org.example.model.JavaMethod;
 import org.example.model.JavaProject;
 import org.example.util.MetricUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
+import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.IntStream;
 
 
 public class MethodRefactoringProblem extends AbstractIntegerProblem {
-
-//    private static final String dataSetPath = "C:/codeRefactoring/datasource/xom-1.2.1/output";
-//        private static final String dataSetPath = "C:/codeRefactoring/datasource/mango/output";
-    private static final String dataSetPath = "C:/codeRefactoring/datasource/jhotdraw-6.0b1/output";
-
-    private final JavaProject project = new JavaProject();
+    private final JavaProject project = new JavaProject(DataSetConst.Ant.THRESHOLD);
+    private int[] fixedMethods;
 
     public MethodRefactoringProblem() {
-        this.project.addSource(dataSetPath);
-//        project.save(project.getName());
+        this.project.addSource(DataSetConst.Ant.output);
+        this.setBounds();
+        this.setFixedAssignments();
+    }
 
-        int numberOfMethod = project.getMethodToRefactor().size();
+    private void setBounds() {
+        int numberOfMethod = project.getMethodList().size();
         int numberOfClass = project.getClassList().size();
 
         List<Integer> lowerLimit = new ArrayList<>(numberOfMethod);
         List<Integer> upperLimit = new ArrayList<>(numberOfMethod);
-        for (int i = 0; i < numberOfMethod; i++) {
+        IntStream.range(0, numberOfMethod).forEach(k -> {
             lowerLimit.add(0);
             upperLimit.add(numberOfClass - 1);
-        }
+        });
+
         super.variableBounds(lowerLimit, upperLimit);
+    }
+
+    private void setFixedAssignments() {
+        List<JavaClass> classList = project.getClassList();
+        List<JavaMethod> methodList = project.getMethodList();
+        fixedMethods = new int[methodList.size()];
+
+        for (int i = 0; i < methodList.size(); i++) {
+            JavaMethod m = methodList.get(i);
+            if (m.canRefactor()) {
+                fixedMethods[i] = -1;
+            } else {
+                fixedMethods[i] = classList.indexOf(m.getCls());
+            }
+        }
     }
 
     @Override
     public int numberOfObjectives() {
-        return 1;
+        return 2;
     }
 
     @Override
@@ -52,21 +68,32 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         return null;
     }
 
+
     @Override
-    public IntegerSolution evaluate(IntegerSolution solution) {
-        // classId, List<methodId>
-        Map<Integer, List<Integer>> methodsByClas = new HashMap<>();
+    public IntegerSolution createSolution() {
+        IntegerSolution solution = super.createSolution();
 
-        List<Integer> variables = solution.variables();
-        for (int i = 0; i < variables.size(); i++) {
-            Integer classId = variables.get(i);
-            Integer methodId = i;
-
-            methodsByClas.computeIfAbsent(classId, k -> new ArrayList<>()).add(methodId);
+        for (int i = 0; i < numberOfVariables(); i++) {
+            if (fixedMethods[i] < 0) {
+                solution.variables().set(i,
+                        JMetalRandom.getInstance().nextInt(
+                                solution.getBounds(i).getLowerBound(),
+                                solution.getBounds(i).getUpperBound()));
+            } else {
+                solution.variables().set(i, fixedMethods[i]);
+            }
         }
 
-        // coupling
-        solution.objectives()[0] = MetricUtils.evalCBO(project, solution.variables());
+        return solution;
+
+    }
+
+    @Override
+    public IntegerSolution evaluate(IntegerSolution solution) {
+        // WMC
+        solution.objectives()[0] = MetricUtils.evalWMC(project, solution.variables());
+        // CBO
+        solution.objectives()[1] = MetricUtils.evalCBO(project, solution.variables());
 
         return solution;
     }

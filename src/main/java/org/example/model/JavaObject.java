@@ -42,9 +42,4 @@ public class JavaObject implements Serializable {
                         append(name).
                 toHashCode();
     }
-
-    @Override
-    public String toString() {
-        return this.getName().replaceAll("/", ".");
-    }
 }

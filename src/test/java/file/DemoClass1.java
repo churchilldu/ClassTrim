@@ -1,11 +1,5 @@
 package file;
 
-
-/*
- * javac -cp "C:\Users\jesse\.m2\repository\org\apache\commons\commons-lang3\3.17.0\commons-lang3-3.17.0.jar" DemoClass1.java
- *
- */
-
 import org.apache.commons.lang3.StringUtils;
 
 public class DemoClass1 extends SuperClass implements Comparable{
@@ -20,8 +14,8 @@ public class DemoClass1 extends SuperClass implements Comparable{
     }
 
     /* Overload */
-    public void setStr(Object str) {
-        this.str = (String) str;
+    public void setStr(Integer str) {
+        this.str = String.valueOf(str);
     }
 
     public void setStr(String str) {
@@ -34,8 +28,9 @@ public class DemoClass1 extends SuperClass implements Comparable{
     }
 
     @Override
-    public void method() {
-        super.method();
+    public void inheritMethod() {
+        super.inheritMethod();
+        new DemoClass2().method2();
     }
 
     @Override
@@ -43,9 +38,17 @@ public class DemoClass1 extends SuperClass implements Comparable{
         return 0;
     }
 
+    private void method1(Object method) {
+        return;
+    }
+
+    private boolean isSingle() {
+        return false;
+    }
+
     class InnerClass {
         public void innerMethod() {
-            return;
+            new DemoClass2().method2();
         }
     }
 }

@@ -21,14 +21,9 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 import java.util.List;
 
-/** Class to configure and run the NSGA-III algorithm */
-public class NSGAIIICodeRefactoring extends AbstractAlgorithmRunner {
-    /**
-     * @param args Command line arguments.
-     */
+public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
         String problemName = "org.example.MethodRefactoringProblem";
-
         Problem<IntegerSolution> problem = ProblemFactory.loadProblem(problemName);
 
         double crossoverProbability = 0.9;

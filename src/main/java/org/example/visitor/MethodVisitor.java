@@ -72,24 +72,14 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-        /**
-         * Filter out following method:
-         * 1. class own method
-         * 2. outside of project
-         * 3. constructor
-         * 4. inner class method
-         */
-
         if ("<init>".equals(name)
-                || owner.equals(cls.getName())
                 || !project.contain(owner)
                 || owner.contains("$")) {
             return;
         }
 
-        JavaMethod invokeMethod = project.getOrCreateMethod(owner, name, descriptor);
-        JavaClass dependClass = project.getOrCreateClass(owner);
-        invokeMethod.setClass(dependClass);
+        JavaClass classCall = project.getOrCreateClass(owner);
+        JavaMethod invokeMethod = project.getOrCreateMethod(classCall, name, descriptor);
         cls.addInvokeMethod(invokeMethod);
     }
 
