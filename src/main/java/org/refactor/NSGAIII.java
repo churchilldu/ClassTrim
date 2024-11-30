@@ -1,4 +1,4 @@
-package org.example;
+package org.refactor;
 
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
-        String problemName = "org.example.MethodRefactoringProblem";
+        String problemName = "org.refactor.MethodRefactoringProblem";
         Problem<IntegerSolution> problem = ProblemFactory.loadProblem(problemName);
 
         double crossoverProbability = 0.9;

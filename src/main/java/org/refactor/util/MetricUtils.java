@@ -1,8 +1,8 @@
-package org.example.util;
+package org.refactor.util;
 
-import org.example.model.JavaClass;
-import org.example.model.JavaMethod;
-import org.example.model.JavaProject;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
+import org.refactor.model.JavaProject;
 
 import java.util.*;
 

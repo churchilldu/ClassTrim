@@ -1,11 +1,16 @@
-package org.example.model;
+package org.refactor.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.example.util.ASMUtils;
+import org.refactor.common.DataSetConst;
+import org.refactor.util.ASMUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLClassLoader;
 
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
@@ -61,11 +66,14 @@ public class JavaMethod extends JavaObject {
 
     public boolean isOverride() {
         try {
-            Class<?> aClass = Class.forName(this.getCls().getQulifiedName());
-
-            for (Method m : aClass.getSuperclass().getMethods()) {
-                if (ASMUtils.isMethodEqual(m, this)) {
-                    return true;
+            URLClassLoader urlCL = URLClassLoader.newInstance(new URL[]{new URL("file:///" + DataSetConst.Ant.jar)});
+            Class<?> aClass = urlCL.loadClass(this.getCls().getQualifiedName());
+            Class<?> superclass = aClass.getSuperclass();
+            if (superclass != null) {
+                for (Method m : superclass.getMethods()) {
+                    if (ASMUtils.isMethodEqual(m, this)) {
+                        return true;
+                    }
                 }
             }
 
@@ -77,8 +85,10 @@ public class JavaMethod extends JavaObject {
                     }
                 }
             }
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e){
+            Logger logger = LoggerFactory.getLogger(JavaMethod.class);
+            logger.error(this.getCls().getQualifiedName());
+            e.printStackTrace();
         }
 
         return false;

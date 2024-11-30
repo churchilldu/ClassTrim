@@ -1,8 +1,8 @@
-package org.example.visitor;
+package org.refactor.visitor;
 
-import org.example.model.JavaClass;
-import org.example.model.JavaMethod;
-import org.example.model.JavaProject;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
+import org.refactor.model.JavaProject;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;

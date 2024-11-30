@@ -1,8 +1,8 @@
-package org.example.util;
+package org.refactor.util;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.example.model.JavaMethod;
+import org.refactor.model.JavaMethod;
 import org.objectweb.asm.Type;
 
 import java.lang.reflect.Method;

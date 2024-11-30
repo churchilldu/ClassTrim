@@ -1,4 +1,4 @@
-import org.example.model.JavaProject;
+import org.refactor.model.JavaProject;
 import org.junit.Test;
 
 public class JavaProjectTest {

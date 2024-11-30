@@ -1,4 +1,4 @@
-package org.example.model;
+package org.refactor.model;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.builder.HashCodeBuilder;

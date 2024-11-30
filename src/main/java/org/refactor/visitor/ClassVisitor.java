@@ -1,9 +1,9 @@
-package org.example.visitor;
+package org.refactor.visitor;
 
-import org.example.model.JavaClass;
-import org.example.model.JavaMethod;
-import org.example.model.JavaProject;
-import org.example.util.ASMUtils;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
+import org.refactor.model.JavaProject;
+import org.refactor.util.ASMUtils;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;

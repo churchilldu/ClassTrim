@@ -1,4 +1,4 @@
-package org.example.common;
+package org.refactor.common;
 
 public class Threshold {
     private final int WMC;

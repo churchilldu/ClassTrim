@@ -1,10 +1,10 @@
-package org.example.model;
+package org.refactor.model;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.example.common.Threshold;
-import org.example.util.FileUtils;
-import org.example.visitor.ClassVisitor;
+import org.refactor.common.Threshold;
+import org.refactor.util.FileUtils;
+import org.refactor.visitor.ClassVisitor;
 import org.objectweb.asm.ClassReader;
 
 import java.io.*;

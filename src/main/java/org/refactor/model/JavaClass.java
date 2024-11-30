@@ -1,4 +1,4 @@
-package org.example.model;
+package org.refactor.model;
 
 
 import org.objectweb.asm.Type;
@@ -42,12 +42,12 @@ public class JavaClass extends JavaObject {
         return invokeMethodList;
     }
 
-    public String getQulifiedName() {
+    public String getQualifiedName() {
         return Type.getObjectType(this.getName()).getClassName();
     }
 
     @Override
     public String toString() {
-        return this.getQulifiedName();
+        return this.getQualifiedName();
     }
 }

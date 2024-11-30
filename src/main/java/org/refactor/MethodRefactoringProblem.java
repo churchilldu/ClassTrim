@@ -1,10 +1,10 @@
-package org.example;
+package org.refactor;
 
-import org.example.common.DataSetConst;
-import org.example.model.JavaClass;
-import org.example.model.JavaMethod;
-import org.example.model.JavaProject;
-import org.example.util.MetricUtils;
+import org.refactor.common.DataSetConst;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
+import org.refactor.model.JavaProject;
+import org.refactor.util.MetricUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.pseudorandom.JMetalRandom;

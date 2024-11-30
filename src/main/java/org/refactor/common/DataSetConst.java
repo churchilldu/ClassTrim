@@ -1,4 +1,4 @@
-package org.example.common;
+package org.refactor.common;
 
 public interface DataSetConst {
 
@@ -16,7 +16,8 @@ public interface DataSetConst {
 
     class Ant{
         public static final String srcPath = "C:/codeRefactoring/datasource/apache-ant-1.7.0-src/apache-ant-1.7.0/src/main";
-        public static final String output = "C:/codeRefactoring/datasource/apache-ant-1.7.0-src/apache-ant-1.7.0/src/main";
+        public static final String output = "C:/Users/jesse/Downloads/ant-1.7.0/org";
+        public static final String jar = "C:/Users/jesse/Downloads/ant-1.7.0.jar";
         public static final String libPath = "C:/codeRefactoring/datasource/apache-ant-1.7.0-src/apache-ant-1.7.0/lib";
         public static final Threshold THRESHOLD = new Threshold(8, 7);
     }
