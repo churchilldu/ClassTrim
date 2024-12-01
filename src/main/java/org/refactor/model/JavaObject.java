@@ -8,21 +8,14 @@ import java.io.Serializable;
 public abstract class JavaObject implements Serializable {
     private static final long serialVersionUID = 1423480912791753005L;
 
-    private String name;
+    private final String name;
 
     public JavaObject(String name) {
         this.name = name;
     }
 
-    public JavaObject() {
-    }
-
     public String getName() {
         return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     @Override

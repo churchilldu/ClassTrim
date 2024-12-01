@@ -1,5 +1,6 @@
 package org.refactor;
 
+import org.refactor.common.DataSetConst;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;
@@ -10,7 +11,6 @@ import org.uma.jmetal.operator.mutation.impl.IntegerPolynomialMutation;
 import org.uma.jmetal.operator.selection.SelectionOperator;
 import org.uma.jmetal.operator.selection.impl.BinaryTournamentSelection;
 import org.uma.jmetal.problem.Problem;
-import org.uma.jmetal.problem.ProblemFactory;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
@@ -23,8 +23,7 @@ import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
-        String problemName = "org.refactor.MethodRefactoringProblem";
-        Problem<IntegerSolution> problem = ProblemFactory.loadProblem(problemName);
+        Problem<IntegerSolution> problem = new MethodRefactoringProblem(DataSetConst.ANT);
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;

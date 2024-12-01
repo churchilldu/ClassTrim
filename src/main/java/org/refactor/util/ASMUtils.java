@@ -3,7 +3,6 @@ package org.refactor.util;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Type;
-import org.refactor.common.DataSetConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,12 +51,12 @@ public class ASMUtils {
         return StringUtils.equals(name, "<init>");
     }
 
-    public static boolean isOverride(String superName,
-                              String[] interfaces,
-                              String methodName,
-                              String descriptor) {
+    public static boolean isOverride(URLClassLoader urlCL,
+                                     String superName,
+                                     String[] interfaces,
+                                     String methodName,
+                                     String descriptor) {
         try {
-            URLClassLoader urlCL = URLClassLoader.newInstance(DataSetConst.Ant.URL);
             Class<?> superClass = urlCL.loadClass(Type.getObjectType(superName).getClassName());
             for (Method m : superClass.getMethods()) {
                 if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {

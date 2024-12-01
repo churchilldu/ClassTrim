@@ -1,13 +1,60 @@
+import org.junit.Assert;
+import org.junit.Before;
+import org.objectweb.asm.Type;
+import org.refactor.common.DataSet;
+import org.refactor.common.Threshold;
+import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.junit.Test;
 
-public class JavaProjectTest {
-    @Test
-    public void test() {
-        JavaProject project = new JavaProject(null);
-        project.setName("file");
-        project.addSource("target/test-classes/file");
+import java.util.Optional;
 
-        project.addSource("C:/codeRefactoring/datasource/xom-1.2.1/output/nu");
+public class JavaProjectTest {
+    public static final DataSet TEST = new DataSet(
+            "file",
+           "" ,
+            "target/test-classes/file",
+            new Threshold(0, 1)
+    );
+
+    private JavaProject project;
+
+    @Before
+    public void setup() {
+        project = new JavaProject(TEST);
+        project.startParse();
+    }
+
+    @Test
+    public void testOverride() {
+        Optional<JavaMethod> inheritMethod = project.getOrCreateClass("file/DemoClass1")
+                .getMethod("inheritMethod", Type.getMethodDescriptor(Type.VOID_TYPE));
+        Assert.assertTrue(inheritMethod.isPresent());
+        Assert.assertFalse(inheritMethod.get().canRefactor());
+
+        Optional<JavaMethod> compareTo = project.getOrCreateClass("file/DemoClass1")
+                .getMethod("compareTo",
+                Type.getMethodDescriptor(Type.INT_TYPE, Type.getType(Object.class)));
+        Assert.assertTrue(compareTo.isPresent());
+        Assert.assertFalse(compareTo.get().canRefactor());
+    }
+
+    @Test
+    public void testGetterSetter() {
+        Optional<JavaMethod> getter = project.getOrCreateClass("file/DemoClass1")
+                .getMethod("getStr", Type.getMethodDescriptor(Type.getType(String.class)));
+        Assert.assertTrue(getter.isPresent());
+        Assert.assertFalse(getter.get().canRefactor());
+
+        Optional<JavaMethod> setter = project.getOrCreateClass("file/DemoClass1")
+                .getMethod("setStr", Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Integer.class)));
+        Assert.assertTrue(setter.isPresent());
+        Assert.assertFalse(setter.get().canRefactor());
+    }
+
+    @Test
+    public void testMetrics() {
+        project.countWMC();
+        Assert.assertEquals(1L, project.countCBO());
     }
 }

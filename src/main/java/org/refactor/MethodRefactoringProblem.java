@@ -1,6 +1,6 @@
 package org.refactor;
 
-import org.refactor.common.DataSetConst;
+import org.refactor.common.DataSet;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -16,14 +16,14 @@ import java.util.stream.IntStream;
 
 
 public class MethodRefactoringProblem extends AbstractIntegerProblem {
-    private final JavaProject project = new JavaProject(DataSetConst.Ant.THRESHOLD);
+    private final JavaProject project;
     private int[] fixedMethods;
 
-    public MethodRefactoringProblem() {
-        project.setName(DataSetConst.Ant.name);
-        this.project.addSource(DataSetConst.Ant.path);
+    public MethodRefactoringProblem(DataSet dataSet) {
+        this.project = new JavaProject(dataSet);
+        this.project.startParse();
         this.setBounds();
-        this.setFixedAssignments();
+        this.initFixedAssignments();
 
         JMetalLogger.logger.info("Original WMC = " + project.countWMC());
         JMetalLogger.logger.info("Original CBO = " + project.countCBO());
@@ -46,7 +46,7 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         JMetalLogger.logger.info("Number of method = " + numberOfMethod);
     }
 
-    private void setFixedAssignments() {
+    private void initFixedAssignments() {
         List<JavaClass> classList = project.getClassList();
         List<JavaMethod> methodList = project.getMethodList();
         fixedMethods = new int[methodList.size()];

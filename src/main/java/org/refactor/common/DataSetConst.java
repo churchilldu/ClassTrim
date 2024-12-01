@@ -1,9 +1,9 @@
 package org.refactor.common;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-
-public interface DataSetConst {
+public class DataSetConst {
+    static {
+        DataSet.setBase("C:/codeRefactoring/datasource/");
+    }
 
     String[] dataSetPath = new String[]{
             "xom-1.2.1/nu/xom",
@@ -17,20 +17,13 @@ public interface DataSetConst {
             "roller-roller_5.1.1/app/src/main"
     };
 
-    class Ant {
-        public static final String name = "org/apache/tools/ant";
-        public static final String path = "C:/Users/jesse/Downloads/ant-1.7.0/org";
-        public static final Threshold THRESHOLD = new Threshold(8, 7);
-        public static final URL[] URL;
-        static {
-            try {
-                URL = new URL[]{
-                        new URL("file:///" + "C:/Users/jesse/Downloads/ant-1.7.0.jar"),
-                        new URL("file:///" + "C:/Users/jesse/Downloads/ant-launcher-1.7.0.jar")
-                };
-            } catch (MalformedURLException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
+
+    public static final DataSet ANT = new DataSet(
+            "org/apache/tools/ant",
+            "ant-1.7.0/",
+            "org",
+            new Threshold(8, 7),
+            "ant-1.7.0.jar",
+            "ant-launcher-1.7.0.jar"
+    );
 }

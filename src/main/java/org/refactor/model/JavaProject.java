@@ -2,23 +2,25 @@ package org.refactor.model;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
+import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClassVisitor;
 
 import java.io.*;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
 public class JavaProject extends JavaObject {
-
     private final List<JavaMethod> methodList = new LinkedList<>();
     private final List<JavaClass> classList = new LinkedList<>();
-    private final Threshold threshold;
+    private final DataSet dataSet;
 
-    public JavaProject(Threshold threshold) {
-        this.threshold = threshold;
+    public JavaProject(DataSet dataSet) {
+        super(dataSet.getName());
+        this.dataSet = dataSet;
     }
 
     public static JavaProject load(String fileName) {
@@ -31,13 +33,13 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    public void addSource(String projectPath) {
-        for (String path : FileUtils.getAllClassFiles(projectPath)) {
-            this.parseClass(path);
+    public void startParse() {
+        for (String path : FileUtils.getAllClassFiles(dataSet.getPath())) {
+            this.parse(path);
         }
     }
 
-    private void parseClass(String classFilePath) {
+    private void parse(String classFilePath) {
         try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
             ClassReader classReader = new ClassReader(classFileInputStream);
             classReader.accept(new ClassVisitor(this), 0);
@@ -103,7 +105,7 @@ public class JavaProject extends JavaObject {
         });
 
         return wmcByClass.values().parallelStream().filter(
-                wmc -> wmc > threshold.getWMC()
+                wmc -> wmc > dataSet.getThreshold().getWMC()
         ).count();
     }
 
@@ -119,7 +121,7 @@ public class JavaProject extends JavaObject {
         });
 
         return cboByClass.values().parallelStream().map(Set::size).filter(
-                cbo -> cbo > threshold.getCBO()
+                cbo -> cbo > dataSet.getThreshold().getCBO()
         ).count();
     }
 
@@ -136,6 +138,10 @@ public class JavaProject extends JavaObject {
     }
 
     public Threshold getThreshold() {
-        return threshold;
+        return this.dataSet.getThreshold();
+    }
+
+    public URLClassLoader getUrlCL() {
+        return this.dataSet.getUrlCL();
     }
 }

@@ -38,7 +38,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         if ((access & Opcodes.ACC_PRIVATE) != 0) {
-            privateFields.put(name, Type.getObjectType(descriptor));
+            privateFields.put(name, Type.getType(descriptor));
         }
 
         return super.visitField(access, name, descriptor, signature, value);
@@ -54,7 +54,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
         method.setAccess(access);
         method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
-        method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
+        method.setOverride(ASMUtils.isOverride(project.getUrlCL(), superName, interfaces, name, descriptor));
 
         return new MethodVisitor(project, cls, method);
     }

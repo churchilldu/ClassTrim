@@ -11,21 +11,13 @@ public class JavaClass extends JavaObject {
     private final List<JavaMethod> declaredMethodList = new LinkedList<>();
     private final List<JavaMethod> invokeMethodList = new LinkedList<>();
 
-    /**
-     * Constructor
-     **/
-
     public JavaClass(String name) {
         super(name);
     }
 
-    /**
-     * Getter and Setter
-     **/
-
     public Optional<JavaMethod> getMethod(String methodName, String descriptor) {
         return declaredMethodList.stream().filter(m ->
-            methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
+                methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
         ).findFirst();
     }
 
@@ -45,12 +37,8 @@ public class JavaClass extends JavaObject {
         return invokeMethodList;
     }
 
-    public String getQualifiedName() {
-        return Type.getObjectType(this.getName()).getClassName();
-    }
-
     @Override
     public String toString() {
-        return this.getQualifiedName();
+        return Type.getObjectType(this.getName()).getClassName();
     }
 }
