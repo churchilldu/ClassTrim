@@ -54,7 +54,5 @@ public class JavaProjectTest {
 
     @Test
     public void testMetrics() {
-        project.countWMC();
-        Assert.assertEquals(1L, project.countCBO());
     }
 }

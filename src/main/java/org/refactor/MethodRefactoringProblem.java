@@ -5,6 +5,7 @@ import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.MetricUtils;
+import org.refactor.util.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
@@ -25,8 +26,8 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         this.setBounds();
         this.initFixedAssignments();
 
-        JMetalLogger.logger.info("Original WMC = " + project.countWMC());
-        JMetalLogger.logger.info("Original CBO = " + project.countCBO());
+        JMetalLogger.logger.info("Original number of class exceeds WMC = " + ProjectUtils.countClsOverWMC(project));
+        JMetalLogger.logger.info("Original number of class exceeds CBO = " + ProjectUtils.countClsOverCBO(project));
     }
 
     private void setBounds() {

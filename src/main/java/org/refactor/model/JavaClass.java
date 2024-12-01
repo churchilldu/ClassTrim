@@ -3,13 +3,12 @@ package org.refactor.model;
 
 import org.objectweb.asm.Type;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class JavaClass extends JavaObject {
-    private final List<JavaMethod> declaredMethodList = new LinkedList<>();
-    private final List<JavaMethod> invokeMethodList = new LinkedList<>();
+    private final List<JavaMethod> declaredMethodList = new ArrayList<>();
+    private final List<JavaMethod> invokeMethodList = new ArrayList<>();
+    private final Set<String> dependencies = new HashSet<>();
 
     public JavaClass(String name) {
         super(name);
@@ -40,5 +39,13 @@ public class JavaClass extends JavaObject {
     @Override
     public String toString() {
         return Type.getObjectType(this.getName()).getClassName();
+    }
+
+    public void addDependency(String name) {
+        this.dependencies.add(name);
+    }
+
+    public int getOuterCbo() {
+        return this.dependencies.size();
     }
 }

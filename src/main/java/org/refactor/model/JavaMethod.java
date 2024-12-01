@@ -74,4 +74,5 @@ public class JavaMethod extends JavaObject {
     public String toString() {
         return this.getName();
     }
+
 }

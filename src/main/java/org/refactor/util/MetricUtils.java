@@ -37,7 +37,7 @@ public class MetricUtils {
         List<JavaMethod> methodList = project.getMethodList();
         List<JavaClass> classList = project.getClassList();
 
-        Map<Integer, Set<Integer>> cboByClass = new HashMap<>();
+        Map<JavaClass, Set<Integer>> cboByClass = new HashMap<>();
         for (int classId = 0; classId < classList.size(); classId++) {
             JavaClass cls = classList.get(classId);
 
@@ -45,13 +45,18 @@ public class MetricUtils {
                 int methodId = methodList.indexOf(m);
                 Integer newClassId = solution.get(methodId);
                 if (!newClassId.equals(classId)) {
-                    cboByClass.computeIfAbsent(classId, k -> new HashSet<>()).add(newClassId);
+                    cboByClass.computeIfAbsent(cls, k -> new HashSet<>()).add(newClassId);
                 }
             }
         }
 
-        return cboByClass.values().parallelStream().map(Set::size).filter(
-                cbo -> cbo > project.getThreshold().getCBO()
+        return cboByClass.entrySet().stream().filter(
+                entry -> {
+                    JavaClass cls = entry.getKey();
+                    Set<Integer> innerCbo = entry.getValue();
+
+                    return cls.getOuterCbo() + innerCbo.size() > project.getThreshold().getCBO();
+                }
         ).count();
     }
 

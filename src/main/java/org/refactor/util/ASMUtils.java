@@ -47,8 +47,16 @@ public class ASMUtils {
         return false;
     }
 
+    public static boolean isInnerClass(String name) {
+        return StringUtils.contains(name, "$");
+    }
+
     public static boolean isConstructor(String name) {
         return StringUtils.equals(name, "<init>");
+    }
+
+    public static boolean isFromJava(String name) {
+        return name.startsWith("java.") || name.startsWith("javax.");
     }
 
     public static boolean isOverride(URLClassLoader urlCL,

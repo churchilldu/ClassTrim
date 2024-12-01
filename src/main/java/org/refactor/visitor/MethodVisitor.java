@@ -52,8 +52,12 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
+        // Do cbo count the class outside self project?
+        if (!ASMUtils.isFromJava(owner) && !project.contain(owner)) {
+            cls.addDependency(owner);
+        }
 
-        if (!ASMUtils.isConstructor(name) && project.contain(owner) && !owner.contains("$")) {
+        if (!ASMUtils.isConstructor(name) && !ASMUtils.isInnerClass(owner) && project.contain(owner)) {
             JavaClass classOnCall = project.getOrCreateClass(owner);
             JavaMethod invokeMethod = project.getOrCreateMethod(classOnCall, name, descriptor);
             cls.addInvokeMethod(invokeMethod);

@@ -19,7 +19,7 @@ public class DataSetConst {
 
 
     public static final DataSet ANT = new DataSet(
-            "org/apache/tools/ant",
+            "org/apache/tools/",
             "ant-1.7.0/",
             "org",
             new Threshold(8, 7),

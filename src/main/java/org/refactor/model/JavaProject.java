@@ -95,36 +95,6 @@ public class JavaProject extends JavaObject {
         return className.startsWith(this.getName());
     }
 
-    public long countWMC() {
-        Map<JavaClass, Integer> wmcByClass = new HashMap<>();
-        classList.forEach(cls -> {
-            cls.getDeclaredMethodList().forEach(m -> {
-                        wmcByClass.merge(cls, m.getComplexity(), Integer::sum);
-                    }
-            );
-        });
-
-        return wmcByClass.values().parallelStream().filter(
-                wmc -> wmc > dataSet.getThreshold().getWMC()
-        ).count();
-    }
-
-    public long countCBO() {
-        Map<JavaClass, Set<JavaClass>> cboByClass = new HashMap<>();
-        classList.forEach(cls -> {
-            cls.getInvokeMethodList().forEach(m -> {
-                JavaClass clsOnCall = m.getCls();
-                if (!cls.equals(clsOnCall)) {
-                    cboByClass.computeIfAbsent(cls, k -> new HashSet<>()).add(clsOnCall);
-                }
-            });
-        });
-
-        return cboByClass.values().parallelStream().map(Set::size).filter(
-                cbo -> cbo > dataSet.getThreshold().getCBO()
-        ).count();
-    }
-
     /**
      * Getter and Setter
      **/
