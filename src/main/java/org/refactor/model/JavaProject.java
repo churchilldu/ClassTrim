@@ -14,8 +14,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class JavaProject extends JavaObject {
-    private final List<JavaMethod> methodList = new LinkedList<>();
-    private final List<JavaClass> classList = new LinkedList<>();
+    private final List<JavaMethod> methodList = new ArrayList<>();
+    private final List<JavaClass> classList = new ArrayList<>();
     private final DataSet dataSet;
 
     public JavaProject(DataSet dataSet) {

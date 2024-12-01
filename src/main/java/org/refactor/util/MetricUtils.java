@@ -10,7 +10,7 @@ import java.util.*;
 public class MetricUtils {
 
     // WMC Weighted Method per Class
-    public static long evalWMC(JavaProject project, List<Integer> solution) {
+    public static long countClassWmcOverThreshold(JavaProject project, List<Integer> solution) {
         List<JavaMethod> methodList = project.getMethodList();
         List<JavaClass> classList = project.getClassList();
 
@@ -33,7 +33,7 @@ public class MetricUtils {
     }
 
     // CBO Coupling Between Objects
-    public static long evalCBO(JavaProject project, List<Integer> solution) {
+    public static long countClassCboOverThreshold(JavaProject project, List<Integer> solution) {
         List<JavaMethod> methodList = project.getMethodList();
         List<JavaClass> classList = project.getClassList();
 

@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ProjectUtils {
-    public static long countClsOverWMC(JavaProject project) {
+    public static long countClassWmcOverThreshold(JavaProject project) {
         Map<JavaClass, Integer> wmcByClass = new HashMap<>();
         project.getClassList().forEach(cls -> {
             cls.getDeclaredMethodList().forEach(m -> {
@@ -24,7 +24,7 @@ public class ProjectUtils {
         ).count();
     }
 
-    public static long countClsOverCBO(JavaProject project) {
+    public static long countClassCboOverThreshold(JavaProject project) {
         Map<JavaClass, Set<JavaClass>> cboByClass = new HashMap<>();
         project.getClassList().forEach(cls -> {
             cls.getInvokeMethodList().forEach(m -> {

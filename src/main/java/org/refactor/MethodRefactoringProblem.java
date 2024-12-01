@@ -26,8 +26,8 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         this.setBounds();
         this.initFixedAssignments();
 
-        JMetalLogger.logger.info("Original number of class exceeds WMC = " + ProjectUtils.countClsOverWMC(project));
-        JMetalLogger.logger.info("Original number of class exceeds CBO = " + ProjectUtils.countClsOverCBO(project));
+        JMetalLogger.logger.info("Original number of class exceeds WMC threshold = " + ProjectUtils.countClassWmcOverThreshold(project));
+        JMetalLogger.logger.info("Original number of class exceeds CBO threshold = " + ProjectUtils.countClassCboOverThreshold(project));
     }
 
     private void setBounds() {
@@ -43,7 +43,7 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
 
         super.variableBounds(lowerLimit, upperLimit);
 
-        JMetalLogger.logger.info("Number of method = " + numberOfClass);
+        JMetalLogger.logger.info("Number of class = " + numberOfClass);
         JMetalLogger.logger.info("Number of method = " + numberOfMethod);
     }
 
@@ -99,9 +99,9 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
     @Override
     public IntegerSolution evaluate(IntegerSolution solution) {
         // WMC
-        solution.objectives()[0] = MetricUtils.evalWMC(project, solution.variables());
+        solution.objectives()[0] = MetricUtils.countClassWmcOverThreshold(project, solution.variables());
         // CBO
-        solution.objectives()[1] = MetricUtils.evalCBO(project, solution.variables());
+        solution.objectives()[1] = MetricUtils.countClassCboOverThreshold(project, solution.variables());
 
         return solution;
     }
