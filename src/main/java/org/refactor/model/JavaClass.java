@@ -22,8 +22,11 @@ public class JavaClass extends JavaObject {
     /**
      * Getter and Setter
      **/
-    public Optional<JavaMethod> getMethod(String name) {
-        return declaredMethodList.stream().filter(m -> name.equals(m.getName())).findFirst();
+
+    public Optional<JavaMethod> getMethod(String methodName, String descriptor) {
+        return declaredMethodList.stream().filter(m ->
+            methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
+        ).findFirst();
     }
 
     public void addDeclaredMethod(JavaMethod method) {

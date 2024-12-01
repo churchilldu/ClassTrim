@@ -39,7 +39,7 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         SelectionOperator<List<IntegerSolution>, IntegerSolution> selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
-        Algorithm algorithm =
+        Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIIBuilder<>(problem)
                         .setCrossoverOperator(crossover)
                         .setMutationOperator(mutation)
@@ -50,7 +50,7 @@ public class NSGAIII extends AbstractAlgorithmRunner {
 
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 
-        List<IntegerSolution> population = (List<IntegerSolution>) algorithm.result();
+        List<IntegerSolution> population = algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
 
         new SolutionListOutput(population)

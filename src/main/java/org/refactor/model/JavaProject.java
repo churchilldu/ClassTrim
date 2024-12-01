@@ -17,9 +17,6 @@ public class JavaProject extends JavaObject {
     private final List<JavaClass> classList = new LinkedList<>();
     private final Threshold threshold;
 
-    /**
-     * Constructor
-     **/
     public JavaProject(Threshold threshold) {
         this.threshold = threshold;
     }
@@ -68,11 +65,11 @@ public class JavaProject extends JavaObject {
      **/
 
     public JavaMethod getOrCreateMethod(JavaClass clazz, String name, String descriptor) {
-        return clazz.getMethod(name).orElseGet(
+        return clazz.getMethod(name, descriptor).orElseGet(
                 () -> {
                     JavaMethod method = new JavaMethod(clazz, name, descriptor);
                     clazz.addDeclaredMethod(method);
-                    this.addMethod(method);
+                    methodList.add(method);
                     return method;
                 }
         );
@@ -82,18 +79,10 @@ public class JavaProject extends JavaObject {
         return this.getClass(className).orElseGet(
                 () -> {
                     JavaClass clazz = new JavaClass(className);
-                    this.addClass(clazz);
+                    classList.add(clazz);
                     return clazz;
                 }
         );
-    }
-
-    private void addClass(JavaClass cls) {
-        this.classList.add(cls);
-    }
-
-    private void addMethod(JavaMethod m) {
-        this.methodList.add(m);
     }
 
     private Optional<JavaClass> getClass(String name) {
@@ -101,13 +90,11 @@ public class JavaProject extends JavaObject {
     }
 
     public boolean contain(String className) {
-//        return StringUtils.equals(className.substring(0, className.indexOf("/")), this.getName());
-        return className.startsWith("org/apache/tools/ant");
+        return className.startsWith(this.getName());
     }
 
     public long countWMC() {
         Map<JavaClass, Integer> wmcByClass = new HashMap<>();
-
         classList.forEach(cls -> {
             cls.getDeclaredMethodList().forEach(m -> {
                         wmcByClass.merge(cls, m.getComplexity(), Integer::sum);

@@ -18,8 +18,8 @@ public interface DataSetConst {
     };
 
     class Ant {
-        public static final String srcPath = "C:/codeRefactoring/datasource/apache-ant-1.7.0-src/apache-ant-1.7.0/src/main";
-        public static final String output = "C:/Users/jesse/Downloads/ant-1.7.0/org";
+        public static final String name = "org/apache/tools/ant";
+        public static final String path = "C:/Users/jesse/Downloads/ant-1.7.0/org";
         public static final Threshold THRESHOLD = new Threshold(8, 7);
         public static final URL[] URL;
         static {

@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
 
-public class JavaObject implements Serializable {
+public abstract class JavaObject implements Serializable {
     private static final long serialVersionUID = 1423480912791753005L;
 
     private String name;
@@ -37,9 +37,8 @@ public class JavaObject implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-                // if deriving: appendSuper(super.hashCode()).
-                        append(name).
-                toHashCode();
+        return new HashCodeBuilder()
+                .append(name)
+                .toHashCode();
     }
 }

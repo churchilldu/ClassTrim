@@ -1,9 +1,7 @@
 package org.refactor.visitor;
 
-import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Label;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.TypePath;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -20,10 +18,6 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
         this.project = project;
         this.cls = cls;
         this.method = method;
-    }
-
-    @Override
-    public void visitCode() {
     }
 
     @Override
@@ -56,21 +50,6 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     }
 
     @Override
-    public void visitLabel(Label label) {
-    }
-
-    @Override
-    public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
-        return super.visitAnnotation(descriptor, visible);
-    }
-
-    @Override
-    public AnnotationVisitor visitTypeAnnotation(int typeRef, TypePath typePath, String descriptor, boolean visible) {
-        return super.visitTypeAnnotation(typeRef, typePath, descriptor, visible);
-    }
-
-
-    @Override
     public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
 
@@ -79,11 +58,6 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
             JavaMethod invokeMethod = project.getOrCreateMethod(classOnCall, name, descriptor);
             cls.addInvokeMethod(invokeMethod);
         }
-    }
-
-    @Override
-    public void visitFieldInsn(int opcode, String owner, String name, String descriptor) {
-        super.visitFieldInsn(opcode, owner, name, descriptor);
     }
 
     @Override
