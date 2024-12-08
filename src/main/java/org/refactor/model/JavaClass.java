@@ -3,7 +3,11 @@ package org.refactor.model;
 
 import org.objectweb.asm.Type;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 public class JavaClass extends JavaObject {
     private final List<JavaMethod> declaredMethodList = new ArrayList<>();

@@ -9,18 +9,17 @@ import org.refactor.util.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
-import org.uma.jmetal.util.pseudorandom.JMetalRandom;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
 
-public class MethodRefactoringProblem extends AbstractIntegerProblem {
+public class RefactoringProblem extends AbstractIntegerProblem {
     private final JavaProject project;
     private int[] fixedMethods;
 
-    public MethodRefactoringProblem(DataSet dataSet) {
+    public RefactoringProblem(DataSet dataSet) {
         this.project = new JavaProject(dataSet);
         this.project.startParse();
         this.setBounds();
@@ -74,7 +73,7 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
 
     @Override
     public String name() {
-        return null;
+        return "Method refactoring";
     }
 
 
@@ -83,12 +82,7 @@ public class MethodRefactoringProblem extends AbstractIntegerProblem {
         IntegerSolution solution = super.createSolution();
 
         for (int i = 0; i < numberOfVariables(); i++) {
-            if (fixedMethods[i] < 0) {
-                solution.variables().set(i,
-                        JMetalRandom.getInstance().nextInt(
-                                solution.getBounds(i).getLowerBound(),
-                                solution.getBounds(i).getUpperBound()));
-            } else {
+            if (fixedMethods[i] > 0) {
                 solution.variables().set(i, fixedMethods[i]);
             }
         }

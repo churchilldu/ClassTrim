@@ -2,6 +2,7 @@ package org.refactor.util;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +46,18 @@ public class ASMUtils {
         }
 
         return false;
+    }
+
+    public static boolean isPrivate(int access) {
+        return (access & Opcodes.ACC_PRIVATE) != 0;
+    }
+
+    public static boolean isPublic(int access) {
+        return (access & Opcodes.ACC_PUBLIC) != 0;
+    }
+
+    public static boolean isAbstract(int access) {
+        return (access & Opcodes.ACC_ABSTRACT) != 0;
     }
 
     public static boolean isInnerClass(String name) {

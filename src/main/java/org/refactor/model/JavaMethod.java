@@ -2,7 +2,7 @@ package org.refactor.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.objectweb.asm.Opcodes;
+import org.refactor.util.ASMUtils;
 
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
@@ -19,7 +19,8 @@ public class JavaMethod extends JavaObject {
     }
 
     public boolean canRefactor() {
-        return (access & Opcodes.ACC_PUBLIC) != 0
+        return ASMUtils.isPublic(access)
+                && !ASMUtils.isAbstract(access)
                 && !isGetterOrSetter
                 && !isOverride;
     }
@@ -54,10 +55,17 @@ public class JavaMethod extends JavaObject {
 
     @Override
     public boolean equals(Object o) {
+        if (o == null) { return false; }
+        if (o == this) { return true; }
+        if (!(o instanceof JavaMethod)) {
+          return false;
+        }
+
+        JavaMethod m = (JavaMethod) o;
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
-                .append(this.clazz, ((JavaMethod) o).getCls())
-                .append(this.descriptor, ((JavaMethod) o).getDescriptor())
+                .append(this.clazz, m.getCls())
+                .append(this.descriptor, m.getDescriptor())
                 .isEquals();
     }
 

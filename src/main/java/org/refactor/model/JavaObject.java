@@ -1,9 +1,9 @@
 package org.refactor.model;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public abstract class JavaObject implements Serializable {
     private static final long serialVersionUID = 1423480912791753005L;
@@ -22,7 +22,7 @@ public abstract class JavaObject implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o instanceof JavaObject) {
-            return StringUtils.equals(this.getName(), ((JavaObject) o).getName());
+            return StringUtils.equals(name, ((JavaObject) o).getName());
         }
 
         return false;
@@ -30,8 +30,6 @@ public abstract class JavaObject implements Serializable {
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .append(name)
-                .toHashCode();
+        return Objects.hash(name);
     }
 }

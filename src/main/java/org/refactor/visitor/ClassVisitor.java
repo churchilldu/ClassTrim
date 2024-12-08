@@ -37,7 +37,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        if ((access & Opcodes.ACC_PRIVATE) != 0) {
+        if (ASMUtils.isPrivate(access)) {
             privateFields.put(name, Type.getType(descriptor));
         }
 

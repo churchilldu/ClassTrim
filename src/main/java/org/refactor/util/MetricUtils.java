@@ -60,6 +60,15 @@ public class MetricUtils {
         ).count();
     }
 
+    // RFC
+    public static long countClassRfcOverThreshold(JavaProject project, List<Integer> solution) {
+        List<JavaMethod> methodList = project.getMethodList();
+        List<JavaClass> classList = project.getClassList();
+
+
+        return 0;
+    }
+
     // LCOM Lack of Cohesion in Methods
 }
 

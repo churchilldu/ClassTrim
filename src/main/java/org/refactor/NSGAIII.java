@@ -23,29 +23,37 @@ import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
-        Problem<IntegerSolution> problem = new MethodRefactoringProblem(DataSetConst.ANT);
+        Problem<IntegerSolution> problem = new RefactoringProblem(DataSetConst.ANT);
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;
         CrossoverOperator<IntegerSolution> crossover = new IntegerSBXCrossover(crossoverProbability,
                 crossoverDistributionIndex);
+        JMetalLogger.logger.info("Crossover distribution index = " + crossoverDistributionIndex);
 
         double mutationProbability = 1.0 / problem.numberOfVariables();
-        double mutationDistributionIndex = 20.0;
+        double mutationDistributionIndex = 5.0;
         MutationOperator<IntegerSolution> mutation = new IntegerPolynomialMutation(mutationProbability,
                 mutationDistributionIndex);
+        JMetalLogger.logger.info("Mutation distribution index = " + mutationDistributionIndex);
 
         SelectionOperator<List<IntegerSolution>, IntegerSolution> selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
+        int populationSize = 500;
+        int maxIterations = 2000000;
+
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIIBuilder<>(problem)
+                        .setPopulationSize(populationSize)
+                        .setMaxIterations(maxIterations)
                         .setCrossoverOperator(crossover)
                         .setMutationOperator(mutation)
                         .setSelectionOperator(selection)
-                        .setMaxIterations(500)
-                        .setNumberOfDivisions(12)
                         .build();
+
+        JMetalLogger.logger.info("Population size = " + populationSize);
+        JMetalLogger.logger.info("Max iterations = " + maxIterations);
 
         AlgorithmRunner algorithmRunner = new AlgorithmRunner.Executor(algorithm).execute();
 
