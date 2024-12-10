@@ -5,6 +5,7 @@ import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class MetricUtils {
@@ -18,7 +19,7 @@ public class MetricUtils {
         for (int classId = 0; classId < classList.size(); classId++) {
             JavaClass cls = classList.get(classId);
 
-            for (JavaMethod m : cls.getDeclaredMethodList()) {
+            for (JavaMethod m : cls.getDeclaredMethods()) {
                 int methodId = methodList.indexOf(m);
                 Integer newClassId = solution.get(methodId);
                 if (newClassId.equals(classId)) {
@@ -41,7 +42,7 @@ public class MetricUtils {
         for (int classId = 0; classId < classList.size(); classId++) {
             JavaClass cls = classList.get(classId);
 
-            for (JavaMethod m : cls.getInvokeMethodList()) {
+            for (JavaMethod m : cls.getInvokedMethods()) {
                 int methodId = methodList.indexOf(m);
                 Integer newClassId = solution.get(methodId);
                 if (!newClassId.equals(classId)) {
@@ -55,7 +56,7 @@ public class MetricUtils {
                     JavaClass cls = entry.getKey();
                     Set<Integer> innerCbo = entry.getValue();
 
-                    return cls.getOuterCbo() + innerCbo.size() > project.getThreshold().getCBO();
+                    return cls.getExternalCbo() + innerCbo.size() > project.getThreshold().getCBO();
                 }
         ).count();
     }

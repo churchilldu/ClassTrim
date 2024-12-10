@@ -41,7 +41,7 @@ public class NSGAIII extends AbstractAlgorithmRunner {
                 new RankingAndCrowdingDistanceComparator<>());
 
         int populationSize = 500;
-        int maxIterations = 2000000;
+        int maxIterations = 2000;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIIBuilder<>(problem)

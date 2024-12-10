@@ -22,7 +22,7 @@ public class DataSetConst {
             "org/apache/tools/",
             "ant-1.7.0/",
             "org",
-            new Threshold(8, 7),
+            new Threshold(8, 7, 7),
             "ant-1.7.0.jar",
             "ant-launcher-1.7.0.jar"
     );

@@ -3,15 +3,11 @@ package org.refactor.model;
 
 import org.objectweb.asm.Type;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaClass extends JavaObject {
-    private final List<JavaMethod> declaredMethodList = new ArrayList<>();
-    private final List<JavaMethod> invokeMethodList = new ArrayList<>();
+    private final List<JavaMethod> declaredMethods = new ArrayList<>();
     private final Set<String> dependencies = new HashSet<>();
 
     public JavaClass(String name) {
@@ -19,25 +15,24 @@ public class JavaClass extends JavaObject {
     }
 
     public Optional<JavaMethod> getMethod(String methodName, String descriptor) {
-        return declaredMethodList.stream().filter(m ->
+        return declaredMethods.stream().filter(m ->
                 methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
         ).findFirst();
     }
 
+    public List<JavaMethod> getInvokedMethods() {
+        return this.declaredMethods.stream()
+                .map(JavaMethod::getInvokeMethods)
+                .flatMap(Set::parallelStream)
+                .collect(Collectors.toList());
+    }
+
     public void addDeclaredMethod(JavaMethod method) {
-        this.declaredMethodList.add(method);
+        this.declaredMethods.add(method);
     }
 
-    public void addInvokeMethod(JavaMethod method) {
-        this.invokeMethodList.add(method);
-    }
-
-    public List<JavaMethod> getDeclaredMethodList() {
-        return declaredMethodList;
-    }
-
-    public List<JavaMethod> getInvokeMethodList() {
-        return invokeMethodList;
+    public List<JavaMethod> getDeclaredMethods() {
+        return declaredMethods;
     }
 
     @Override
@@ -49,7 +44,7 @@ public class JavaClass extends JavaObject {
         this.dependencies.add(name);
     }
 
-    public int getOuterCbo() {
+    public int getExternalCbo() {
         return this.dependencies.size();
     }
 }

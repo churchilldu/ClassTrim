@@ -4,6 +4,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.refactor.util.ASMUtils;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
     private final String descriptor;
@@ -11,6 +14,8 @@ public class JavaMethod extends JavaObject {
     private boolean isOverride;
     private boolean isGetterOrSetter;
     private int complexity = 0;
+    private final Set<JavaMethod> invokeMethods = new HashSet<>();
+    private final Set<String> externalCalledMethods = new HashSet<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
         super(name);
@@ -51,6 +56,23 @@ public class JavaMethod extends JavaObject {
 
     public void setOverride(boolean override) {
         isOverride = override;
+    }
+
+    public void addInvokeMethod(JavaMethod method) {
+        this.invokeMethods.add(method);
+    }
+
+    public Set<JavaMethod> getInvokeMethods() {
+        return invokeMethods;
+    }
+
+
+    public void addExternalCalledMethod(String s) {
+        this.externalCalledMethods.add(s);
+    }
+
+    public int getRfc() {
+        return this.externalCalledMethods.size() + invokeMethods.size();
     }
 
     @Override

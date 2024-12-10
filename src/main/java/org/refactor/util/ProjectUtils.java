@@ -13,7 +13,7 @@ public class ProjectUtils {
     public static long countClassWmcOverThreshold(JavaProject project) {
         Map<JavaClass, Integer> wmcByClass = new HashMap<>();
         project.getClassList().forEach(cls -> {
-            cls.getDeclaredMethodList().forEach(m -> {
+            cls.getDeclaredMethods().forEach(m -> {
                         wmcByClass.merge(cls, m.getComplexity(), Integer::sum);
                     }
             );
@@ -27,7 +27,7 @@ public class ProjectUtils {
     public static long countClassCboOverThreshold(JavaProject project) {
         Map<JavaClass, Set<JavaClass>> cboByClass = new HashMap<>();
         project.getClassList().forEach(cls -> {
-            cls.getInvokeMethodList().forEach(m -> {
+            cls.getInvokedMethods().forEach(m -> {
                 JavaClass clsOnCall = m.getCls();
                 if (!cls.equals(clsOnCall)) {
                     cboByClass.computeIfAbsent(cls, k -> new HashSet<>()).add(clsOnCall);
@@ -40,9 +40,21 @@ public class ProjectUtils {
                     JavaClass cls = entry.getKey();
                     Set<JavaClass> dependencies = entry.getValue();
 
-                    return cls.getOuterCbo() + dependencies.size() > project.getThreshold().getCBO();
+                    return cls.getExternalCbo() + dependencies.size() > project.getThreshold().getCBO();
                 }
         ).count();
     }
 
+    public static long countClassRfcOverThreshold(JavaProject project) {
+        Map<JavaClass, Integer> rfcByClass = new HashMap<>();
+        project.getClassList().forEach(cls -> {
+            cls.getDeclaredMethods().forEach(m -> {
+                rfcByClass.merge(cls, m.getRfc(), Integer::sum);
+            });
+        });
+
+        return rfcByClass.values().parallelStream().filter(
+                rfc -> rfc > project.getThreshold().getRFC()
+        ).count();
+    }
 }
