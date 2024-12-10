@@ -9,14 +9,12 @@ import org.refactor.util.ASMUtils;
 
 public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
     private final JavaProject project;
-    private final JavaClass cls;
     private final JavaMethod method;
     private int complexity = 0;
 
-    protected MethodVisitor(JavaProject project, JavaClass cls, JavaMethod method) {
+    protected MethodVisitor(JavaProject project, JavaMethod method) {
         super(Opcodes.ASM9);
         this.project = project;
-        this.cls = cls;
         this.method = method;
     }
 
@@ -54,8 +52,8 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
         super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
         // Do cbo count the class outside self project?
         if (!project.contain(owner) && !ASMUtils.isFromJava(owner)) {
-            cls.addDependency(owner);
-            method.addExternalCalledMethod(owner + name + descriptor);
+            method.addExternalClass(owner);
+            method.addExternalMethod(owner + name + descriptor);
         }
 
         if (project.contain(owner) && !ASMUtils.isConstructor(name) && !ASMUtils.isInnerClass(owner)) {

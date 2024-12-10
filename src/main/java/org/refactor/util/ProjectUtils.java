@@ -2,59 +2,45 @@ package org.refactor.util;
 
 
 import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ProjectUtils {
-    public static long countClassWmcOverThreshold(JavaProject project) {
-        Map<JavaClass, Integer> wmcByClass = new HashMap<>();
-        project.getClassList().forEach(cls -> {
-            cls.getDeclaredMethods().forEach(m -> {
-                        wmcByClass.merge(cls, m.getComplexity(), Integer::sum);
-                    }
-            );
-        });
+    private static final Logger logger = LoggerFactory.getLogger(ProjectUtils.class);
 
-        return wmcByClass.values().parallelStream().filter(
-                wmc -> wmc > project.getThreshold().getWMC()
-        ).count();
+    public static long countClassWmcOverThreshold(JavaProject project) {
+        return MetricUtils.countClassWmcOverThreshold(
+                convertToMap(project),
+                project.getThreshold().getWMC()
+        );
     }
 
     public static long countClassCboOverThreshold(JavaProject project) {
-        Map<JavaClass, Set<JavaClass>> cboByClass = new HashMap<>();
-        project.getClassList().forEach(cls -> {
-            cls.getInvokedMethods().forEach(m -> {
-                JavaClass clsOnCall = m.getCls();
-                if (!cls.equals(clsOnCall)) {
-                    cboByClass.computeIfAbsent(cls, k -> new HashSet<>()).add(clsOnCall);
-                }
-            });
-        });
-
-        return cboByClass.entrySet().stream().filter(
-                entry -> {
-                    JavaClass cls = entry.getKey();
-                    Set<JavaClass> dependencies = entry.getValue();
-
-                    return cls.getExternalCbo() + dependencies.size() > project.getThreshold().getCBO();
-                }
-        ).count();
+        return MetricUtils.countClassCboOverThreshold(
+                convertToMap(project),
+                project.getThreshold().getCBO()
+        );
     }
 
     public static long countClassRfcOverThreshold(JavaProject project) {
-        Map<JavaClass, Integer> rfcByClass = new HashMap<>();
-        project.getClassList().forEach(cls -> {
-            cls.getDeclaredMethods().forEach(m -> {
-                rfcByClass.merge(cls, m.getRfc(), Integer::sum);
-            });
-        });
+        return MetricUtils.countClassRfcOverThreshold(
+                convertToMap(project),
+                project.getThreshold().getRFC()
+        );
+    }
 
-        return rfcByClass.values().parallelStream().filter(
-                rfc -> rfc > project.getThreshold().getRFC()
-        ).count();
+    private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {
+        return project.getClassList().parallelStream().collect(
+                Collectors.toMap(
+                        Function.identity(),
+                        JavaClass::getDeclaredMethods
+                )
+        );
     }
 }

@@ -56,7 +56,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
         method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
         method.setOverride(ASMUtils.isOverride(project.getUrlCL(), superName, interfaces, name, descriptor));
 
-        return new MethodVisitor(project, cls, method);
+        return new MethodVisitor(project, method);
     }
 
 

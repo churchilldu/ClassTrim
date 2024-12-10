@@ -27,6 +27,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
         JMetalLogger.logger.info("Original number of class exceeds WMC threshold = " + ProjectUtils.countClassWmcOverThreshold(project));
         JMetalLogger.logger.info("Original number of class exceeds CBO threshold = " + ProjectUtils.countClassCboOverThreshold(project));
+        JMetalLogger.logger.info("Original number of class exceeds RFC threshold = " + ProjectUtils.countClassRfcOverThreshold(project));
     }
 
     private void setBounds() {
@@ -56,14 +57,14 @@ public class RefactoringProblem extends AbstractIntegerProblem {
             if (m.canRefactor()) {
                 fixedMethods[i] = -1;
             } else {
-                fixedMethods[i] = classList.indexOf(m.getCls());
+                fixedMethods[i] = classList.indexOf(m.getClazz());
             }
         }
     }
 
     @Override
     public int numberOfObjectives() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -96,6 +97,8 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         solution.objectives()[0] = MetricUtils.countClassWmcOverThreshold(project, solution.variables());
         // CBO
         solution.objectives()[1] = MetricUtils.countClassCboOverThreshold(project, solution.variables());
+        // RFC
+        solution.objectives()[2] = MetricUtils.countClassRfcOverThreshold(project, solution.variables());
 
         return solution;
     }

@@ -10,12 +10,13 @@ import java.util.Set;
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
     private final String descriptor;
+    private final Set<JavaMethod> invokedMethods = new HashSet<>();
+    private final Set<String> externalMethods = new HashSet<>();
+    private final Set<String> externalClasses = new HashSet<>();
     private int access;
     private boolean isOverride;
     private boolean isGetterOrSetter;
     private int complexity = 0;
-    private final Set<JavaMethod> invokeMethods = new HashSet<>();
-    private final Set<String> externalCalledMethods = new HashSet<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
         super(name);
@@ -30,7 +31,7 @@ public class JavaMethod extends JavaObject {
                 && !isOverride;
     }
 
-    public JavaClass getCls() {
+    public JavaClass getClazz() {
         return clazz;
     }
 
@@ -59,34 +60,45 @@ public class JavaMethod extends JavaObject {
     }
 
     public void addInvokeMethod(JavaMethod method) {
-        this.invokeMethods.add(method);
+        this.invokedMethods.add(method);
+    }
+
+    public void addExternalMethod(String signature) {
+        this.externalMethods.add(signature);
+    }
+
+    public void addExternalClass(String name) {
+        this.externalClasses.add(name);
     }
 
     public Set<JavaMethod> getInvokeMethods() {
-        return invokeMethods;
+        return invokedMethods;
     }
 
-
-    public void addExternalCalledMethod(String s) {
-        this.externalCalledMethods.add(s);
+    public Set<String> getExternalMethods() {
+        return externalMethods;
     }
 
-    public int getRfc() {
-        return this.externalCalledMethods.size() + invokeMethods.size();
+    public Set<String> getExternalClasses() {
+        return externalClasses;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) { return false; }
-        if (o == this) { return true; }
+        if (o == null) {
+            return false;
+        }
+        if (o == this) {
+            return true;
+        }
         if (!(o instanceof JavaMethod)) {
-          return false;
+            return false;
         }
 
         JavaMethod m = (JavaMethod) o;
         return new EqualsBuilder()
                 .appendSuper(super.equals(o))
-                .append(this.clazz, m.getCls())
+                .append(this.clazz, m.getClazz())
                 .append(this.descriptor, m.getDescriptor())
                 .isEquals();
     }

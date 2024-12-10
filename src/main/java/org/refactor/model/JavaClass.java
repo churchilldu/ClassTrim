@@ -3,12 +3,12 @@ package org.refactor.model;
 
 import org.objectweb.asm.Type;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 public class JavaClass extends JavaObject {
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
-    private final Set<String> dependencies = new HashSet<>();
 
     public JavaClass(String name) {
         super(name);
@@ -18,13 +18,6 @@ public class JavaClass extends JavaObject {
         return declaredMethods.stream().filter(m ->
                 methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
         ).findFirst();
-    }
-
-    public List<JavaMethod> getInvokedMethods() {
-        return this.declaredMethods.stream()
-                .map(JavaMethod::getInvokeMethods)
-                .flatMap(Set::parallelStream)
-                .collect(Collectors.toList());
     }
 
     public void addDeclaredMethod(JavaMethod method) {
@@ -40,11 +33,4 @@ public class JavaClass extends JavaObject {
         return Type.getObjectType(this.getName()).getClassName();
     }
 
-    public void addDependency(String name) {
-        this.dependencies.add(name);
-    }
-
-    public int getExternalCbo() {
-        return this.dependencies.size();
-    }
 }
