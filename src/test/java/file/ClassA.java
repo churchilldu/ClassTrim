@@ -2,10 +2,10 @@ package file;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class DemoClass1 extends SuperClass implements Comparable{
+public class ClassA extends SuperClass implements Comparable{
     private String str;
 
-    public DemoClass1(String str) {
+    public ClassA(String str) {
         this.str = str;
     }
 
@@ -24,13 +24,13 @@ public class DemoClass1 extends SuperClass implements Comparable{
 
     @Override
     public boolean equals(Object obj) {
-        return StringUtils.equals(((DemoClass1) obj).getStr(), str);
+        return StringUtils.equals(((ClassA) obj).getStr(), str);
     }
 
     @Override
     public void inheritMethod() {
         super.inheritMethod();
-        new DemoClass2().method2();
+        new ClassB().method2();
     }
 
     @Override
@@ -38,8 +38,7 @@ public class DemoClass1 extends SuperClass implements Comparable{
         return 0;
     }
 
-    private void method1(Object method) {
-        return;
+    private void A1(Object method) {
     }
 
     private boolean isSingle() {
@@ -48,7 +47,7 @@ public class DemoClass1 extends SuperClass implements Comparable{
 
     class InnerClass {
         public void innerMethod() {
-            new DemoClass2().method2();
+            new ClassB().method2();
         }
     }
 }

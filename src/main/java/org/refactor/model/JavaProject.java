@@ -100,11 +100,11 @@ public class JavaProject extends JavaObject {
      **/
 
     public List<JavaClass> getClassList() {
-        return classList;
+        return Collections.unmodifiableList(classList);
     }
 
     public List<JavaMethod> getMethodList() {
-        return methodList;
+        return Collections.unmodifiableList(methodList);
     }
 
     public Threshold getThreshold() {

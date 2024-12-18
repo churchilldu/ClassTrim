@@ -69,7 +69,11 @@ public class ASMUtils {
     }
 
     public static boolean isFromJava(String name) {
-        return name.startsWith("java.") || name.startsWith("javax.");
+        return (name.startsWith("java/") ||
+                name.startsWith("javax/") ||
+                name.startsWith("org/omg/") ||
+                name.startsWith("org/w3c/dom.") ||
+                name.startsWith("org/xml/sax/"));
     }
 
     public static boolean isOverride(URLClassLoader urlCL,

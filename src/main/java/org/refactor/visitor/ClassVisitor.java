@@ -46,10 +46,6 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        if (ASMUtils.isConstructor(name)) {
-            return null;
-        }
-
         JavaMethod method = project.getOrCreateMethod(cls, name, descriptor);
 
         method.setAccess(access);

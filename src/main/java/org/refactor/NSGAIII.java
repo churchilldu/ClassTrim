@@ -40,8 +40,8 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         SelectionOperator<List<IntegerSolution>, IntegerSolution> selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
-        int populationSize = 500;
-        int maxIterations = 2000;
+        int populationSize = 100;
+        int maxIterations = 250;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIIBuilder<>(problem)

@@ -5,22 +5,26 @@ import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.MetricUtils;
+import org.refactor.util.ObjectiveCalculator;
 import org.refactor.util.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
 
 public class RefactoringProblem extends AbstractIntegerProblem {
     private final JavaProject project;
+    private final ObjectiveCalculator objectiveCalculator;
     private int[] fixedMethods;
 
     public RefactoringProblem(DataSet dataSet) {
         this.project = new JavaProject(dataSet);
+        objectiveCalculator = new ObjectiveCalculator(project);
         this.project.startParse();
         this.setBounds();
         this.initFixedAssignments();
@@ -60,6 +64,8 @@ public class RefactoringProblem extends AbstractIntegerProblem {
                 fixedMethods[i] = classList.indexOf(m.getClazz());
             }
         }
+
+        JMetalLogger.logger.info("Number of method to refactor = " + Arrays.stream(fixedMethods).filter(i -> i < 0).count());
     }
 
     @Override
@@ -93,12 +99,13 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
     @Override
     public IntegerSolution evaluate(IntegerSolution solution) {
+        objectiveCalculator.setSolution(solution.variables());
         // WMC
-        solution.objectives()[0] = MetricUtils.countClassWmcOverThreshold(project, solution.variables());
+        solution.objectives()[0] = objectiveCalculator.sumClassWmcOverThreshold();
         // CBO
-        solution.objectives()[1] = MetricUtils.countClassCboOverThreshold(project, solution.variables());
+        solution.objectives()[1] = objectiveCalculator.sumClassCboOverThreshold();
         // RFC
-        solution.objectives()[2] = MetricUtils.countClassRfcOverThreshold(project, solution.variables());
+        solution.objectives()[2] = objectiveCalculator.sumClassRfcOverThreshold();
 
         return solution;
     }

@@ -27,6 +27,7 @@ public class JavaMethod extends JavaObject {
     public boolean canRefactor() {
         return ASMUtils.isPublic(access)
                 && !ASMUtils.isAbstract(access)
+                && !ASMUtils.isConstructor(this.getName())
                 && !isGetterOrSetter
                 && !isOverride;
     }
