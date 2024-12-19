@@ -2,12 +2,14 @@ package org.refactor.model;
 
 
 import org.objectweb.asm.Type;
+import org.refactor.util.ASMUtils;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 public class JavaClass extends JavaObject {
+    private int access;
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
 
     public JavaClass(String name) {
@@ -28,9 +30,19 @@ public class JavaClass extends JavaObject {
         return declaredMethods;
     }
 
+    public boolean canRefactor() {
+        return ASMUtils.isPublic(access)
+                && !ASMUtils.isAbstract(access)
+                && !ASMUtils.isEnum(access)
+                && !ASMUtils.isInterface(access);
+    }
+
     @Override
     public String toString() {
         return Type.getObjectType(this.getName()).getClassName();
     }
 
+    public void setAccess(int access) {
+        this.access = access;
+    }
 }

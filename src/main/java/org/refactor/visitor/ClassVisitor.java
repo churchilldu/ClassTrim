@@ -2,7 +2,6 @@ package org.refactor.visitor;
 
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -16,7 +15,7 @@ import java.util.Map;
 public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     private final Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
 
-    private final Map<String, Type> privateFields = new HashMap<>();
+    private final Map<String, String> privateFields = new HashMap<>();
     private final JavaProject project;
     private JavaClass cls;
     private String superName;
@@ -38,7 +37,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
         if (ASMUtils.isPrivate(access)) {
-            privateFields.put(name, Type.getType(descriptor));
+            privateFields.put(name, descriptor);
         }
 
         return super.visitField(access, name, descriptor, signature, value);
@@ -51,6 +50,10 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
         method.setAccess(access);
         method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
         method.setOverride(ASMUtils.isOverride(project.getUrlCL(), superName, interfaces, name, descriptor));
+        ASMUtils.getDependencyOf(descriptor).stream()
+                .filter(project::contain)
+                .map(project::getOrCreateClass)
+                .forEach(method::addDependency);
 
         return new MethodVisitor(project, method);
     }

@@ -7,7 +7,6 @@ import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.junit.Test;
 
-import java.nio.file.Paths;
 import java.util.Optional;
 
 public class JavaProjectTest {

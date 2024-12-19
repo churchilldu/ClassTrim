@@ -9,18 +9,23 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.net.URLClassLoader;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
 
-    public static boolean isGetterOrSetter(String methodName, String descriptor, Map<String, Type> privateFields) {
+    public static boolean isGetterOrSetter(String methodName, String descriptor, Map<String, String> privateFields) {
         Type returnType = Type.getMethodType(descriptor).getReturnType();
         Type[] argumentTypes = Type.getMethodType(descriptor).getArgumentTypes();
 
-        for (Map.Entry<String, Type> field : privateFields.entrySet()) {
+        for (Map.Entry<String, String> field : privateFields.entrySet()) {
             String fieldName = field.getKey();
-            Type fieldType = field.getValue();
+            Type fieldType = Type.getType(field.getValue());
 
             if (StringUtils.equalsIgnoreCase("get" + fieldName, methodName)) {
                 if (ObjectUtils.isEmpty(argumentTypes) && fieldType.equals(returnType)) {
@@ -58,6 +63,14 @@ public class ASMUtils {
 
     public static boolean isAbstract(int access) {
         return (access & Opcodes.ACC_ABSTRACT) != 0;
+    }
+
+    public static boolean isEnum(int access) {
+        return (access & Opcodes.ACC_ENUM) != 0;
+    }
+
+    public static boolean isInterface(int access) {
+        return (access & Opcodes.ACC_INTERFACE) != 0;
     }
 
     public static boolean isInnerClass(String name) {
@@ -103,6 +116,22 @@ public class ASMUtils {
 
         return false;
     }
+
+    public static Set<String> getDependencyOf(String methodDescriptor) {
+        Type methodType = Type.getMethodType(methodDescriptor);
+        Type[] argumentTypes = methodType.getArgumentTypes();
+        Type returnType = methodType.getReturnType();
+
+        return Stream.concat(Arrays.stream(argumentTypes), Stream.of(returnType))
+                .map(Type::getInternalName)
+                .filter(Predicate.not(Arrays.asList(PRIMITIVE_DESCRIPTORS)::contains))
+                .collect(Collectors.toSet());
+    }
+
+    private static final String[] PRIMITIVE_DESCRIPTORS = new String[]{
+            "V", "Z", "C", "B", "S", "I", "F", "J", "D"
+    };
+
 
     private static boolean isMethodEqual(Method m1, String m2Name, String m2Descriptor) {
         Class<?>[] m1Params = m1.getParameterTypes();

@@ -30,7 +30,7 @@ public class ClassA extends SuperClass implements Comparable{
     @Override
     public void inheritMethod() {
         super.inheritMethod();
-        new ClassB().method2();
+        new ClassB().method_B2();
     }
 
     @Override
@@ -38,16 +38,20 @@ public class ClassA extends SuperClass implements Comparable{
         return 0;
     }
 
-    private void A1(Object method) {
+    private void method_A1(Object method) {
     }
 
-    private boolean isSingle() {
+    private long[] method_A2() {
+        return null;
+    }
+
+    private boolean A_isSingle() {
         return false;
     }
 
-    class InnerClass {
-        public void innerMethod() {
-            new ClassB().method2();
+    class A_InnerClass {
+        public void A_innerMethod1() {
+            new ClassB().method_B1();
         }
     }
 }

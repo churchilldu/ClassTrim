@@ -53,16 +53,16 @@ public class MethodVisitor extends org.objectweb.asm.MethodVisitor {
         // Do cbo count the class outside self project?
         if (project.contain(owner)) {
             if (ASMUtils.isInnerClass(owner)) {
-                method.addExternalClass(owner);
-                method.addExternalMethod(owner + name + descriptor);
+                method.addFixedClass(owner);
+                method.addFixedMethod(owner + name + descriptor);
             } else {
                 JavaClass classOnCall = project.getOrCreateClass(owner);
                 JavaMethod invokeMethod = project.getOrCreateMethod(classOnCall, name, descriptor);
                 method.addInvokeMethod(invokeMethod);
             }
         } else if (!ASMUtils.isFromJava(owner)) {
-            method.addExternalClass(owner);
-            method.addExternalMethod(owner + name + descriptor);
+            method.addFixedClass(owner);
+            method.addFixedMethod(owner + name + descriptor);
         }
     }
 

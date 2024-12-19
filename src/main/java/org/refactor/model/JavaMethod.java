@@ -10,9 +10,10 @@ import java.util.Set;
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
     private final String descriptor;
+    private final Set<JavaClass> dependencies = new HashSet<>();
     private final Set<JavaMethod> invokedMethods = new HashSet<>();
-    private final Set<String> externalMethods = new HashSet<>();
-    private final Set<String> externalClasses = new HashSet<>();
+    private final Set<String> fixedMethods = new HashSet<>();
+    private final Set<String> fixedClasses = new HashSet<>();
     private int access;
     private boolean isOverride;
     private boolean isGetterOrSetter;
@@ -60,28 +61,36 @@ public class JavaMethod extends JavaObject {
         isOverride = override;
     }
 
+    public void addDependency(JavaClass cls) {
+        this.dependencies.add(cls);
+    }
+
     public void addInvokeMethod(JavaMethod method) {
         this.invokedMethods.add(method);
     }
 
-    public void addExternalMethod(String signature) {
-        this.externalMethods.add(signature);
+    public void addFixedMethod(String signature) {
+        this.fixedMethods.add(signature);
     }
 
-    public void addExternalClass(String name) {
-        this.externalClasses.add(name);
+    public void addFixedClass(String name) {
+        this.fixedClasses.add(name);
     }
 
     public Set<JavaMethod> getInvokeMethods() {
         return invokedMethods;
     }
 
-    public Set<String> getExternalMethods() {
-        return externalMethods;
+    public Set<String> getFixedMethods() {
+        return fixedMethods;
     }
 
-    public Set<String> getExternalClasses() {
-        return externalClasses;
+    public Set<String> getFixedClasses() {
+        return fixedClasses;
+    }
+
+    public Set<JavaClass> getDependencies() {
+        return dependencies;
     }
 
     @Override

@@ -29,7 +29,6 @@ public class FileUtils {
         try {
             return Files.walk(Paths.get(path))
                     .filter(Files::isRegularFile)
-                    .filter(x -> !x.toString().contains("$"))
                     .filter(x -> !isIgnoredDir(x.toAbsolutePath().toString(), IGNORED_DIRECTORIES))
                     .filter(x -> x.toAbsolutePath().toString().toLowerCase().endsWith(ending))
                     .map(x -> x.toAbsolutePath().toString())

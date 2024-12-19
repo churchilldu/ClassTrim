@@ -32,7 +32,7 @@ public class MetricUtils {
                     Set<JavaClass> innerClass = new HashSet<>();
                     methods.forEach(
                             m -> {
-                                externalClass.addAll(m.getExternalClasses());
+                                externalClass.addAll(m.getFixedClasses());
                                 innerClass.addAll(
                                         m.getInvokeMethods().parallelStream().map(JavaMethod::getClazz).collect(Collectors.toSet())
                                 );
@@ -92,18 +92,19 @@ public class MetricUtils {
 
         methodsByClass.forEach(
                 (clazz, methods) -> {
-                    Set<String> externalClass = new HashSet<>();
-                    Set<JavaClass> innerClass = new HashSet<>();
+                    Set<String> fixedClass = new HashSet<>();
+                    Set<JavaClass> classes = new HashSet<>();
                     methods.forEach(
                             m -> {
-                                externalClass.addAll(m.getExternalClasses());
-                                innerClass.addAll(
+                                fixedClass.addAll(m.getFixedClasses());
+                                classes.addAll(
                                         m.getInvokeMethods().parallelStream().map(JavaMethod::getClazz).collect(Collectors.toSet())
                                 );
+                                classes.addAll(m.getDependencies());
                             }
                     );
-                    int cbo = externalClass.size() + innerClass.size();
-                    if (innerClass.contains(clazz)) {
+                    int cbo = fixedClass.size() + classes.size();
+                    if (classes.contains(clazz)) {
                         cbo--;
                     }
 
@@ -120,7 +121,7 @@ public class MetricUtils {
                 (clazz, methods) -> {
                     methods.forEach(
                             m -> rfcByClass.merge(clazz,
-                                    (int) (m.getExternalMethods().size()
+                                    (int) (m.getFixedMethods().size()
                                             + m.getInvokeMethods().stream()
                                             .filter(i -> !i.getClazz().equals(clazz))
                                             .count()),
