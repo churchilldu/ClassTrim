@@ -1,6 +1,7 @@
 package org.refactor.visitor;
 
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -50,12 +51,8 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
         method.setAccess(access);
         method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
         method.setOverride(ASMUtils.isOverride(project.getUrlCL(), superName, interfaces, name, descriptor));
-        ASMUtils.getDependencyOf(descriptor).stream()
-                .filter(project::contain)
-                .map(project::getOrCreateClass)
-                .forEach(method::addDependency);
 
-        return new MethodVisitor(project, method);
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
 
