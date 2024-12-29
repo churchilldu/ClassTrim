@@ -1,11 +1,34 @@
 package org.refactor.common;
 
+import org.refactor.util.FileUtils;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.util.ArrayList;
+import java.util.List;
+
 public class DataSetConst {
+    private static final String MAVEN_REPO = "C:/Users/jesse/.m2/repository/";
+    private static final String DATESET_BASE = "C:/codeRefactoring/datasource/";
+    public static URLClassLoader urlCL;
+
     static {
-        DataSet.setBase("C:/codeRefactoring/datasource/");
+        DataSet.setBase(DATESET_BASE);
+        try {
+            List<URL> urlList = new ArrayList<>();
+            for (String jar : FileUtils.getAllJarFiles(MAVEN_REPO, DATESET_BASE)) {
+                urlList.add(new URL("file:///" + jar));
+            }
+
+            urlCL = URLClassLoader.newInstance(urlList.toArray(new URL[0]));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
-    String[] dataSetPath = new String[]{
+    private static final String[] dataSetPath = new String[]{
             "xom-1.2.1/nu/xom",
             "jhotdraw-6.0b1/org",
             "ganttproject-1.11.1/src",
@@ -22,8 +45,6 @@ public class DataSetConst {
             "org/apache/tools/",
             "ant-1.7.0/",
             "org",
-            new Threshold(8, 7, 7),
-            "ant-1.7.0.jar",
-            "ant-launcher-1.7.0.jar"
+            new Threshold(8, 7, 7)
     );
 }

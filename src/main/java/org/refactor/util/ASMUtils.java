@@ -4,11 +4,11 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
+import org.refactor.common.DataSetConst;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
-import java.net.URLClassLoader;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
@@ -89,13 +89,12 @@ public class ASMUtils {
                 name.startsWith("org/xml/sax/"));
     }
 
-    public static boolean isOverride(URLClassLoader urlCL,
-                                     String superName,
+    public static boolean isOverride(String superName,
                                      String[] interfaces,
                                      String methodName,
                                      String descriptor) {
         try {
-            Class<?> superClass = urlCL.loadClass(Type.getObjectType(superName).getClassName());
+            Class<?> superClass = DataSetConst.urlCL.loadClass(Type.getObjectType(superName).getClassName());
             for (Method m : superClass.getMethods()) {
                 if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
                     return true;
@@ -103,7 +102,7 @@ public class ASMUtils {
             }
 
             for (String name : interfaces) {
-                Class<?> aInterface = urlCL.loadClass(Type.getObjectType(name).getClassName());
+                Class<?> aInterface = DataSetConst.urlCL.loadClass(Type.getObjectType(name).getClassName());
                 for (Method m : aInterface.getMethods()) {
                     if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
                         return true;
@@ -131,6 +130,16 @@ public class ASMUtils {
     private static final String[] PRIMITIVE_DESCRIPTORS = new String[]{
             "V", "Z", "C", "B", "S", "I", "F", "J", "D"
     };
+
+    public static String getDeclaringClass(String className, String methodName) {
+        try {
+            return Type.getInternalName(DataSetConst.urlCL.loadClass(Type.getObjectType(className).getClassName()).getMethod(methodName).getDeclaringClass());
+        } catch (NoSuchMethodException | ClassNotFoundException e) {
+            logger.error(e.getMessage());
+        }
+
+        return "";
+    }
 
 
     private static boolean isMethodEqual(Method m1, String m2Name, String m2Descriptor) {

@@ -4,7 +4,6 @@ import org.refactor.common.DataSet;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
-import org.refactor.util.MetricUtils;
 import org.refactor.util.ObjectiveCalculator;
 import org.refactor.util.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
@@ -25,7 +24,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     public RefactoringProblem(DataSet dataSet) {
         this.project = new JavaProject(dataSet);
         objectiveCalculator = new ObjectiveCalculator(project);
-        this.project.startParse();
+        this.project.start();
         this.setBounds();
         this.initFixedAssignments();
 
@@ -106,6 +105,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         solution.objectives()[1] = objectiveCalculator.sumClassCboOverThreshold();
         // RFC
         solution.objectives()[2] = objectiveCalculator.sumClassRfcOverThreshold();
+
         // WMC
         solution.objectives()[3] = objectiveCalculator.countClassWmcOverThreshold();
         // CBO

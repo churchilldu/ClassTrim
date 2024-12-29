@@ -22,7 +22,7 @@ public class JavaProjectTest {
     @Before
     public void setup() {
         project = new JavaProject(TEST);
-        project.startParse();
+        project.start();
     }
 
     @Test

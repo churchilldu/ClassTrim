@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -15,6 +16,15 @@ public class FileUtils {
         //Use separator so this works on both Windows and Unix-like systems!
         IGNORED_DIRECTORIES.add(String.format("%c.git%c", File.separatorChar, File.separatorChar));
         IGNORED_DIRECTORIES.add("$");
+    }
+
+    public static String[] getAllJarFiles(String... paths) {
+        List<String> files = new ArrayList<>();
+        for (String path : paths) {
+            files.addAll(Arrays.asList(getAllFiles(path, "jar")));
+        }
+
+        return files.toArray(new String[0]);
     }
 
     public static String[] getAllJavaFiles(String path) {
