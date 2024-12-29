@@ -12,22 +12,11 @@ public class DataSet {
     private final String name;
     private final String path;
     private final Threshold threshold;
-    private final URLClassLoader urlCL;
 
-    public DataSet(String name, String root, String classFolder, Threshold threshold, String... jars) {
+    public DataSet(String name, String root, String classFolder, Threshold threshold) {
         this.name = name;
         this.path = BASE + root + classFolder;
         this.threshold = threshold;
-        List<URL> urls = new ArrayList<>();
-        try {
-            for (String jar : jars) {
-                urls.add(new URL("file:///" + BASE + root + jar));
-            }
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
-        urlCL = URLClassLoader.newInstance(urls.toArray(new URL[0]));
     }
 
     public static void setBase(String b) {
@@ -44,9 +33,5 @@ public class DataSet {
 
     public Threshold getThreshold() {
         return threshold;
-    }
-
-    public URLClassLoader getUrlCL() {
-        return urlCL;
     }
 }

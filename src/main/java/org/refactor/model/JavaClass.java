@@ -45,4 +45,11 @@ public class JavaClass extends JavaObject {
     public void setAccess(int access) {
         this.access = access;
     }
+
+    public JavaMethod createMethod(String name, String descriptor) {
+        JavaMethod method = new JavaMethod(this, name, descriptor);
+        declaredMethods.add(method);
+        return method;
+    }
+
 }

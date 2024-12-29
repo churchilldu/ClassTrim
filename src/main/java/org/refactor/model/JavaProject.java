@@ -6,9 +6,9 @@ import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClassVisitor;
+import org.refactor.visitor.CouplingVisitor;
 
 import java.io.*;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
@@ -33,9 +33,18 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    public void startParse() {
-        for (String path : FileUtils.getAllClassFiles(dataSet.getPath())) {
-            this.parse(path);
+    public void start() {
+        String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
+        Arrays.stream(allClassFiles).parallel().forEach(this::parse);
+        Arrays.stream(allClassFiles).parallel().forEach(this::parseInsn);
+    }
+
+    private void parseInsn(String classFilePath) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
+            ClassReader classReader = new ClassReader(classFileInputStream);
+            classReader.accept(new CouplingVisitor(this), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -87,6 +96,13 @@ public class JavaProject extends JavaObject {
         );
     }
 
+    public JavaClass createClass(String className) {
+        JavaClass clazz = new JavaClass(className);
+        classList.add(clazz);
+        return clazz;
+    }
+
+
     private Optional<JavaClass> getClass(String name) {
         return classList.stream().filter(cls -> name.equals(cls.getName())).findFirst();
     }
@@ -111,7 +127,4 @@ public class JavaProject extends JavaObject {
         return this.dataSet.getThreshold();
     }
 
-    public URLClassLoader getUrlCL() {
-        return this.dataSet.getUrlCL();
-    }
 }

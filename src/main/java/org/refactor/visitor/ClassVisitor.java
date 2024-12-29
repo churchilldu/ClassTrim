@@ -1,6 +1,7 @@
 package org.refactor.visitor;
 
 import org.objectweb.asm.FieldVisitor;
+import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -17,7 +18,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
     private final Map<String, String> privateFields = new HashMap<>();
     private final JavaProject project;
-    private JavaClass cls;
+    private JavaClass clazz;
     private String superName;
     private String[] interfaces;
 
@@ -31,7 +32,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
         super.visit(version, access, name, signature, superName, interfaces);
         this.superName = superName;
         this.interfaces = interfaces;
-        cls = project.getOrCreateClass(name);
+        clazz = project.createClass(name);
     }
 
     @Override
@@ -45,23 +46,19 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        JavaMethod method = project.getOrCreateMethod(cls, name, descriptor);
+        JavaMethod method = clazz.createMethod(name, descriptor);
 
         method.setAccess(access);
         method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
-        method.setOverride(ASMUtils.isOverride(project.getUrlCL(), superName, interfaces, name, descriptor));
-        ASMUtils.getDependencyOf(descriptor).stream()
-                .filter(project::contain)
-                .map(project::getOrCreateClass)
-                .forEach(method::addDependency);
+        method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
 
-        return new MethodVisitor(project, method);
+        return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
 
     @Override
     public void visitEnd() {
         super.visitEnd();
-        logger.info("parse class: {}", cls.toString());
+        logger.info(clazz.toString());
     }
 }
