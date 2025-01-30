@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ObjectiveCalculator {
-    private final Map<JavaClass, List<JavaMethod>> methodsByClass = new HashMap<>();
+    private Map<JavaClass, List<JavaMethod>> methodsByClass;
     private final JavaProject project;
 
     public ObjectiveCalculator(JavaProject project) {
@@ -18,8 +18,9 @@ public class ObjectiveCalculator {
     }
 
     public void setSolution(List<Integer> solution) {
-        List<JavaMethod> methodList = project.getMethodList();
-        List<JavaClass> classList = project.getClassList();
+        List<JavaMethod> methodList = project.getMethodsCanRefactor();
+        List<JavaClass> classList = project.getClassCanRefactor();
+        methodsByClass = new HashMap<>();
         for (int methodId = 0; methodId < solution.size(); methodId++) {
             Integer classId = solution.get(methodId);
             methodsByClass.computeIfAbsent(

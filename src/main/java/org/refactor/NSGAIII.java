@@ -23,7 +23,7 @@ import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
-        Problem<IntegerSolution> problem = new RefactoringProblem(DataSetConst.ANT);
+        Problem<IntegerSolution> problem = new RefactoringProblem(DataSetConst.ANT_7);
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;

@@ -1,15 +1,21 @@
 package org.refactor.util;
 
+import org.refactor.model.JavaClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class FileUtils {
     public static final List<String> IGNORED_DIRECTORIES = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     //Initialize ignored directories with .git.
     static {
@@ -55,5 +61,19 @@ public class FileUtils {
             }
         }
         return false;
+    }
+
+    public static void write(String file, Map<JavaClass, Integer> metricByClass) {
+        Path path = Paths.get(file);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            for (Map.Entry<JavaClass, Integer> entry : metricByClass.entrySet()) {
+                String className = entry.getKey().getName();
+                Integer metric = entry.getValue();
+                writer.write(className + ", " + metric);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
     }
 }

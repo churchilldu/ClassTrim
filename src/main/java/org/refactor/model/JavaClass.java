@@ -6,14 +6,27 @@ import org.refactor.util.ASMUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 public class JavaClass extends JavaObject {
+    private final JavaProject project;
     private int access;
+    // Field type
+    private final List<JavaClass> fieldsType = new ArrayList<>();
+    // superClass and interface
+    private JavaClass superClass;
+    private final List<JavaClass> interfaces = new ArrayList<>();
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
 
     public JavaClass(String name) {
         super(name);
+        this.project = null;
+    }
+
+    public JavaClass(String name, JavaProject project) {
+        super(name);
+        this.project = project;
     }
 
     public Optional<JavaMethod> getMethod(String methodName, String descriptor) {
@@ -22,18 +35,16 @@ public class JavaClass extends JavaObject {
         ).findFirst();
     }
 
-    public void addDeclaredMethod(JavaMethod method) {
-        this.declaredMethods.add(method);
-    }
-
     public List<JavaMethod> getDeclaredMethods() {
         return declaredMethods;
     }
 
     public boolean canRefactor() {
-        return ASMUtils.isPublic(access)
+        return this.project != null
+                && ASMUtils.isPublic(access)
                 && !ASMUtils.isAbstract(access)
                 && !ASMUtils.isEnum(access)
+                && !ASMUtils.isInnerClass(this.getName())
                 && !ASMUtils.isInterface(access);
     }
 
@@ -52,4 +63,55 @@ public class JavaClass extends JavaObject {
         return method;
     }
 
+    public List<JavaClass> getFieldsType() {
+        return fieldsType;
+    }
+
+    public void addDependency(JavaClass dependency) {
+        this.fieldsType.add(dependency);
+    }
+
+    public void addInterface(JavaClass anInterface) {
+        this.interfaces.add(anInterface);
+    }
+
+    public Optional<JavaClass> getSuperClass() {
+        return Optional.ofNullable(superClass);
+    }
+
+    public void setSuperClass(JavaClass superClass) {
+        this.superClass = superClass;
+    }
+
+    public List<JavaClass> getInterfaces() {
+        return interfaces;
+    }
+
+    public JavaProject getProject() {
+        return project;
+    }
+
+    public boolean isInherited(JavaClass parent) {
+        JavaClass c = this;
+        while (c.getSuperClass().isPresent()) {
+            c = c.getSuperClass().get();
+            if (c.equals(parent)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o instanceof JavaClass) {
+            JavaClass c = (JavaClass) o;
+            return Objects.equals(this.project, c.getProject())
+                    && this.getName().equals(c.getName());
+        }
+
+        return false;
+    }
 }

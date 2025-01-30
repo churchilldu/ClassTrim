@@ -12,11 +12,13 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class JavaProject extends JavaObject {
-    private final List<JavaMethod> methodList = new ArrayList<>();
     private final List<JavaClass> classList = new ArrayList<>();
     private final DataSet dataSet;
+    private List<JavaClass> classToRefactor;
+    private List<JavaMethod> methodsToRefactor;
 
     public JavaProject(DataSet dataSet) {
         super(dataSet.getName());
@@ -30,30 +32,6 @@ public class JavaProject extends JavaObject {
 
         } catch (IOException | ClassCastException excp) {
             throw new IllegalArgumentException(excp.getMessage());
-        }
-    }
-
-    public void start() {
-        String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
-        Arrays.stream(allClassFiles).parallel().forEach(this::parse);
-        Arrays.stream(allClassFiles).parallel().forEach(this::parseInsn);
-    }
-
-    private void parseInsn(String classFilePath) {
-        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
-            ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new CouplingVisitor(this), 0);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    private void parse(String classFilePath) {
-        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
-            ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new ClassVisitor(this), 0);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -72,24 +50,42 @@ public class JavaProject extends JavaObject {
     }
 
     /**
-     * Custom method
+     * Getter and Setter
      **/
 
-    public JavaMethod getOrCreateMethod(JavaClass clazz, String name, String descriptor) {
-        return clazz.getMethod(name, descriptor).orElseGet(
-                () -> {
-                    JavaMethod method = new JavaMethod(clazz, name, descriptor);
-                    clazz.addDeclaredMethod(method);
-                    methodList.add(method);
-                    return method;
-                }
-        );
+    private void parseInvocation(String classFilePath) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
+            ClassReader classReader = new ClassReader(classFileInputStream);
+            classReader.accept(new CouplingVisitor(this), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
+
+    private void parse(String classFilePath) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
+            ClassReader classReader = new ClassReader(classFileInputStream);
+            classReader.accept(new ClassVisitor(this), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    public void start() {
+        String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
+        Arrays.stream(allClassFiles).forEach(this::parse);
+        Arrays.stream(allClassFiles).forEach(this::parseInvocation);
+    }
+
+    /**
+     * Custom method
+     **/
 
     public JavaClass getOrCreateClass(String className) {
         return this.getClass(className).orElseGet(
                 () -> {
-                    JavaClass clazz = new JavaClass(className);
+                    JavaClass clazz = new JavaClass(className, this);
                     classList.add(clazz);
                     return clazz;
                 }
@@ -97,30 +93,59 @@ public class JavaProject extends JavaObject {
     }
 
     public JavaClass createClass(String className) {
-        JavaClass clazz = new JavaClass(className);
+        JavaClass clazz = new JavaClass(className, this);
         classList.add(clazz);
         return clazz;
     }
 
+    public Optional<JavaMethod> getMethod(String className, String methodName, String descriptor) {
+        return this.getClass(className).flatMap(c -> c.getMethod(methodName, descriptor));
+    }
 
-    private Optional<JavaClass> getClass(String name) {
-        return classList.stream().filter(cls -> name.equals(cls.getName())).findFirst();
+    public Optional<JavaMethod> getMethodRecursively(String owner, String methodName, String descriptor) {
+        Optional<JavaClass> c = this.getClass(owner);
+        while (c.isPresent()) {
+            Optional<JavaMethod> method = c.get().getMethod(methodName, descriptor);
+            if (method.isPresent()) {
+                return method;
+            }
+            c = c.get().getSuperClass();
+        }
+
+        return Optional.empty();
     }
 
     public boolean contain(String className) {
-        return className.startsWith(this.getName());
+        return this.getClass(className).isPresent();
     }
 
-    /**
-     * Getter and Setter
-     **/
-
-    public List<JavaClass> getClassList() {
-        return Collections.unmodifiableList(classList);
+    public Optional<JavaClass> getClass(String className) {
+        Iterator<JavaClass> iterator = classList.iterator();
+        return classList.parallelStream()
+                .filter(c -> className.equals(c.getName()))
+                .findFirst();
     }
 
-    public List<JavaMethod> getMethodList() {
-        return Collections.unmodifiableList(methodList);
+    public List<JavaClass> getClassCanRefactor() {
+        if (classToRefactor == null) {
+            classToRefactor = this.classList.parallelStream()
+                    .filter(JavaClass::canRefactor)
+                    .collect(Collectors.toList());
+        }
+
+        return classToRefactor;
+    }
+
+    public List<JavaMethod> getMethodsCanRefactor() {
+        if (methodsToRefactor == null) {
+            methodsToRefactor = this.classList.parallelStream()
+                    .map(JavaClass::getDeclaredMethods)
+                    .flatMap(List::parallelStream)
+                    .filter(JavaMethod::canRefactor)
+                    .collect(Collectors.toList());
+        }
+
+        return methodsToRefactor;
     }
 
     public Threshold getThreshold() {

@@ -33,6 +33,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
         this.superName = superName;
         this.interfaces = interfaces;
         clazz = project.createClass(name);
+        clazz.setAccess(access);
     }
 
     @Override
@@ -47,10 +48,12 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
         JavaMethod method = clazz.createMethod(name, descriptor);
-
         method.setAccess(access);
-        method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
-        method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
+
+        if (!ASMUtils.isConstructor(name)) {
+            method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
+            method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
+        }
 
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }

@@ -78,7 +78,8 @@ public class ASMUtils {
     }
 
     public static boolean isConstructor(String name) {
-        return StringUtils.equals(name, "<init>");
+        return StringUtils.equals(name, "<init>")
+                || StringUtils.equals(name, "<clinit>");
     }
 
     public static boolean isFromJava(String name) {
@@ -111,12 +112,13 @@ public class ASMUtils {
             }
         } catch (Exception e) {
             logger.error(e.getMessage());
+            return false;
         }
 
         return false;
     }
 
-    public static Set<String> getDependencyOf(String methodDescriptor) {
+    public static Set<String> getMethodSignatureType(String methodDescriptor) {
         Type methodType = Type.getMethodType(methodDescriptor);
         Type[] argumentTypes = methodType.getArgumentTypes();
         Type returnType = methodType.getReturnType();
@@ -131,14 +133,21 @@ public class ASMUtils {
             "V", "Z", "C", "B", "S", "I", "F", "J", "D"
     };
 
-    public static String getDeclaringClass(String className, String methodName) {
-        try {
-            return Type.getInternalName(DataSetConst.urlCL.loadClass(Type.getObjectType(className).getClassName()).getMethod(methodName).getDeclaringClass());
-        } catch (NoSuchMethodException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
+    public static String getDeclaringClass(String className, String methodName, String methodDescriptor) {
+        if (ASMUtils.isConstructor(methodName)) {
+            return className;
         }
 
-        return "";
+
+        try {
+            return Type.getInternalName(
+                    DataSetConst.urlCL.loadClass(Type.getObjectType(className).getClassName())
+                            .getMethod(methodName, getParameterTypes(methodDescriptor)).getDeclaringClass());
+            // ClassLoader methods were identified as invoked class own methods.
+        } catch (NoSuchMethodException | ClassNotFoundException e) {
+            logger.error(e.getMessage());
+            return className;
+        }
     }
 
 
@@ -160,4 +169,36 @@ public class ASMUtils {
         return false;
     }
 
+    private static Class<?>[] getParameterTypes(String descriptor) {
+        return Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
+                .map(Type::getInternalName)
+                .map(ASMUtils::getClass)
+                .toArray(Class[]::new);
+    }
+
+    private static Class<?> getClass(String className) {
+        // Map primitive types manually since they aren't handled by Class.forName
+        switch (className) {
+            case "Z": return boolean.class;
+            case "B": return byte.class;
+            case "C": return char.class;
+            case "S": return short.class;
+            case "I": return int.class;
+            case "J": return long.class;
+            case "F": return float.class;
+            case "D": return double.class;
+            case "V": return void.class;
+            default:
+                // Use ClassLoader to load non-primitive types
+                try {
+                    if (className.contains("/")) {
+                        className = className.replace("/", ".");
+                    }
+                    return Class.forName(className, true, DataSetConst.urlCL);
+                } catch (ClassNotFoundException e) {
+                    logger.error(e.getMessage());
+                    return null;
+                }
+        }
+    }
 }

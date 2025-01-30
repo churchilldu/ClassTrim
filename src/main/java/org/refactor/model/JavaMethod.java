@@ -10,14 +10,13 @@ import java.util.Set;
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
     private final String descriptor;
-    private final Set<JavaClass> dependencies = new HashSet<>();
-    private final Set<JavaMethod> invokedMethods = new HashSet<>();
-    private final Set<String> fixedMethods = new HashSet<>();
-    private final Set<String> fixedClasses = new HashSet<>();
     private int access;
     private boolean isOverride;
     private boolean isGetterOrSetter;
-    private int complexity = 0;
+    // Arguments' type and return type
+    // Check is count of number or times
+    private final Set<JavaClass> signatureType = new HashSet<>();
+    private final Set<JavaMethod> invokedMethods = new HashSet<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
         super(name);
@@ -26,7 +25,9 @@ public class JavaMethod extends JavaObject {
     }
 
     public boolean canRefactor() {
-        return ASMUtils.isPublic(access)
+        return this.clazz != null
+                && this.clazz.canRefactor()
+                && ASMUtils.isPublic(access)
                 && !ASMUtils.isAbstract(access)
                 && !ASMUtils.isConstructor(this.getName())
                 && !isGetterOrSetter
@@ -35,14 +36,6 @@ public class JavaMethod extends JavaObject {
 
     public JavaClass getClazz() {
         return clazz;
-    }
-
-    public int getComplexity() {
-        return complexity;
-    }
-
-    public void setComplexity(int complexity) {
-        this.complexity = complexity;
     }
 
     public void setAccess(int access) {
@@ -62,35 +55,19 @@ public class JavaMethod extends JavaObject {
     }
 
     public void addDependency(JavaClass cls) {
-        this.dependencies.add(cls);
+        this.signatureType.add(cls);
     }
 
     public void addInvokeMethod(JavaMethod method) {
         this.invokedMethods.add(method);
     }
 
-    public void addFixedMethod(String signature) {
-        this.fixedMethods.add(signature);
-    }
-
-    public void addFixedClass(String name) {
-        this.fixedClasses.add(name);
-    }
-
     public Set<JavaMethod> getInvokeMethods() {
         return invokedMethods;
     }
 
-    public Set<String> getFixedMethods() {
-        return fixedMethods;
-    }
-
-    public Set<String> getFixedClasses() {
-        return fixedClasses;
-    }
-
-    public Set<JavaClass> getDependencies() {
-        return dependencies;
+    public Set<JavaClass> getSignatureType() {
+        return signatureType;
     }
 
     @Override

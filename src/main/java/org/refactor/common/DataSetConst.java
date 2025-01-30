@@ -41,7 +41,7 @@ public class DataSetConst {
     };
 
 
-    public static final DataSet ANT = new DataSet(
+    public static final DataSet ANT_7 = new DataSet(
             "org/apache/tools/",
             "ant-1.7.0/",
             "org",

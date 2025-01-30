@@ -3,51 +3,24 @@ package org.refactor.util;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
 public class MetricUtils {
-
     // WMC Weighted Method per Class
     public static long countClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        Map<JavaClass, Integer> wmcByClass = new HashMap<>();
-        methodsByClass.forEach(
-                (clazz, methods) ->
-                        wmcByClass.put(clazz, methods.parallelStream().mapToInt(JavaMethod::getComplexity).sum())
-        );
-
-        return wmcByClass.values().parallelStream().filter(
+        return MetricUtils.getWmcByClass(methodsByClass).values().parallelStream().filter(
                 wmc -> wmc > threshold
         ).count();
     }
 
     // CBO Coupling Between Objects
     public static long countClassCboOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        Map<JavaClass, Integer> cboByClass = new HashMap<>();
-
-        methodsByClass.forEach(
-                (clazz, methods) -> {
-                    Set<String> externalClass = new HashSet<>();
-                    Set<JavaClass> innerClass = new HashSet<>();
-                    methods.forEach(
-                            m -> {
-                                externalClass.addAll(m.getFixedClasses());
-                                innerClass.addAll(
-                                        m.getInvokeMethods().parallelStream().map(JavaMethod::getClazz).collect(Collectors.toSet())
-                                );
-                            }
-                    );
-                    int cbo = externalClass.size() + innerClass.size();
-                    if (innerClass.contains(clazz)) {
-                        cbo--;
-                    }
-
-                    cboByClass.put(clazz, cbo);
-                }
-        );
-
-        return cboByClass.values().stream().filter(
+        return MetricUtils.getCboByClass(methodsByClass).values().parallelStream().filter(
                 cbo -> cbo > threshold
         ).count();
     }
@@ -77,61 +50,63 @@ public class MetricUtils {
         ).sum();
     }
 
-    private static Map<JavaClass, Integer> getWmcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        Map<JavaClass, Integer> wmcByClass = new HashMap<>();
-        methodsByClass.forEach(
-                (clazz, methods) ->
-                        wmcByClass.put(clazz, methods.parallelStream().mapToInt(JavaMethod::getComplexity).sum())
+    public static Map<JavaClass, Integer> getWmcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+        return methodsByClass.entrySet().parallelStream().collect(
+                Collectors.toMap(
+                        Map.Entry::getKey,
+                        entry -> entry.getValue().size()
+                )
         );
-
-        return wmcByClass;
     }
 
-    private static Map<JavaClass, Integer> getCboByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        Map<JavaClass, Integer> cboByClass = new HashMap<>();
-
-        methodsByClass.forEach(
-                (clazz, methods) -> {
-                    Set<String> fixedClass = new HashSet<>();
-                    Set<JavaClass> classes = new HashSet<>();
-                    methods.forEach(
-                            m -> {
-                                fixedClass.addAll(m.getFixedClasses());
-                                classes.addAll(
-                                        m.getInvokeMethods().parallelStream().map(JavaMethod::getClazz).collect(Collectors.toSet())
-                                );
-                                classes.addAll(m.getDependencies());
-                            }
-                    );
-                    int cbo = fixedClass.size() + classes.size();
-                    if (classes.contains(clazz)) {
-                        cbo--;
-                    }
-
-                    cboByClass.put(clazz, cbo);
-                }
+    public static Map<JavaClass, Integer> getCboByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+        return methodsByClass.entrySet().parallelStream().collect(
+                Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> computeCbo(e.getKey(), e.getValue())
+                )
         );
-
-        return cboByClass;
     }
 
-    private static Map<JavaClass, Integer> getRfcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        Map<JavaClass, Integer> rfcByClass = new HashMap<>();
-        methodsByClass.forEach(
-                (clazz, methods) -> {
-                    methods.forEach(
-                            m -> rfcByClass.merge(clazz,
-                                    (int) (m.getFixedMethods().size()
-                                            + m.getInvokeMethods().stream()
-                                            .filter(i -> !i.getClazz().equals(clazz))
-                                            .count()),
-                                    Integer::sum
-                            )
-                    );
-                }
-        );
+    private static int computeCbo(JavaClass clazz, List<JavaMethod> methods) {
+        Set<JavaClass> couplings = methods.parallelStream()
+                .map(m -> getCouplingsOfMethod(clazz, m))
+                .flatMap(Set::parallelStream)
+                .collect(Collectors.toSet());
+        clazz.getSuperClass().ifPresent(couplings::add);
+        couplings.addAll(clazz.getInterfaces());
+        couplings.addAll(clazz.getFieldsType());
 
-        return rfcByClass;
+        return couplings.size();
+    }
+
+    private static Set<JavaClass> getCouplingsOfMethod(JavaClass clazz, JavaMethod method) {
+        Set<JavaClass> couplings = method.getInvokeMethods().parallelStream()
+                .map(JavaMethod::getClazz)
+                .filter(c -> !ASMUtils.isFromJava(c.getName()))
+                .filter(Predicate.not(clazz::equals))
+                .filter(Predicate.not(clazz::isInherited))
+                .collect(Collectors.toSet());
+        couplings.addAll(method.getSignatureType());
+
+        return couplings;
+    }
+
+    public static Map<JavaClass, Integer> getRfcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+        return methodsByClass.entrySet().parallelStream().collect(
+                Collectors.toMap(
+                        Map.Entry::getKey,
+                        e -> computeRfc(e.getValue())
+                )
+        );
+    }
+
+    private static int computeRfc(List<JavaMethod> methods) {
+        return methods.stream()
+                .map(JavaMethod::getInvokeMethods)
+                .flatMap(Set::parallelStream)
+                .collect(Collectors.toSet())
+                .size() + methods.size();
     }
 
 }
