@@ -28,6 +28,7 @@ public class JavaProjectTest {
     );
     private static final String SUPER_CLASS = "pack/SuperClass";
     private static final String CLASS_A = "pack/A";
+    private static final String CLASS_B = "pack/B";
 
     private JavaProject project;
 
@@ -37,15 +38,22 @@ public class JavaProjectTest {
         project.start();
     }
 
-
-
     @Test
-    public void testCbo() {
+    public void testCbo01() {
         Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
 
         Optional<JavaClass> classA = project.getClass(CLASS_A);
         assertTrue(classA.isPresent());
         assertEquals(Integer.valueOf(7), cboByClass.get(classA.get()));
+    }
+
+    @Test
+    public void testCbo02() {
+        Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
+
+        Optional<JavaClass> classB = project.getClass(CLASS_B);
+        assertTrue(classB.isPresent());
+        assertEquals(Integer.valueOf(1), cboByClass.get(classB.get()));
     }
 
     @Test

@@ -1,7 +1,11 @@
 package pack;
 
-import java.io.IOException;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
+import java.util.Objects;
+
+@SuppressWarnings("unused")
 public interface Test {}
 
 /**
@@ -25,14 +29,15 @@ class Caller {
 }
 
 /**
- * CBO = super class 1
+ * Basic computation.
+ * super class 1
  * interface 1
  * Exception 1
  * Declaring method arguments type 1
  * Declaring method return type 1
  * field type 1
  * invoked methods class 1
- * = 7
+ * CBO = 7
  */
 class A extends SuperClass implements AInterface {
     private FieldType field;
@@ -48,35 +53,42 @@ class A extends SuperClass implements AInterface {
     public void method_A2() {
         new Caller().method();
     }
+}
 
+/**
+ * Invoke methods of Jdk or external lib.
+ * super class 0
+ * interface 0
+ * Exception 0
+ * Declaring method arguments type 0
+ * Declaring method return type 0
+ * field type 0
+ * invoked methods class 1
+ * CBO = 1
+ */
+class B implements Comparable<B> {
+    public void invoke_external_method() {
+        StringUtils.equals("", "");
+    }
+
+    public void invoke_jdk_method() {
+        Objects.hash("");
+    }
+    @Override
+    public int compareTo(B o) {
+        return 0;
+    }
 }
 
 
 class A1 extends A {
     static class A_InnerClass {
         public void A_innerMethod1() {
-            new B().method_B1();
         }
     }
 }
 
 class A2 extends A1 {
-}
-
-class B {
-    public B() {
-        A a = new A();
-    }
-
-    public void method_B1() {
-    }
-
-    public A method_B3() {
-        return new A();
-    }
-
-    public void method_B4(A a) {
-    }
 }
 
 

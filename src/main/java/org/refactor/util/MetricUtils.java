@@ -68,6 +68,7 @@ public class MetricUtils {
         clazz.getSuperClass().ifPresent(coupling::add);
         coupling.addAll(clazz.getInterfaces());
         coupling.addAll(clazz.getFieldsType());
+        coupling.removeIf(clazz::equals);
 
         return coupling.size();
     }
@@ -76,7 +77,6 @@ public class MetricUtils {
         Set<JavaClass> couplings = method.getInvokeMethods().stream()
                 .map(JavaMethod::getClazz)
                 .filter(c -> !ASMUtils.isFromJava(c.getName()))
-                .filter(Predicate.not(clazz::equals))
                 .collect(Collectors.toSet());
         couplings.addAll(method.getCoupling());
 
