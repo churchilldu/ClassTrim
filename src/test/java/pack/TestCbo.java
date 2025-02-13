@@ -6,11 +6,7 @@ import java.io.IOException;
 import java.util.Objects;
 
 @SuppressWarnings("unused")
-public interface Test {}
-
-/**
- * Test computation CBO
- */
+public interface TestCbo {}
 
 interface AInterface {}
 
@@ -29,7 +25,7 @@ class Caller {
 }
 
 /**
- * Basic computation.
+ * Basic and thorough computation.
  * super class 1
  * interface 1
  * Exception 1
@@ -74,27 +70,29 @@ class B implements Comparable<B> {
     public void invoke_jdk_method() {
         Objects.hash("");
     }
+
     @Override
     public int compareTo(B o) {
         return 0;
     }
 }
 
-
-class A1 extends A {
-    static class A_InnerClass {
-        public void A_innerMethod1() {
-        }
+/**
+ * Invoke methods from super class.
+ * super class 1
+ * interface 0
+ * Exception 0
+ * Declaring method arguments type 0
+ * Declaring method return type 0
+ * field type 0
+ * invoked methods class 1
+ * CBO = 1
+ */
+class C0 {
+    public void method_C0() {}
+}
+class C extends C0 {
+    public void method_C() {
+        this.method_C0();
     }
 }
-
-class A2 extends A1 {
-}
-
-
-enum Enum {
-    ENUM1,
-    ENUM2;
-    private Enum() {}
-}
-

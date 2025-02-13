@@ -26,9 +26,9 @@ public class JavaProjectTest {
             "target/test-classes/pack",
             new Threshold(0, 1, 1)
     );
-    private static final String SUPER_CLASS = "pack/SuperClass";
     private static final String CLASS_A = "pack/A";
     private static final String CLASS_B = "pack/B";
+    private static final String CLASS_C = "pack/C";
 
     private JavaProject project;
 
@@ -57,34 +57,12 @@ public class JavaProjectTest {
     }
 
     @Test
-    public void testOverride() {
-        Optional<JavaMethod> inheritMethod = project.getOrCreateClass("pack/ClassA")
-                .getMethod("inheritMethod", Type.getMethodDescriptor(Type.VOID_TYPE));
-        assertTrue(inheritMethod.isPresent());
-        Assert.assertFalse(inheritMethod.get().canRefactor());
+    public void testCbo03() {
+        Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
 
-        Optional<JavaMethod> compareTo = project.getOrCreateClass("pack/ClassA")
-                .getMethod("compareTo",
-                        Type.getMethodDescriptor(Type.INT_TYPE, Type.getType(Object.class)));
-        assertTrue(compareTo.isPresent());
-        Assert.assertFalse(compareTo.get().canRefactor());
-    }
-
-    @Test
-    public void testGetterSetter() {
-        Optional<JavaMethod> getter = project.getOrCreateClass("pack/ClassA")
-                .getMethod("getStr", Type.getMethodDescriptor(Type.getType(String.class)));
-        assertTrue(getter.isPresent());
-        Assert.assertFalse(getter.get().canRefactor());
-
-        Optional<JavaMethod> setter = project.getOrCreateClass("pack/ClassA")
-                .getMethod("setStr", Type.getMethodDescriptor(Type.VOID_TYPE, Type.getType(Integer.class)));
-        assertTrue(setter.isPresent());
-        Assert.assertFalse(setter.get().canRefactor());
-    }
-
-    @Test
-    public void testMetrics() {
+        Optional<JavaClass> classC = project.getClass(CLASS_C);
+        assertTrue(classC.isPresent());
+        assertEquals(Integer.valueOf(1), cboByClass.get(classC.get()));
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {

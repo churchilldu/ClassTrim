@@ -52,6 +52,7 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
         if (!ASMUtils.isConstructor(name)) {
             method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
+            // todo: lazily set override to method can refactor.
             method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
         }
 
