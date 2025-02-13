@@ -32,19 +32,16 @@ public class ASMUtils {
                     return true;
                 }
             }
-
             if (StringUtils.equalsIgnoreCase("set" + fieldName, methodName)) {
                 if (returnType.equals(Type.VOID_TYPE)) {
                     return true;
                 }
             }
-
             if (methodName.startsWith("is")) {
                 if (returnType.equals(Type.BOOLEAN_TYPE)) {
                     return true;
                 }
             }
-
             if (methodName.startsWith("_")) {
                 return true;
             }
@@ -78,6 +75,7 @@ public class ASMUtils {
         return StringUtils.contains(name, "$");
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isConstructor(String name) {
         return StringUtils.equals(name, "<init>")
                 || StringUtils.equals(name, "<clinit>");
@@ -115,34 +113,23 @@ public class ASMUtils {
         Type returnType = methodType.getReturnType();
 
         return Stream.concat(Arrays.stream(argumentTypes), Stream.of(returnType))
+                .filter(Predicate.not(Arrays.asList(PRIMITIVE_TYPES)::contains))
                 .map(Type::getInternalName)
                 .map(s -> s.replace("[", "")) // array
-                .filter(Predicate.not(Arrays.asList(PRIMITIVE_DESCRIPTORS)::contains))
                 .collect(Collectors.toSet());
     }
 
-    // todo refactor to Type.void const
-    private static final String[] PRIMITIVE_DESCRIPTORS = new String[]{
-            "V", "Z", "C", "B", "S", "I", "F", "J", "D"
+    private static final Type[] PRIMITIVE_TYPES = new Type[]{
+            Type.VOID_TYPE,
+            Type.BOOLEAN_TYPE,
+            Type.CHAR_TYPE,
+            Type.BYTE_TYPE,
+            Type.SHORT_TYPE,
+            Type.INT_TYPE,
+            Type.FLOAT_TYPE,
+            Type.LONG_TYPE,
+            Type.DOUBLE_TYPE,
     };
-
-    public static String getDeclaringClass(String className, String methodName, String methodDescriptor) {
-        if (ASMUtils.isConstructor(methodName)) {
-            return className;
-        }
-
-
-        try {
-            return Type.getInternalName(
-                    DataSetConst.urlCL.loadClass(Type.getObjectType(className).getClassName())
-                            .getMethod(methodName, getParameterTypes(methodDescriptor)).getDeclaringClass());
-            // ClassLoader methods were identified as invoked class own methods.
-        } catch (NoSuchMethodException | ClassNotFoundException e) {
-            logger.error(e.getMessage());
-            return className;
-        }
-    }
-
 
     private static boolean isMethodEqual(Method m1, String m2Name, String m2Descriptor) {
         Class<?>[] m1Params = m1.getParameterTypes();
@@ -162,36 +149,4 @@ public class ASMUtils {
         return false;
     }
 
-    private static Class<?>[] getParameterTypes(String descriptor) {
-        return Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
-                .map(Type::getInternalName)
-                .map(ASMUtils::getClass)
-                .toArray(Class[]::new);
-    }
-
-    private static Class<?> getClass(String className) {
-        // Map primitive types manually since they aren't handled by Class.forName
-        switch (className) {
-            case "Z": return boolean.class;
-            case "B": return byte.class;
-            case "C": return char.class;
-            case "S": return short.class;
-            case "I": return int.class;
-            case "J": return long.class;
-            case "F": return float.class;
-            case "D": return double.class;
-            case "V": return void.class;
-            default:
-                // Use ClassLoader to load non-primitive types
-                try {
-                    if (className.contains("/")) {
-                        className = className.replace("/", ".");
-                    }
-                    return Class.forName(className, true, DataSetConst.urlCL);
-                } catch (ClassNotFoundException e) {
-                    logger.error(e.getMessage());
-                    return null;
-                }
-        }
-    }
 }
