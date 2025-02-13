@@ -13,9 +13,12 @@ public class JavaMethod extends JavaObject {
     private int access;
     private boolean isOverride;
     private boolean isGetterOrSetter;
-    // Arguments' type and return type
-    // Check is count of number or times
-    private final Set<JavaClass> signatureType = new HashSet<>();
+    /**
+     * Argument's type
+     * Return type
+     * Exception
+     */
+    private final Set<JavaClass> coupling = new HashSet<>();
     private final Set<JavaMethod> invokedMethods = new HashSet<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
@@ -32,6 +35,28 @@ public class JavaMethod extends JavaObject {
                 && !ASMUtils.isConstructor(this.getName())
                 && !isGetterOrSetter
                 && !isOverride;
+    }
+
+    private boolean isOverride() {
+        JavaClass c = this.clazz;
+        while (c.getSuperClass().isPresent()) {
+            c = c.getSuperClass().get();
+            for (JavaMethod method : c.getDeclaredMethods()) {
+                if (method.equals(this)) {
+                    return true;
+                }
+            }
+        }
+
+        for (JavaClass anInterface : c.getInterfaces()) {
+            for (JavaMethod method : anInterface.getDeclaredMethods()) {
+                if (method.equals(this)) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     public JavaClass getClazz() {
@@ -54,8 +79,8 @@ public class JavaMethod extends JavaObject {
         isOverride = override;
     }
 
-    public void addDependency(JavaClass cls) {
-        this.signatureType.add(cls);
+    public void registerCoupling(JavaClass c) {
+        this.coupling.add(c);
     }
 
     public void addInvokeMethod(JavaMethod method) {
@@ -66,28 +91,26 @@ public class JavaMethod extends JavaObject {
         return invokedMethods;
     }
 
-    public Set<JavaClass> getSignatureType() {
-        return signatureType;
+    public Set<JavaClass> getCoupling() {
+        return coupling;
     }
+
 
     @Override
     public boolean equals(Object o) {
-        if (o == null) {
-            return false;
-        }
         if (o == this) {
             return true;
         }
-        if (!(o instanceof JavaMethod)) {
-            return false;
+        if (o instanceof JavaMethod) {
+            JavaMethod m = (JavaMethod) o;
+            return new EqualsBuilder()
+                    .appendSuper(super.equals(o))
+                    .append(this.clazz, m.getClazz())
+                    .append(this.descriptor, m.getDescriptor())
+                    .isEquals();
         }
 
-        JavaMethod m = (JavaMethod) o;
-        return new EqualsBuilder()
-                .appendSuper(super.equals(o))
-                .append(this.clazz, m.getClazz())
-                .append(this.descriptor, m.getDescriptor())
-                .isEquals();
+        return false;
     }
 
     @Override

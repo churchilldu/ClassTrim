@@ -28,7 +28,7 @@ public class CouplingVisitor extends ClassVisitor {
         super.visit(version, access, name, signature, superName, interfaces);
         this.project.getClass(name).ifPresent(c -> {
             this.clazz = c;
-            setSuperClass(c, superName);
+            this.setSuperClass(c, superName);
             for (String anInterface : interfaces) {
                 this.addInterface(c, anInterface);
             }
@@ -37,7 +37,7 @@ public class CouplingVisitor extends ClassVisitor {
 
     @Override
     public FieldVisitor visitField(int access, String name, String descriptor, String signature, Object value) {
-        registerFieldDependency(descriptor);
+        this.registerFieldType(descriptor);
         return super.visitField(access, name, descriptor, signature, value);
     }
 
@@ -46,7 +46,8 @@ public class CouplingVisitor extends ClassVisitor {
         Optional<JavaMethod> m = clazz.getMethod(name, descriptor);
         if (m.isPresent()) {
             this.method = m.get();
-            this.registerMethodDependency(descriptor);
+            this.registerMethodSignature(descriptor);
+            this.registerExceptions(exceptions);
             return new MV();
         }
 
@@ -67,19 +68,24 @@ public class CouplingVisitor extends ClassVisitor {
         }
     }
 
-    private void registerMethodDependency(String descriptor) {
-        // Arguments
-        Type methodType = Type.getMethodType(descriptor);
-        Type[] argumentTypes = methodType.getArgumentTypes();
-        // Return type
+    private void registerMethodSignature(String descriptor) {
         ASMUtils.getMethodSignatureType(descriptor).stream()
                 .filter(Predicate.not(ASMUtils::isFromJava))
-                .forEach(c -> project.getClass(c).ifPresentOrElse(method::addDependency,
-                        () -> method.addDependency(new JavaClass(c)))
-                );
+                .forEach(c -> project.getClass(c).ifPresentOrElse(method::registerCoupling,
+                        () -> method.registerCoupling(new JavaClass(c))));
     }
 
-    private void registerFieldDependency(String descriptor) {
+    private void registerExceptions(String[] exceptions) {
+        if (exceptions == null) return;
+        for (String exception : exceptions) {
+            if (!ASMUtils.isFromJava(exception)) {
+                project.getClass(exception).ifPresentOrElse(e -> method.registerCoupling(e),
+                        () -> method.registerCoupling(new JavaClass(exception)));
+            }
+        }
+    }
+
+    private void registerFieldType(String descriptor) {
         String className = Type.getObjectType(descriptor).getInternalName();
         if (!ASMUtils.isFromJava(className)) {
             project.getClass(className).ifPresentOrElse(clazz::addDependency,

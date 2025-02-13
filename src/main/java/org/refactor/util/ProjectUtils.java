@@ -1,7 +1,6 @@
 package org.refactor.util;
 
 
-import org.refactor.common.DataSet;
 import org.refactor.common.DataSetConst;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -9,7 +8,8 @@ import org.refactor.model.JavaProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,11 +45,8 @@ public class ProjectUtils {
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {
-        return project.getClassCanRefactor().parallelStream().collect(
-                Collectors.toMap(
-                        Function.identity(),
-                        JavaClass::getDeclaredMethods
-                )
-        );
+        return project.getClassCanRefactor()
+                .stream().unordered()
+                .collect(Collectors.toMap(Function.identity(), JavaClass::getDeclaredMethods));
     }
 }

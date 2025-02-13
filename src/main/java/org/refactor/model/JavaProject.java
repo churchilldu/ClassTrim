@@ -152,4 +152,8 @@ public class JavaProject extends JavaObject {
         return this.dataSet.getThreshold();
     }
 
+    public List<JavaClass> getClassList() {
+        return Collections.unmodifiableList(classList);
+    }
+
 }

@@ -13,14 +13,14 @@ import java.util.stream.Collectors;
 public class MetricUtils {
     // WMC Weighted Method per Class
     public static long countClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getWmcByClass(methodsByClass).values().parallelStream().filter(
+        return MetricUtils.getWmcByClass(methodsByClass).values().stream().filter(
                 wmc -> wmc > threshold
         ).count();
     }
 
     // CBO Coupling Between Objects
     public static long countClassCboOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getCboByClass(methodsByClass).values().parallelStream().filter(
+        return MetricUtils.getCboByClass(methodsByClass).values().stream().filter(
                 cbo -> cbo > threshold
         ).count();
     }
@@ -33,7 +33,7 @@ public class MetricUtils {
     }
 
     public static long sumClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getWmcByClass(methodsByClass).values().parallelStream().mapToInt(
+        return MetricUtils.getWmcByClass(methodsByClass).values().stream().mapToInt(
                 wmc -> Math.max(wmc - threshold, 0)
         ).sum();
     }
@@ -51,49 +51,40 @@ public class MetricUtils {
     }
 
     public static Map<JavaClass, Integer> getWmcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        return methodsByClass.entrySet().parallelStream().collect(
-                Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue().size()
-                )
-        );
+        return methodsByClass.entrySet().stream().collect(
+                Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size()));
     }
 
     public static Map<JavaClass, Integer> getCboByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        return methodsByClass.entrySet().parallelStream().collect(
-                Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> computeCbo(e.getKey(), e.getValue())
-                )
-        );
+        return methodsByClass.entrySet().stream().collect(
+                Collectors.toMap(Map.Entry::getKey, e -> computeCbo(e.getKey(), e.getValue())));
     }
 
     private static int computeCbo(JavaClass clazz, List<JavaMethod> methods) {
-        Set<JavaClass> couplings = methods.parallelStream()
-                .map(m -> getCouplingsOfMethod(clazz, m))
-                .flatMap(Set::parallelStream)
+        Set<JavaClass> coupling = methods.stream()
+                .map(m -> getCouplingOfMethod(clazz, m))
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet());
-        clazz.getSuperClass().ifPresent(couplings::add);
-        couplings.addAll(clazz.getInterfaces());
-        couplings.addAll(clazz.getFieldsType());
+        clazz.getSuperClass().ifPresent(coupling::add);
+        coupling.addAll(clazz.getInterfaces());
+        coupling.addAll(clazz.getFieldsType());
 
-        return couplings.size();
+        return coupling.size();
     }
 
-    private static Set<JavaClass> getCouplingsOfMethod(JavaClass clazz, JavaMethod method) {
-        Set<JavaClass> couplings = method.getInvokeMethods().parallelStream()
+    private static Set<JavaClass> getCouplingOfMethod(JavaClass clazz, JavaMethod method) {
+        Set<JavaClass> couplings = method.getInvokeMethods().stream()
                 .map(JavaMethod::getClazz)
                 .filter(c -> !ASMUtils.isFromJava(c.getName()))
                 .filter(Predicate.not(clazz::equals))
-                .filter(Predicate.not(clazz::isInherited))
                 .collect(Collectors.toSet());
-        couplings.addAll(method.getSignatureType());
+        couplings.addAll(method.getCoupling());
 
         return couplings;
     }
 
     public static Map<JavaClass, Integer> getRfcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        return methodsByClass.entrySet().parallelStream().collect(
+        return methodsByClass.entrySet().stream().collect(
                 Collectors.toMap(
                         Map.Entry::getKey,
                         e -> computeRfc(e.getValue())
@@ -104,7 +95,7 @@ public class MetricUtils {
     private static int computeRfc(List<JavaMethod> methods) {
         return methods.stream()
                 .map(JavaMethod::getInvokeMethods)
-                .flatMap(Set::parallelStream)
+                .flatMap(Set::stream)
                 .collect(Collectors.toSet())
                 .size() + methods.size();
     }

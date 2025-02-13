@@ -61,6 +61,7 @@ public class ASMUtils {
         return (access & Opcodes.ACC_PUBLIC) != 0;
     }
 
+    @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isAbstract(int access) {
         return (access & Opcodes.ACC_ABSTRACT) != 0;
     }
@@ -125,6 +126,7 @@ public class ASMUtils {
 
         return Stream.concat(Arrays.stream(argumentTypes), Stream.of(returnType))
                 .map(Type::getInternalName)
+                .map(s -> s.replace("[", "")) // array
                 .filter(Predicate.not(Arrays.asList(PRIMITIVE_DESCRIPTORS)::contains))
                 .collect(Collectors.toSet());
     }
