@@ -11,7 +11,6 @@ public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
     private final String descriptor;
     private int access;
-    private boolean isOverride;
     private boolean isGetterOrSetter;
     /**
      * Argument's type
@@ -34,25 +33,33 @@ public class JavaMethod extends JavaObject {
                 && !ASMUtils.isAbstract(access)
                 && !ASMUtils.isConstructor(this.getName())
                 && !isGetterOrSetter
-                && !isOverride;
+                && !isOverride();
     }
 
     private boolean isOverride() {
         JavaClass c = this.clazz;
         while (c.getSuperClass().isPresent()) {
-            c = c.getSuperClass().get();
-            for (JavaMethod method : c.getDeclaredMethods()) {
-                if (method.equals(this)) {
-                    return true;
+            if (c.getSuperClass().get().getProject() != null) {
+                c = c.getSuperClass().get();
+                for (JavaMethod method : c.getDeclaredMethods()) {
+                    if (method.equals(this)) {
+                        return true;
+                    }
                 }
+            } else {
+                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
             }
         }
 
         for (JavaClass anInterface : c.getInterfaces()) {
-            for (JavaMethod method : anInterface.getDeclaredMethods()) {
-                if (method.equals(this)) {
-                    return true;
+            if (anInterface.getProject() != null) {
+                for (JavaMethod method : anInterface.getDeclaredMethods()) {
+                    if (method.equals(this)) {
+                        return true;
+                    }
                 }
+            } else {
+                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
             }
         }
 
@@ -73,10 +80,6 @@ public class JavaMethod extends JavaObject {
 
     public void setGetterOrSetter(boolean getterOrSetter) {
         isGetterOrSetter = getterOrSetter;
-    }
-
-    public void setOverride(boolean override) {
-        isOverride = override;
     }
 
     public void registerCoupling(JavaClass c) {

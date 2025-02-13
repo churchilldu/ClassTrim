@@ -92,7 +92,6 @@ public class ASMUtils {
     }
 
     public static boolean isOverride(String superName,
-                                     String[] interfaces,
                                      String methodName,
                                      String descriptor) {
         try {
@@ -100,15 +99,6 @@ public class ASMUtils {
             for (Method m : superClass.getMethods()) {
                 if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
                     return true;
-                }
-            }
-
-            for (String name : interfaces) {
-                Class<?> aInterface = DataSetConst.urlCL.loadClass(Type.getObjectType(name).getClassName());
-                for (Method m : aInterface.getMethods()) {
-                    if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
-                        return true;
-                    }
                 }
             }
         } catch (Exception e) {

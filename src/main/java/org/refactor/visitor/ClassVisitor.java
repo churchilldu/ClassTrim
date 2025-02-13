@@ -19,8 +19,6 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     private final Map<String, String> privateFields = new HashMap<>();
     private final JavaProject project;
     private JavaClass clazz;
-    private String superName;
-    private String[] interfaces;
 
     public ClassVisitor(JavaProject project) {
         super(Opcodes.ASM9);
@@ -30,8 +28,6 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
-        this.superName = superName;
-        this.interfaces = interfaces;
         clazz = project.createClass(name);
         clazz.setAccess(access);
     }
@@ -52,13 +48,10 @@ public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
 
         if (!ASMUtils.isConstructor(name)) {
             method.setGetterOrSetter(ASMUtils.isGetterOrSetter(name, descriptor, privateFields));
-            // todo: lazily set override to method can refactor.
-            method.setOverride(ASMUtils.isOverride(superName, interfaces, name, descriptor));
         }
 
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
-
 
     @Override
     public void visitEnd() {
