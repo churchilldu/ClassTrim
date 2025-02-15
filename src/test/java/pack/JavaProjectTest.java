@@ -1,6 +1,6 @@
-import org.junit.Assert;
+package pack;
+
 import org.junit.Before;
-import org.objectweb.asm.Type;
 import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
 import org.refactor.model.JavaClass;
@@ -8,11 +8,8 @@ import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.junit.Test;
 import org.refactor.util.MetricUtils;
-import org.refactor.util.ProjectUtils;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -29,40 +26,54 @@ public class JavaProjectTest {
     private static final String CLASS_A = "pack/A";
     private static final String CLASS_B = "pack/B";
     private static final String CLASS_C = "pack/C";
+    private static final String CLASS_D = "pack/D";
+    private static final String CLASS_E = "pack/E";
 
     private JavaProject project;
+    private Map<JavaClass, Integer> cboByClass;
 
     @Before
     public void setup() {
         project = new JavaProject(TEST_DATA);
         project.start();
+        cboByClass = MetricUtils.getCboByClass(convertToMap(project));
     }
 
     @Test
     public void testCbo01() {
-        Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
-
-        Optional<JavaClass> classA = project.getClass(CLASS_A);
-        assertTrue(classA.isPresent());
-        assertEquals(Integer.valueOf(7), cboByClass.get(classA.get()));
+        this.doTest(CLASS_A);
     }
 
     @Test
     public void testCbo02() {
-        Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
-
-        Optional<JavaClass> classB = project.getClass(CLASS_B);
-        assertTrue(classB.isPresent());
-        assertEquals(Integer.valueOf(1), cboByClass.get(classB.get()));
+        this.doTest(CLASS_B);
     }
 
     @Test
     public void testCbo03() {
-        Map<JavaClass, Integer> cboByClass = MetricUtils.getCboByClass(convertToMap(project));
+        this.doTest(CLASS_C);
+    }
 
-        Optional<JavaClass> classC = project.getClass(CLASS_C);
-        assertTrue(classC.isPresent());
-        assertEquals(Integer.valueOf(1), cboByClass.get(classC.get()));
+    @Test
+    public void testCbo04() {
+        this.doTest(CLASS_D);
+    }
+
+    @Test
+    public void testCbo05() {
+        this.doTest(CLASS_E);
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    private void doTest(String className) {
+        Optional<JavaClass> classA = project.getClass(className);
+        assertTrue(classA.isPresent());
+        try {
+            assertEquals(Class.forName(classA.get().toString()).getField("CBO").get("CBO"),
+                    cboByClass.get(classA.get()));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {

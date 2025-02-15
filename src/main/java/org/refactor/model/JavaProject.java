@@ -4,6 +4,7 @@ import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
 import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
+import org.refactor.util.ASMUtils;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClassVisitor;
 import org.refactor.visitor.CouplingVisitor;
@@ -82,16 +83,6 @@ public class JavaProject extends JavaObject {
      * Custom method
      **/
 
-    public JavaClass getOrCreateClass(String className) {
-        return this.getClass(className).orElseGet(
-                () -> {
-                    JavaClass clazz = new JavaClass(className, this);
-                    classList.add(clazz);
-                    return clazz;
-                }
-        );
-    }
-
     public JavaClass createClass(String className) {
         JavaClass clazz = new JavaClass(className, this);
         classList.add(clazz);
@@ -105,6 +96,9 @@ public class JavaProject extends JavaObject {
     public Optional<JavaMethod> getMethodRecursively(String owner, String methodName, String descriptor) {
         Optional<JavaClass> c = this.getClass(owner);
         while (c.isPresent()) {
+            if (c.get().getProject() == null && c.get().getDeclaredMethods().isEmpty()) {
+                ASMUtils.addMethods(c.get());
+            }
             Optional<JavaMethod> method = c.get().getMethod(methodName, descriptor);
             if (method.isPresent()) {
                 return method;
@@ -115,36 +109,29 @@ public class JavaProject extends JavaObject {
         return Optional.empty();
     }
 
-    public boolean contain(String className) {
-        return this.getClass(className).isPresent();
-    }
-
     public Optional<JavaClass> getClass(String className) {
-        Iterator<JavaClass> iterator = classList.iterator();
-        return classList.parallelStream()
+        return classList.stream()
                 .filter(c -> className.equals(c.getName()))
                 .findFirst();
     }
 
     public List<JavaClass> getClassCanRefactor() {
         if (classToRefactor == null) {
-            classToRefactor = this.classList.parallelStream()
+            classToRefactor = this.classList.stream()
                     .filter(JavaClass::canRefactor)
                     .collect(Collectors.toList());
         }
-
         return classToRefactor;
     }
 
     public List<JavaMethod> getMethodsCanRefactor() {
         if (methodsToRefactor == null) {
-            methodsToRefactor = this.classList.parallelStream()
+            methodsToRefactor = this.classList.stream()
                     .map(JavaClass::getDeclaredMethods)
-                    .flatMap(List::parallelStream)
+                    .flatMap(List::stream)
                     .filter(JavaMethod::canRefactor)
                     .collect(Collectors.toList());
         }
-
         return methodsToRefactor;
     }
 

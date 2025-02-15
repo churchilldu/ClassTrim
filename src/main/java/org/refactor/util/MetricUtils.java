@@ -6,6 +6,7 @@ import org.refactor.model.JavaMethod;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -60,24 +61,27 @@ public class MetricUtils {
     }
 
     private static int computeCbo(JavaClass clazz, List<JavaMethod> methods) {
-        Set<JavaClass> coupling = methods.stream()
-                .map(m -> getCouplingOfMethod(clazz, m))
-                .flatMap(Set::stream)
-                .collect(Collectors.toSet());
+        List<JavaClass> coupling = methods.stream()
+                .map(MetricUtils::getCouplingOfMethod)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
         clazz.getSuperClass().ifPresent(coupling::add);
         coupling.addAll(clazz.getInterfaces());
         coupling.addAll(clazz.getFieldsType());
-        coupling.removeIf(clazz::equals);
 
-        return coupling.size();
+        return coupling.stream()
+                .filter(Predicate.not(clazz::equals))
+                .map(JavaClass::getName)
+                .filter(Predicate.not(ASMUtils::isFromJava))
+                .collect(Collectors.toSet())
+                .size();
     }
 
-    private static Set<JavaClass> getCouplingOfMethod(JavaClass clazz, JavaMethod method) {
-        Set<JavaClass> couplings = method.getInvokeMethods().stream()
+    private static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
+        List<JavaClass> couplings = method.getInvokeMethods().stream()
                 .map(JavaMethod::getClazz)
-                .filter(c -> !ASMUtils.isFromJava(c.getName()))
-                .collect(Collectors.toSet());
-        couplings.addAll(method.getCoupling());
+                .collect(Collectors.toList());
+        couplings.addAll(method.getSignature());
 
         return couplings;
     }
@@ -90,7 +94,7 @@ public class MetricUtils {
     private static int computeRfc(List<JavaMethod> methods) {
         return methods.stream()
                 .map(JavaMethod::getInvokeMethods)
-                .flatMap(Set::stream)
+                .flatMap(List::stream)
                 .collect(Collectors.toSet())
                 .size() + methods.size();
     }

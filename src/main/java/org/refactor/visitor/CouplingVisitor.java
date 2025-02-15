@@ -6,6 +6,8 @@ import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.ASMUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 import java.util.function.Predicate;
@@ -14,6 +16,8 @@ public class CouplingVisitor extends ClassVisitor {
     private final JavaProject project;
     private JavaClass clazz;
     private JavaMethod method;
+
+    private Logger logger = LoggerFactory.getLogger(CouplingVisitor.class);
 
     public CouplingVisitor(JavaProject project) {
         super(Opcodes.ASM9);
@@ -52,17 +56,13 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void setSuperClass(JavaClass clazz, String className) {
-        if (!ASMUtils.isFromJava(className)) {
-            project.getClass(className).ifPresentOrElse(clazz::setSuperClass,
-                    () -> clazz.setSuperClass(new JavaClass(className, null)));
-        }
+        project.getClass(className).ifPresentOrElse(clazz::setSuperClass,
+                () -> clazz.setSuperClass(new JavaClass(className, null)));
     }
 
     private void addInterface(JavaClass clazz, String interfaceName) {
-        if (!ASMUtils.isFromJava(interfaceName)) {
-            project.getClass(interfaceName).ifPresentOrElse(clazz::addInterface,
-                    () -> clazz.addInterface(new JavaClass(interfaceName, null)));
-        }
+        project.getClass(interfaceName).ifPresentOrElse(clazz::addInterface,
+                () -> clazz.addInterface(new JavaClass(interfaceName, null)));
     }
 
     private void registerMethodSignature(String descriptor) {
@@ -83,11 +83,10 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void registerFieldType(String descriptor) {
-        String className = Type.getObjectType(descriptor).getInternalName();
+        String className = Type.getType(descriptor).getInternalName();
         if (!ASMUtils.isFromJava(className)) {
             project.getClass(className).ifPresentOrElse(clazz::registerFieldType,
-                    () -> clazz.registerFieldType(new JavaClass(className, null))
-            );
+                    () -> clazz.registerFieldType(new JavaClass(className, null)));
         }
     }
 

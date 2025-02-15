@@ -4,8 +4,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.refactor.util.ASMUtils;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
@@ -13,12 +12,13 @@ public class JavaMethod extends JavaObject {
     private int access;
     private boolean isGetterOrSetter;
     /**
+     * Signature includes:
      * Argument's type
      * Return type
      * Exception
      */
-    private final Set<JavaClass> coupling = new HashSet<>();
-    private final Set<JavaMethod> invokedMethods = new HashSet<>();
+    private final List<JavaClass> signature = new ArrayList<>();
+    private final List<JavaMethod> invokedMethods = new ArrayList<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
         super(name);
@@ -83,19 +83,19 @@ public class JavaMethod extends JavaObject {
     }
 
     public void registerCoupling(JavaClass c) {
-        this.coupling.add(c);
+        this.signature.add(c);
     }
 
     public void addInvokeMethod(JavaMethod method) {
         this.invokedMethods.add(method);
     }
 
-    public Set<JavaMethod> getInvokeMethods() {
-        return invokedMethods;
+    public List<JavaMethod> getInvokeMethods() {
+        return Collections.unmodifiableList(invokedMethods);
     }
 
-    public Set<JavaClass> getCoupling() {
-        return coupling;
+    public List<JavaClass> getSignature() {
+        return Collections.unmodifiableList(signature);
     }
 
 

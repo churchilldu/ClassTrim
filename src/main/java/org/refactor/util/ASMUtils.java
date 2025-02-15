@@ -5,6 +5,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.refactor.common.DataSetConst;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +89,17 @@ public class ASMUtils {
                 name.startsWith("org/omg/") ||
                 name.startsWith("org/w3c/dom.") ||
                 name.startsWith("org/xml/sax/"));
+    }
+
+    public static void addMethods(JavaClass clazz) {
+        try {
+            Class<?> aClass = DataSetConst.urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
+            for (Method m : aClass.getMethods()) {
+                clazz.createMethod(m.getName(), Type.getMethodDescriptor(m));
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
     }
 
     public static boolean isOverride(String superName,
