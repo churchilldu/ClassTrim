@@ -9,7 +9,6 @@ import org.refactor.util.ASMUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 
 public class CouplingVisitor extends ClassVisitor {
@@ -17,7 +16,7 @@ public class CouplingVisitor extends ClassVisitor {
     private JavaClass clazz;
     private JavaMethod method;
 
-    private Logger logger = LoggerFactory.getLogger(CouplingVisitor.class);
+    private final Logger logger = LoggerFactory.getLogger(CouplingVisitor.class);
 
     public CouplingVisitor(JavaProject project) {
         super(Opcodes.ASM9);
@@ -44,13 +43,12 @@ public class CouplingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        Optional<JavaMethod> m = clazz.getMethod(name, descriptor);
-        if (m.isPresent()) {
-            this.method = m.get();
-            this.registerMethodSignature(descriptor);
-            this.registerExceptions(exceptions);
-            return new MV();
-        }
+        clazz.getMethod(name, descriptor).ifPresent(
+                m -> {
+                    this.method = m;
+                    this.registerMethodSignature(descriptor);
+                    this.registerExceptions(exceptions);
+                });
 
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
@@ -86,26 +84,11 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void registerFieldType(String descriptor) {
-        Type type = Type.getType(descriptor);
-        String className = type.getInternalName();
-        if (!ASMUtils.isPrimitiveType(type) && !ASMUtils.isFromJava(className)) {
+        String className = ASMUtils.getFieldType(descriptor).getInternalName();
+        if (!ASMUtils.isPrimitiveType(className) && !ASMUtils.isFromJava(className)) {
             project.getClass(className).ifPresentOrElse(clazz::registerFieldType,
                     () -> clazz.registerFieldType(new JavaClass(className, null)));
         }
-    }
-
-    private class MV extends MethodVisitor {
-        protected MV() {
-            super(Opcodes.ASM9);
-        }
-
-        @Override
-        public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
-            super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-            project.getMethodRecursively(owner, name, descriptor).ifPresentOrElse(method::addInvokeMethod,
-                    () -> method.addInvokeMethod(new JavaMethod(new JavaClass(owner, null), name, descriptor)));
-        }
-
     }
 
 }

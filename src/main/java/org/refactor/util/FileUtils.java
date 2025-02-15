@@ -64,16 +64,16 @@ public class FileUtils {
     }
 
     public static void write(String file, Map<JavaClass, Integer> metricByClass) {
-        Path path = Paths.get(file);
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            for (Map.Entry<JavaClass, Integer> entry : metricByClass.entrySet()) {
-                String className = entry.getKey().getName();
-                Integer metric = entry.getValue();
-                writer.write(className + ", " + metric);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
+//        Path path = Paths.get(file);
+//        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+//            for (Map.Entry<JavaClass, Integer> entry : metricByClass.entrySet()) {
+//                String className = entry.getKey().toString();
+//                Integer metric = entry.getValue();
+//                writer.write(className + ", " + metric);
+//                writer.newLine();
+//            }
+//        } catch (IOException e) {
+//            log.error(e.getMessage());
+//        }
     }
 }

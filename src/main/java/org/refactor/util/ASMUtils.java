@@ -14,8 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
@@ -90,7 +88,7 @@ public class ASMUtils {
                 name.startsWith("org/xml/sax/"));
     }
 
-    public static void addMethods(JavaClass clazz) {
+    public static void loadMethodsToClass(JavaClass clazz) {
         try {
             Class<?> aClass = DataSetConst.urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
             for (Method m : aClass.getMethods()) {

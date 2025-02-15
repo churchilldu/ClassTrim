@@ -89,13 +89,20 @@ public class JavaProjectTest {
         this.doTest(CLASS_I);
     }
 
+    @Test
+    public void testCbo10() {
+        this.doTest(CLASS_J);
+    }
+
     @SuppressWarnings("CallToPrintStackTrace")
     private void doTest(String className) {
         Optional<JavaClass> clazz = project.getClass(className);
         assertTrue(clazz.isPresent());
         Integer cbo = null;
         try {
-            cbo = (Integer) Class.forName(clazz.get().toString()).getField("CBO").get("CBO");
+            cbo = (Integer) Class.forName(clazz.get().toString())
+                    .getField("CBO")
+                    .get("CBO");
         } catch (Exception e) {
             e.printStackTrace();
         }

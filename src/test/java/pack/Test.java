@@ -272,3 +272,24 @@ class I {
     }
 }
 
+/**
+ * Get methods from super class,
+ * but super class haven't been set yet.
+ */
+class J extends K {
+    public static final Integer CBO = 2;
+    public J() {
+        register(I.class);
+        register(H.class);
+    }
+}
+
+class K0 {
+    public void register(Class<?> clazz) {}
+}
+
+class K extends K0 {
+    public void method_K1() {
+        register(K.class);
+    }
+}

@@ -8,6 +8,7 @@ import org.refactor.util.ASMUtils;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClassVisitor;
 import org.refactor.visitor.CouplingVisitor;
+import org.refactor.visitor.MethodInvocationVisitor;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -50,11 +51,16 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    /**
-     * Getter and Setter
-     **/
-
     private void parseInvocation(String classFilePath) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
+            ClassReader classReader = new ClassReader(classFileInputStream);
+            classReader.accept(new MethodInvocationVisitor(this), 0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void parseInheritance(String classFilePath) {
         try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
             ClassReader classReader = new ClassReader(classFileInputStream);
             classReader.accept(new CouplingVisitor(this), 0);
@@ -72,10 +78,10 @@ public class JavaProject extends JavaObject {
         }
     }
 
-
     public void start() {
         String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
         Arrays.stream(allClassFiles).forEach(this::parse);
+        Arrays.stream(allClassFiles).forEach(this::parseInheritance);
         Arrays.stream(allClassFiles).forEach(this::parseInvocation);
     }
 
@@ -97,7 +103,7 @@ public class JavaProject extends JavaObject {
         Optional<JavaClass> c = this.getClass(owner);
         while (c.isPresent()) {
             if (c.get().getProject() == null && c.get().getDeclaredMethods().isEmpty()) {
-                ASMUtils.addMethods(c.get());
+                ASMUtils.loadMethodsToClass(c.get());
             }
             Optional<JavaMethod> method = c.get().getMethod(methodName, descriptor);
             if (method.isPresent()) {

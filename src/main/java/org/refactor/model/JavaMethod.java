@@ -4,7 +4,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.refactor.util.ASMUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
@@ -39,27 +41,29 @@ public class JavaMethod extends JavaObject {
     private boolean isOverride() {
         JavaClass c = this.clazz;
         while (c.getSuperClass().isPresent()) {
-            if (c.getSuperClass().get().getProject() != null) {
+            if (c.getSuperClass().get().getProject() == null
+                    || c.getSuperClass().get().getDeclaredMethods().isEmpty()) {
+                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
+            } else {
                 c = c.getSuperClass().get();
                 for (JavaMethod method : c.getDeclaredMethods()) {
                     if (method.equals(this)) {
                         return true;
                     }
                 }
-            } else {
-                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
             }
         }
 
         for (JavaClass anInterface : c.getInterfaces()) {
-            if (anInterface.getProject() != null) {
+            if (anInterface.getProject() == null
+                    || anInterface.getDeclaredMethods().isEmpty()) {
+                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
+            } else {
                 for (JavaMethod method : anInterface.getDeclaredMethods()) {
                     if (method.equals(this)) {
                         return true;
                     }
                 }
-            } else {
-                return ASMUtils.isOverride(c.getName(), this.getName(), this.getDescriptor());
             }
         }
 
