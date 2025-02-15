@@ -19,11 +19,6 @@ public class JavaClass extends JavaObject {
     private final List<JavaClass> interfaces = new ArrayList<>();
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
 
-    public JavaClass(String name) {
-        super(name);
-        this.project = null;
-    }
-
     public JavaClass(String name, JavaProject project) {
         super(name);
         this.project = project;
@@ -67,7 +62,7 @@ public class JavaClass extends JavaObject {
         return fieldsType;
     }
 
-    public void addDependency(JavaClass dependency) {
+    public void registerFieldType(JavaClass dependency) {
         this.fieldsType.add(dependency);
     }
 

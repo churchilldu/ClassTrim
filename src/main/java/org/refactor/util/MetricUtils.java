@@ -6,7 +6,6 @@ import org.refactor.model.JavaMethod;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 
@@ -84,12 +83,8 @@ public class MetricUtils {
     }
 
     public static Map<JavaClass, Integer> getRfcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
-        return methodsByClass.entrySet().stream().collect(
-                Collectors.toMap(
-                        Map.Entry::getKey,
-                        e -> computeRfc(e.getValue())
-                )
-        );
+        return methodsByClass.entrySet().stream()
+                .collect(Collectors.toMap(Map.Entry::getKey, e -> computeRfc(e.getValue())));
     }
 
     private static int computeRfc(List<JavaMethod> methods) {
