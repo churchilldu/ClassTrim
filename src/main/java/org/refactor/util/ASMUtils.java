@@ -6,15 +6,14 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.refactor.common.DataSetConst;
 import org.refactor.model.JavaClass;
-import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -120,20 +119,39 @@ public class ASMUtils {
         return false;
     }
 
-    public static Set<String> getMethodSignatureType(String methodDescriptor) {
-        Type methodType = Type.getMethodType(methodDescriptor);
-        Type[] argumentTypes = methodType.getArgumentTypes();
-        Type returnType = methodType.getReturnType();
-
-        return Stream.concat(Arrays.stream(argumentTypes), Stream.of(returnType))
-                .filter(Predicate.not(ASMUtils::isPrimitiveType))
-                .map(Type::getInternalName)
-                .map(s -> s.replace("[", "")) // array
-                .collect(Collectors.toSet());
-    }
-
     public static boolean isPrimitiveType(Type type) {
         return Arrays.asList(PRIMITIVE_TYPES).contains(type);
+    }
+
+    public static boolean isPrimitiveType(String type) {
+        return Arrays.stream(PRIMITIVE_TYPES)
+                .map(Type::getInternalName)
+                .anyMatch(type::equals);
+    }
+
+    public static List<Type> getMethodSignatureType(String descriptor) {
+        Type methodType = Type.getMethodType(descriptor);
+        List<Type> types = new ArrayList<>();
+        for (Type argType : methodType.getArgumentTypes()) {
+            if (isArray(argType)) {
+                types.add(argType.getElementType());
+                continue;
+            }
+            types.add(argType);
+        }
+        Type returnType = methodType.getReturnType();
+        types.add(isArray(returnType) ? returnType.getElementType() : returnType);
+
+        return types;
+    }
+
+    public static Type getFieldType(String descriptor) {
+        Type type = Type.getType(descriptor);
+        return isArray(type) ? type.getElementType() : type;
+    }
+
+    private static boolean isArray(Type type) {
+        return Type.ARRAY == type.getSort();
     }
 
     private static final Type[] PRIMITIVE_TYPES = new Type[]{

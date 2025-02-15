@@ -66,7 +66,10 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void registerMethodSignature(String descriptor) {
-        ASMUtils.getMethodSignatureType(descriptor).stream()
+        ASMUtils.getMethodSignatureType(descriptor)
+                .stream()
+                .filter(Predicate.not(ASMUtils::isPrimitiveType))
+                .map(Type::getInternalName)
                 .filter(Predicate.not(ASMUtils::isFromJava))
                 .forEach(c -> project.getClass(c).ifPresentOrElse(method::registerCoupling,
                         () -> method.registerCoupling(new JavaClass(c, null))));

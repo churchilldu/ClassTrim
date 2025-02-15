@@ -179,6 +179,9 @@ class F {
     private Long aBoxedLong;
     private Date date;
     private LocalDate localDate;
+    private boolean aBoolean;
+    private byte aByte;
+    private short aShort;
 
     public Integer method_F1() {
         return null;
@@ -238,3 +241,34 @@ class H extends Pair<Object, Object> implements Builder<Object> {
         return Pair.create(null, null);
     }
 }
+
+
+/**
+ * Test Array argument and return type.
+ * super class 0
+ * interface 0
+ * Exception 0
+ * Declaring method arguments type 0
+ * Declaring method return type 0
+ * field type 0
+ * invoked methods class 0
+ */
+@SuppressWarnings("unused")
+class I {
+    public static final Integer CBO = 0;
+
+    private int[] ints;
+    private Integer[] integers;
+
+    public long[] method_I1(int[] ints, byte[] bytes){
+        return null;
+    }
+
+    public Long[] method_I2(Integer[] ints,
+                            String[] strings,
+                            Object[] objects,
+                            I[] is){
+        return null;
+    }
+}
+

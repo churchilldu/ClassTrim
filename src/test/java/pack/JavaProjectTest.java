@@ -23,14 +23,16 @@ public class JavaProjectTest {
             "target/test-classes/pack",
             new Threshold(0, 1, 1)
     );
-    private static final String CLASS_A = "pack/A";
-    private static final String CLASS_B = "pack/B";
-    private static final String CLASS_C = "pack/C";
-    private static final String CLASS_D = "pack/D";
-    private static final String CLASS_E = "pack/E";
-    private static final String CLASS_F = "pack/F";
-    private static final String CLASS_G = "pack/G";
-    private static final String CLASS_H = "pack/H";
+    public static final String CLASS_A = "pack/A";
+    public static final String CLASS_B = "pack/B";
+    public static final String CLASS_C = "pack/C";
+    public static final String CLASS_D = "pack/D";
+    public static final String CLASS_E = "pack/E";
+    public static final String CLASS_F = "pack/F";
+    public static final String CLASS_G = "pack/G";
+    public static final String CLASS_H = "pack/H";
+    public static final String CLASS_I = "pack/I";
+    public static final String CLASS_J = "pack/J";
 
     private JavaProject project;
     private Map<JavaClass, Integer> cboByClass;
@@ -80,6 +82,11 @@ public class JavaProjectTest {
     @Test
     public void testCbo08() {
         this.doTest(CLASS_H);
+    }
+
+    @Test
+    public void testCbo09() {
+        this.doTest(CLASS_I);
     }
 
     @SuppressWarnings("CallToPrintStackTrace")

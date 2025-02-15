@@ -72,6 +72,7 @@ public class MetricUtils {
         return coupling.stream()
                 .filter(Predicate.not(clazz::equals))
                 .map(JavaClass::getName)
+                .filter(Predicate.not(ASMUtils::isPrimitiveType))
                 .filter(Predicate.not(ASMUtils::isFromJava))
                 .collect(Collectors.toSet())
                 .size();
