@@ -83,8 +83,9 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void registerFieldType(String descriptor) {
-        String className = Type.getType(descriptor).getInternalName();
-        if (!ASMUtils.isFromJava(className)) {
+        Type type = Type.getType(descriptor);
+        String className = type.getInternalName();
+        if (!ASMUtils.isPrimitiveType(type) && !ASMUtils.isFromJava(className)) {
             project.getClass(className).ifPresentOrElse(clazz::registerFieldType,
                     () -> clazz.registerFieldType(new JavaClass(className, null)));
         }

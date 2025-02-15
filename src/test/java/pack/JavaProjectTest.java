@@ -28,6 +28,9 @@ public class JavaProjectTest {
     private static final String CLASS_C = "pack/C";
     private static final String CLASS_D = "pack/D";
     private static final String CLASS_E = "pack/E";
+    private static final String CLASS_F = "pack/F";
+    private static final String CLASS_G = "pack/G";
+    private static final String CLASS_H = "pack/H";
 
     private JavaProject project;
     private Map<JavaClass, Integer> cboByClass;
@@ -64,16 +67,32 @@ public class JavaProjectTest {
         this.doTest(CLASS_E);
     }
 
+    @Test
+    public void testCbo06() {
+        this.doTest(CLASS_F);
+    }
+
+    @Test
+    public void testCbo07() {
+        this.doTest(CLASS_G);
+    }
+
+    @Test
+    public void testCbo08() {
+        this.doTest(CLASS_H);
+    }
+
     @SuppressWarnings("CallToPrintStackTrace")
     private void doTest(String className) {
-        Optional<JavaClass> classA = project.getClass(className);
-        assertTrue(classA.isPresent());
+        Optional<JavaClass> clazz = project.getClass(className);
+        assertTrue(clazz.isPresent());
+        Integer cbo = null;
         try {
-            assertEquals(Class.forName(classA.get().toString()).getField("CBO").get("CBO"),
-                    cboByClass.get(classA.get()));
+            cbo = (Integer) Class.forName(clazz.get().toString()).getField("CBO").get("CBO");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        assertEquals(cbo, cboByClass.get(clazz.get()));
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {

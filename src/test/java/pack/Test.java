@@ -1,8 +1,15 @@
 package pack;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.Builder;
+import org.apache.commons.lang3.exception.ContextedException;
+import org.apache.commons.lang3.time.DateParser;
+import org.apache.commons.lang3.time.StopWatch;
+import org.apache.commons.lang3.time.TimeZones;
+import org.apache.commons.math3.util.Pair;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
@@ -64,11 +71,11 @@ class A extends SuperClass implements AInterface {
  */
 class B implements Comparable<B> {
     public static final Integer CBO = 1;
-    public void invoke_external_method() {
+    public void method_B1() {
         StringUtils.equals("", "");
     }
 
-    public void invoke_jdk_method() {
+    public void method_B2() {
         Objects.hash("");
     }
 
@@ -112,7 +119,7 @@ class C extends C0 {
  */
 class D extends Date {
     public static final Integer CBO = 0;
-    public void invoke_inherited_external_method() {
+    public void method_D1() {
         this.setTime(0L);
     }
 }
@@ -124,7 +131,7 @@ class E0 {
 
 /**
  * Duplicate dependencies.
- * super class 0
+ * super class 1
  * interface 0
  * Exception 1
  * Declaring method arguments type 1
@@ -149,5 +156,85 @@ class E extends E0 {
     public ReturnType method_E4(ArgumentType arg1,
                                 ArgumentType arg2) {
         return this.method_E3();
+    }
+}
+
+/**
+ * Test type from jdk.
+ * super class 0
+ * interface 0
+ * Exception 0
+ * Declaring method arguments type 0
+ * Declaring method return type 0
+ * field type 0
+ * invoked methods class 0
+ */
+class F {
+    public static final Integer CBO = 0;
+
+    private int anInt;
+    private long aLong;
+    private String string;
+    private Integer integer;
+    private Long aBoxedLong;
+    private Date date;
+    private LocalDate localDate;
+
+    public Integer method_F1() {
+        return null;
+    }
+    public void method_F2() throws RuntimeException {}
+    public Long method_F3(int anInt,
+                          long aLong) {
+        return null;
+    }
+    public Long method_F4(Integer anInt,
+                          Long aLong,
+                          String string) {
+        return null;
+    }
+}
+
+/**
+ * Test type from external project.
+ * super class 0
+ * interface 0
+ * Exception 1
+ * Declaring method arguments type 1
+ * Declaring method return type 1
+ * field type 1
+ * invoked methods class 0
+ */
+class G {
+    public static final Integer CBO = 4;
+
+    private StopWatch stopWatch;
+
+    public TimeZones method_G1(DateParser parser) {
+        return null;
+    }
+    public void method_G2() throws ContextedException {}
+}
+
+/**
+ * Test extends third-libs.
+ * super class 1
+ * interface 1
+ * Exception 0
+ * Declaring method arguments type 0
+ * Declaring method return type 0
+ * field type 0
+ * invoked methods class 0
+ */
+class H extends Pair<Object, Object> implements Builder<Object> {
+    public static final Integer CBO = 2;
+
+    public H(Object o, Object o2) {
+        super(o, o2);
+    }
+
+    @Override
+    public Object build() {
+        return Pair.create(null, null);
     }
 }

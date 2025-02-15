@@ -126,10 +126,14 @@ public class ASMUtils {
         Type returnType = methodType.getReturnType();
 
         return Stream.concat(Arrays.stream(argumentTypes), Stream.of(returnType))
-                .filter(Predicate.not(Arrays.asList(PRIMITIVE_TYPES)::contains))
+                .filter(Predicate.not(ASMUtils::isPrimitiveType))
                 .map(Type::getInternalName)
                 .map(s -> s.replace("[", "")) // array
                 .collect(Collectors.toSet());
+    }
+
+    public static boolean isPrimitiveType(Type type) {
+        return Arrays.asList(PRIMITIVE_TYPES).contains(type);
     }
 
     private static final Type[] PRIMITIVE_TYPES = new Type[]{
