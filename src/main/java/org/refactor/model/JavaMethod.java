@@ -1,12 +1,11 @@
 package org.refactor.model;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.refactor.util.ASMUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 public class JavaMethod extends JavaObject {
     private final JavaClass clazz;
@@ -102,31 +101,21 @@ public class JavaMethod extends JavaObject {
         return Collections.unmodifiableList(signature);
     }
 
-
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
+        if (o == this) return true;
         if (o instanceof JavaMethod) {
             JavaMethod m = (JavaMethod) o;
-            return new EqualsBuilder()
-                    .appendSuper(super.equals(o))
-                    .append(this.clazz, m.getClazz())
-                    .append(this.descriptor, m.getDescriptor())
-                    .isEquals();
+            return m.getName().equals(this.getName())
+                    && m.getClazz().equals(this.getClazz())
+                    && m.getDescriptor().equals(this.descriptor);
         }
-
         return false;
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder()
-                .appendSuper(super.hashCode())
-                .append(this.clazz)
-                .append(this.descriptor)
-                .toHashCode();
+        return Objects.hash(this.getName(), clazz, descriptor);
     }
 
     @Override

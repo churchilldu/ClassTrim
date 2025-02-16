@@ -5,7 +5,6 @@ import org.refactor.model.JavaMethod;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -69,13 +68,13 @@ public class MetricUtils {
         coupling.addAll(clazz.getInterfaces());
         coupling.addAll(clazz.getFieldsType());
 
-        return coupling.stream()
+        return (int) coupling.stream()
                 .filter(Predicate.not(clazz::equals))
                 .map(JavaClass::getName)
                 .filter(Predicate.not(ASMUtils::isPrimitiveType))
                 .filter(Predicate.not(ASMUtils::isFromJava))
-                .collect(Collectors.toSet())
-                .size();
+                .distinct()
+                .count();
     }
 
     private static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
@@ -93,11 +92,11 @@ public class MetricUtils {
     }
 
     private static int computeRfc(List<JavaMethod> methods) {
-        return methods.stream()
+        return (int) methods.stream()
                 .map(JavaMethod::getInvokeMethods)
                 .flatMap(List::stream)
-                .collect(Collectors.toSet())
-                .size() + methods.size();
+                .distinct()
+                .count();
     }
 
 }

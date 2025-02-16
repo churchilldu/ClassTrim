@@ -26,7 +26,7 @@ public class CouplingVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
-        this.project.getClass(name).ifPresent(c -> {
+        this.project.findClass(name).ifPresent(c -> {
             this.clazz = c;
             this.setSuperClass(c, superName);
             for (String anInterface : interfaces) {
@@ -43,7 +43,7 @@ public class CouplingVisitor extends ClassVisitor {
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        clazz.getMethod(name, descriptor).ifPresent(
+        clazz.findMethod(name, descriptor).ifPresent(
                 m -> {
                     this.method = m;
                     this.registerMethodSignature(descriptor);
@@ -54,12 +54,12 @@ public class CouplingVisitor extends ClassVisitor {
     }
 
     private void setSuperClass(JavaClass clazz, String className) {
-        project.getClass(className).ifPresentOrElse(clazz::setSuperClass,
+        project.findClass(className).ifPresentOrElse(clazz::setSuperClass,
                 () -> clazz.setSuperClass(new JavaClass(className, null)));
     }
 
     private void addInterface(JavaClass clazz, String interfaceName) {
-        project.getClass(interfaceName).ifPresentOrElse(clazz::addInterface,
+        project.findClass(interfaceName).ifPresentOrElse(clazz::addInterface,
                 () -> clazz.addInterface(new JavaClass(interfaceName, null)));
     }
 
@@ -69,7 +69,7 @@ public class CouplingVisitor extends ClassVisitor {
                 .filter(Predicate.not(ASMUtils::isPrimitiveType))
                 .map(Type::getInternalName)
                 .filter(Predicate.not(ASMUtils::isFromJava))
-                .forEach(c -> project.getClass(c).ifPresentOrElse(method::registerCoupling,
+                .forEach(c -> project.findClass(c).ifPresentOrElse(method::registerCoupling,
                         () -> method.registerCoupling(new JavaClass(c, null))));
     }
 
@@ -77,7 +77,7 @@ public class CouplingVisitor extends ClassVisitor {
         if (exceptions == null) return;
         for (String exception : exceptions) {
             if (!ASMUtils.isFromJava(exception)) {
-                project.getClass(exception).ifPresentOrElse(e -> method.registerCoupling(e),
+                project.findClass(exception).ifPresentOrElse(e -> method.registerCoupling(e),
                         () -> method.registerCoupling(new JavaClass(exception, null)));
             }
         }
@@ -86,7 +86,7 @@ public class CouplingVisitor extends ClassVisitor {
     private void registerFieldType(String descriptor) {
         String className = ASMUtils.getFieldType(descriptor).getInternalName();
         if (!ASMUtils.isPrimitiveType(className) && !ASMUtils.isFromJava(className)) {
-            project.getClass(className).ifPresentOrElse(clazz::registerFieldType,
+            project.findClass(className).ifPresentOrElse(clazz::registerFieldType,
                     () -> clazz.registerFieldType(new JavaClass(className, null)));
         }
     }

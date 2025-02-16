@@ -12,9 +12,7 @@ import java.util.Optional;
 public class JavaClass extends JavaObject {
     private final JavaProject project;
     private int access;
-    // Field type
     private final List<JavaClass> fieldsType = new ArrayList<>();
-    // superClass and interface
     private JavaClass superClass;
     private final List<JavaClass> interfaces = new ArrayList<>();
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
@@ -24,7 +22,7 @@ public class JavaClass extends JavaObject {
         this.project = project;
     }
 
-    public Optional<JavaMethod> getMethod(String methodName, String descriptor) {
+    public Optional<JavaMethod> findMethod(String methodName, String descriptor) {
         return declaredMethods.stream().filter(m ->
                 methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
         ).findFirst();

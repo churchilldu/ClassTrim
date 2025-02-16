@@ -96,16 +96,16 @@ public class JavaProject extends JavaObject {
     }
 
     public Optional<JavaMethod> getMethod(String className, String methodName, String descriptor) {
-        return this.getClass(className).flatMap(c -> c.getMethod(methodName, descriptor));
+        return this.findClass(className).flatMap(c -> c.findMethod(methodName, descriptor));
     }
 
-    public Optional<JavaMethod> getMethodRecursively(String owner, String methodName, String descriptor) {
-        Optional<JavaClass> c = this.getClass(owner);
+    public Optional<JavaMethod> findMethodRecursively(String owner, String methodName, String descriptor) {
+        Optional<JavaClass> c = this.findClass(owner);
         while (c.isPresent()) {
             if (c.get().getProject() == null && c.get().getDeclaredMethods().isEmpty()) {
                 ASMUtils.loadMethodsToClass(c.get());
             }
-            Optional<JavaMethod> method = c.get().getMethod(methodName, descriptor);
+            Optional<JavaMethod> method = c.get().findMethod(methodName, descriptor);
             if (method.isPresent()) {
                 return method;
             }
@@ -115,9 +115,8 @@ public class JavaProject extends JavaObject {
         return Optional.empty();
     }
 
-    public Optional<JavaClass> getClass(String className) {
-        return classList.stream()
-                .filter(c -> className.equals(c.getName()))
+    public Optional<JavaClass> findClass(String className) {
+        return classList.stream().filter(c -> className.equals(c.getName()))
                 .findFirst();
     }
 

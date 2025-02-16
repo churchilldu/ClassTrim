@@ -293,3 +293,33 @@ class K extends K0 {
         register(K.class);
     }
 }
+
+/**
+ * Basic RFC calculation
+ */
+class L0 {
+    public void method_L0() {}
+}
+class L {
+    public static final Integer RFC = 3;
+    public void method_L1() {
+        new L0().method_L0();
+        method_L2();
+    }
+    public void method_L2() {
+        new L0().method_L0();
+        method_L1();
+    }
+}
+
+/**
+ * RFC include method from Jdk
+ */
+class M {
+    public static final Integer RFC = 3;
+    public void method_M1() {
+        Objects.hashCode(RFC);
+        equals("");
+        hashCode();
+    }
+}

@@ -26,12 +26,12 @@ public class MethodInvocationVisitor extends ClassVisitor {
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
         super.visit(version, access, name, signature, superName, interfaces);
-        this.project.getClass(name).ifPresent(c -> this.clazz = c);
+        this.project.findClass(name).ifPresent(c -> this.clazz = c);
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
-        Optional<JavaMethod> m = clazz.getMethod(name, descriptor);
+        Optional<JavaMethod> m = clazz.findMethod(name, descriptor);
         if (m.isPresent()) {
             this.method = m.get();
             return new MV();
@@ -48,7 +48,7 @@ public class MethodInvocationVisitor extends ClassVisitor {
         @Override
         public void visitMethodInsn(int opcode, String owner, String name, String descriptor, boolean isInterface) {
             super.visitMethodInsn(opcode, owner, name, descriptor, isInterface);
-            project.getMethodRecursively(owner, name, descriptor).ifPresentOrElse(method::addInvokeMethod,
+            project.findMethodRecursively(owner, name, descriptor).ifPresentOrElse(method::addInvokeMethod,
                     () -> method.addInvokeMethod(new JavaMethod(new JavaClass(owner, null), name, descriptor)));
         }
 

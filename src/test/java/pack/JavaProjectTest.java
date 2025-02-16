@@ -33,80 +33,102 @@ public class JavaProjectTest {
     public static final String CLASS_H = "pack/H";
     public static final String CLASS_I = "pack/I";
     public static final String CLASS_J = "pack/J";
+    public static final String CLASS_L = "pack/L";
+    public static final String CLASS_M = "pack/M";
 
     private JavaProject project;
     private Map<JavaClass, Integer> cboByClass;
+    private Map<JavaClass, Integer> rfcByClass;
 
     @Before
     public void setup() {
         project = new JavaProject(TEST_DATA);
         project.start();
         cboByClass = MetricUtils.getCboByClass(convertToMap(project));
+        rfcByClass = MetricUtils.getRfcByClass(convertToMap(project));
     }
 
     @Test
     public void testCbo01() {
-        this.doTest(CLASS_A);
+        this.doTestCbo(CLASS_A);
     }
 
     @Test
     public void testCbo02() {
-        this.doTest(CLASS_B);
+        this.doTestCbo(CLASS_B);
     }
 
     @Test
     public void testCbo03() {
-        this.doTest(CLASS_C);
+        this.doTestCbo(CLASS_C);
     }
 
     @Test
     public void testCbo04() {
-        this.doTest(CLASS_D);
+        this.doTestCbo(CLASS_D);
     }
 
     @Test
     public void testCbo05() {
-        this.doTest(CLASS_E);
+        this.doTestCbo(CLASS_E);
     }
 
     @Test
     public void testCbo06() {
-        this.doTest(CLASS_F);
+        this.doTestCbo(CLASS_F);
     }
 
     @Test
     public void testCbo07() {
-        this.doTest(CLASS_G);
+        this.doTestCbo(CLASS_G);
     }
 
     @Test
     public void testCbo08() {
-        this.doTest(CLASS_H);
+        this.doTestCbo(CLASS_H);
     }
 
     @Test
     public void testCbo09() {
-        this.doTest(CLASS_I);
+        this.doTestCbo(CLASS_I);
     }
 
     @Test
     public void testCbo10() {
-        this.doTest(CLASS_J);
+        this.doTestCbo(CLASS_J);
+    }
+
+    @Test
+    public void testRfc01() {
+        this.doTestRfc(CLASS_L);
+    }
+
+    @Test
+    public void testRfc02() {
+        this.doTestRfc(CLASS_M);
+    }
+
+    private void doTestRfc(String className) {
+        this.doTest(className, "RFC", rfcByClass);
+    }
+
+    private void doTestCbo(String className) {
+        this.doTest(className, "CBO", cboByClass);
     }
 
     @SuppressWarnings("CallToPrintStackTrace")
-    private void doTest(String className) {
-        Optional<JavaClass> clazz = project.getClass(className);
+    private void doTest(String className, String metric, Map<JavaClass, Integer> metricOfClass) {
+        Optional<JavaClass> clazz = project.findClass(className);
         assertTrue(clazz.isPresent());
-        Integer cbo = null;
+        Integer expect = null;
         try {
-            cbo = (Integer) Class.forName(clazz.get().toString())
-                    .getField("CBO")
-                    .get("CBO");
+            expect = (Integer) Class.forName(clazz.get().toString())
+                    .getField(metric)
+                    .get(metric);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        assertEquals(cbo, cboByClass.get(clazz.get()));
+        assertEquals(expect, metricOfClass.get(clazz.get()));
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {
