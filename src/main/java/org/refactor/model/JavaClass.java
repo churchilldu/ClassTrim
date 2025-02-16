@@ -4,10 +4,7 @@ package org.refactor.model;
 import org.objectweb.asm.Type;
 import org.refactor.util.ASMUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 public class JavaClass extends JavaObject {
     private final JavaProject project;
@@ -29,7 +26,7 @@ public class JavaClass extends JavaObject {
     }
 
     public List<JavaMethod> getDeclaredMethods() {
-        return declaredMethods;
+        return Collections.unmodifiableList(declaredMethods);
     }
 
     public boolean canRefactor() {
@@ -57,7 +54,7 @@ public class JavaClass extends JavaObject {
     }
 
     public List<JavaClass> getFieldsType() {
-        return fieldsType;
+        return Collections.unmodifiableList(fieldsType);
     }
 
     public void registerFieldType(JavaClass dependency) {
@@ -77,7 +74,7 @@ public class JavaClass extends JavaObject {
     }
 
     public List<JavaClass> getInterfaces() {
-        return interfaces;
+        return Collections.unmodifiableList(interfaces);
     }
 
     public JavaProject getProject() {

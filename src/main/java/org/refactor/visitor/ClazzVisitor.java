@@ -1,5 +1,6 @@
 package org.refactor.visitor;
 
+import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
@@ -13,14 +14,14 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClassVisitor extends org.objectweb.asm.ClassVisitor {
-    private final Logger logger = LoggerFactory.getLogger(ClassVisitor.class);
+public class ClazzVisitor extends ClassVisitor {
+    private final Logger logger = LoggerFactory.getLogger(ClazzVisitor.class);
 
     private final Map<String, String> privateFields = new HashMap<>();
     private final JavaProject project;
     private JavaClass clazz;
 
-    public ClassVisitor(JavaProject project) {
+    public ClazzVisitor(JavaProject project) {
         super(Opcodes.ASM9);
         this.project = project;
     }

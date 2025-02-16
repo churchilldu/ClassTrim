@@ -2,11 +2,12 @@ package org.refactor.model;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
 import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
 import org.refactor.util.ASMUtils;
 import org.refactor.util.FileUtils;
-import org.refactor.visitor.ClassVisitor;
+import org.refactor.visitor.ClazzVisitor;
 import org.refactor.visitor.CouplingVisitor;
 import org.refactor.visitor.MethodInvocationVisitor;
 
@@ -51,38 +52,32 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    private void parseInvocation(String classFilePath) {
-        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
-            ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new MethodInvocationVisitor(this), 0);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public void start() {
+        String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
+        Arrays.stream(allClassFiles).forEach(this::parseMethods);
+        Arrays.stream(allClassFiles).forEach(this::parseInheritance);
+        Arrays.stream(allClassFiles).forEach(this::parseInvocation);
+    }
+
+    private void parseMethods(String classFilePath) {
+        this.parse(classFilePath, new ClazzVisitor(this));
     }
 
     private void parseInheritance(String classFilePath) {
-        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
+        this.parse(classFilePath, new CouplingVisitor(this));
+    }
+
+    private void parseInvocation(String classFilePath) {
+        this.parse(classFilePath, new MethodInvocationVisitor(this));
+    }
+
+    private void parse(String filePath, ClassVisitor visitor) {
+        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(filePath))) {
             ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new CouplingVisitor(this), 0);
+            classReader.accept(visitor, 0);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private void parse(String classFilePath) {
-        try (InputStream classFileInputStream = Files.newInputStream(Paths.get(classFilePath))) {
-            ClassReader classReader = new ClassReader(classFileInputStream);
-            classReader.accept(new ClassVisitor(this), 0);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public void start() {
-        String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
-        Arrays.stream(allClassFiles).forEach(this::parse);
-        Arrays.stream(allClassFiles).forEach(this::parseInheritance);
-        Arrays.stream(allClassFiles).forEach(this::parseInvocation);
     }
 
     /**
@@ -126,7 +121,7 @@ public class JavaProject extends JavaObject {
                     .filter(JavaClass::canRefactor)
                     .collect(Collectors.toList());
         }
-        return classToRefactor;
+        return Collections.unmodifiableList(classToRefactor);
     }
 
     public List<JavaMethod> getMethodsCanRefactor() {
@@ -137,7 +132,7 @@ public class JavaProject extends JavaObject {
                     .filter(JavaMethod::canRefactor)
                     .collect(Collectors.toList());
         }
-        return methodsToRefactor;
+        return Collections.unmodifiableList(methodsToRefactor);
     }
 
     public Threshold getThreshold() {
