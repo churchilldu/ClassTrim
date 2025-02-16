@@ -120,7 +120,7 @@ public class JavaMethod extends JavaObject {
 
     @Override
     public String toString() {
-        return this.getName();
+        return this.clazz.toString() + "." + this.getName();
     }
 
 }

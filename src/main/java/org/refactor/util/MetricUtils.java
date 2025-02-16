@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 public class MetricUtils {
@@ -92,9 +93,8 @@ public class MetricUtils {
     }
 
     private static int computeRfc(List<JavaMethod> methods) {
-        return (int) methods.stream()
-                .map(JavaMethod::getInvokeMethods)
-                .flatMap(List::stream)
+        return (int) Stream.concat(methods.stream(),
+                        methods.stream().map(JavaMethod::getInvokeMethods).flatMap(List::stream))
                 .distinct()
                 .count();
     }

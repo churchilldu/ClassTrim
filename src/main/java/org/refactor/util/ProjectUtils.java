@@ -10,8 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ProjectUtils {
     private static final Logger logger = LoggerFactory.getLogger(ProjectUtils.class);
@@ -21,6 +23,13 @@ public class ProjectUtils {
         project.start();
         FileUtils.write("cbo.csv", MetricUtils.getCboByClass(convertToMap(project)));
         FileUtils.write("rfc.csv", MetricUtils.getRfcByClass(convertToMap(project)));
+    }
+
+    private static Set<JavaMethod> getResponseSetOf(JavaProject project, String className) {
+        JavaClass clazz = project.findClass(className.replace(".", "/")).get();
+        List<JavaMethod> methods = clazz.getDeclaredMethods();
+        return Stream.concat(methods.stream(), methods.stream().map(JavaMethod::getInvokeMethods).flatMap(List::stream))
+                .collect(Collectors.toSet());
     }
 
     public static long countClassWmcOverThreshold(JavaProject project) {

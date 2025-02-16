@@ -316,10 +316,10 @@ class L {
  * RFC include method from Jdk
  */
 class M {
-    public static final Integer RFC = 3;
-    public void method_M1() {
-        Objects.hashCode(RFC);
-        equals("");
-        hashCode();
-    }
+    public static final Integer RFC = 5;
+    public void method_M1() {}
 }
+
+/**
+ * RFC include method from Jdk
+ */
