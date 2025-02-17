@@ -1,8 +1,6 @@
 package org.refactor;
 
 import org.refactor.common.DataSet;
-import org.refactor.model.JavaClass;
-import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.ObjectiveCalculator;
 import org.refactor.util.ProjectUtils;
@@ -11,7 +9,6 @@ import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -34,7 +31,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     }
 
     private void setBounds() {
-        int numberOfMethod = project.getMethodsCanRefactor().size();
+        int numberOfMethod = project.getMethodsToRefactor().size();
         int numberOfClass = project.getClassCanRefactor().size();
 
         List<Integer> lowerLimit = new ArrayList<>(numberOfMethod);

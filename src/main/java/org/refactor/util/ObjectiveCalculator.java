@@ -18,7 +18,7 @@ public class ObjectiveCalculator {
     }
 
     public void setSolution(List<Integer> solution) {
-        List<JavaMethod> methodList = project.getMethodsCanRefactor();
+        List<JavaMethod> methodList = project.getMethodsToRefactor();
         List<JavaClass> classList = project.getClassCanRefactor();
         methodsByClass = new HashMap<>();
         for (int methodId = 0; methodId < solution.size(); methodId++) {

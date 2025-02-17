@@ -80,10 +80,6 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    /**
-     * Custom method
-     **/
-
     public JavaClass createClass(String className) {
         JavaClass clazz = new JavaClass(className, this);
         classList.add(clazz);
@@ -124,12 +120,12 @@ public class JavaProject extends JavaObject {
         return Collections.unmodifiableList(classToRefactor);
     }
 
-    public List<JavaMethod> getMethodsCanRefactor() {
+    // todo Should I include all methods from class that can be refactored.
+    public List<JavaMethod> getMethodsToRefactor() {
         if (methodsToRefactor == null) {
-            methodsToRefactor = this.classList.stream()
+            methodsToRefactor = this.getClassCanRefactor().stream()
                     .map(JavaClass::getDeclaredMethods)
                     .flatMap(List::stream)
-                    .filter(JavaMethod::canRefactor)
                     .collect(Collectors.toList());
         }
         return Collections.unmodifiableList(methodsToRefactor);

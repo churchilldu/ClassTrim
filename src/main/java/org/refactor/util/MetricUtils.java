@@ -13,49 +13,49 @@ import java.util.stream.Stream;
 public class MetricUtils {
     // WMC Weighted Method per Class
     public static long countClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getWmcByClass(methodsByClass).values().stream().filter(
+        return MetricUtils.getWmcOfClass(methodsByClass).values().stream().filter(
                 wmc -> wmc > threshold
         ).count();
     }
 
     // CBO Coupling Between Objects
     public static long countClassCboOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getCboByClass(methodsByClass).values().stream().filter(
+        return MetricUtils.getCboOfClass(methodsByClass).values().stream().filter(
                 cbo -> cbo > threshold
         ).count();
     }
 
     // RFC
     public static long countClassRfcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getRfcByClass(methodsByClass).values().stream().filter(
+        return MetricUtils.getRfcOfClass(methodsByClass).values().stream().filter(
                 rfc -> rfc > threshold
         ).count();
     }
 
     public static long sumClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getWmcByClass(methodsByClass).values().stream().mapToInt(
+        return MetricUtils.getWmcOfClass(methodsByClass).values().stream().mapToInt(
                 wmc -> Math.max(wmc - threshold, 0)
         ).sum();
     }
 
     public static long sumClassCboOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getCboByClass(methodsByClass).values().stream().mapToInt(
+        return MetricUtils.getCboOfClass(methodsByClass).values().stream().mapToInt(
                 cbo -> Math.max(cbo - threshold, 0)
         ).sum();
     }
 
     public static long sumClassRfcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
-        return MetricUtils.getRfcByClass(methodsByClass).values().stream().mapToInt(
+        return MetricUtils.getRfcOfClass(methodsByClass).values().stream().mapToInt(
                 rfc -> Math.max(rfc - threshold, 0)
         ).sum();
     }
 
-    public static Map<JavaClass, Integer> getWmcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+    public static Map<JavaClass, Integer> getWmcOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
         return methodsByClass.entrySet().stream().collect(
                 Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size()));
     }
 
-    public static Map<JavaClass, Integer> getCboByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+    public static Map<JavaClass, Integer> getCboOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
         return methodsByClass.entrySet().stream().collect(
                 Collectors.toMap(Map.Entry::getKey, e -> computeCbo(e.getKey(), e.getValue())));
     }
@@ -78,16 +78,16 @@ public class MetricUtils {
                 .count();
     }
 
-    private static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
+    protected static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
         List<JavaClass> couplings = method.getInvokeMethods().stream()
                 .map(JavaMethod::getClazz)
                 .collect(Collectors.toList());
-        couplings.addAll(method.getSignature());
+        couplings.addAll(method.getCoupling());
 
         return couplings;
     }
 
-    public static Map<JavaClass, Integer> getRfcByClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+    public static Map<JavaClass, Integer> getRfcOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
         return methodsByClass.entrySet().stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, e -> computeRfc(e.getValue())));
     }

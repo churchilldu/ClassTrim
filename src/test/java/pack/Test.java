@@ -295,6 +295,20 @@ class K extends K0 {
 }
 
 /**
+ * Use other class global variable
+ */
+class N0 {
+    public static final Integer N1 = 1;
+}
+
+class N {
+    public static final Integer CBO = 1;
+    public void method_N() {
+        System.out.println("" + N0.N1);
+    }
+}
+
+/**
  * Basic RFC calculation
  */
 class L0 {

@@ -21,8 +21,8 @@ public class ProjectUtils {
     public static void main(String[] args) {
         JavaProject project = new JavaProject(DataSetConst.ANT_7);
         project.start();
-        FileUtils.write("cbo.csv", MetricUtils.getCboByClass(convertToMap(project)));
-        FileUtils.write("rfc.csv", MetricUtils.getRfcByClass(convertToMap(project)));
+        FileUtils.write("cbo.csv", MetricUtils.getCboOfClass(convertToMap(project)));
+        FileUtils.write("rfc.csv", MetricUtils.getRfcOfClass(convertToMap(project)));
     }
 
     private static Set<JavaMethod> getResponseSetOf(JavaProject project, String className) {

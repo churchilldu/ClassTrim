@@ -1,15 +1,16 @@
 package pack;
 
-import org.junit.Before;
+import org.junit.Test;
 import org.refactor.common.DataSet;
 import org.refactor.common.Threshold;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
-import org.junit.Test;
 import org.refactor.util.MetricUtils;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -35,17 +36,17 @@ public class JavaProjectTest {
     public static final String CLASS_J = "pack/J";
     public static final String CLASS_L = "pack/L";
     public static final String CLASS_M = "pack/M";
+    public static final String CLASS_N = "pack/N";
 
-    private JavaProject project;
-    private Map<JavaClass, Integer> cboByClass;
-    private Map<JavaClass, Integer> rfcByClass;
+    private static final JavaProject project;
+    private static final Map<JavaClass, Integer> cboOfClass;
+    private static final Map<JavaClass, Integer> rfcOfClass;
 
-    @Before
-    public void setup() {
+    static {
         project = new JavaProject(TEST_DATA);
         project.start();
-        cboByClass = MetricUtils.getCboByClass(convertToMap(project));
-        rfcByClass = MetricUtils.getRfcByClass(convertToMap(project));
+        cboOfClass = MetricUtils.getCboOfClass(convertToMap(project));
+        rfcOfClass = MetricUtils.getRfcOfClass(convertToMap(project));
     }
 
     @Test
@@ -99,6 +100,11 @@ public class JavaProjectTest {
     }
 
     @Test
+    public void testCboN() {
+        this.doTestCbo(CLASS_N);
+    }
+
+    @Test
     public void testRfc01() {
         this.doTestRfc(CLASS_L);
     }
@@ -109,11 +115,11 @@ public class JavaProjectTest {
     }
 
     private void doTestRfc(String className) {
-        this.doTest(className, "RFC", rfcByClass);
+        this.doTest(className, "RFC", rfcOfClass);
     }
 
     private void doTestCbo(String className) {
-        this.doTest(className, "CBO", cboByClass);
+        this.doTest(className, "CBO", cboOfClass);
     }
 
     @SuppressWarnings("CallToPrintStackTrace")

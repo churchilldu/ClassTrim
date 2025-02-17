@@ -17,8 +17,9 @@ public class JavaMethod extends JavaObject {
      * Argument's type
      * Return type
      * Exception
+     * Global variable
      */
-    private final List<JavaClass> signature = new ArrayList<>();
+    private final List<JavaClass> coupling = new ArrayList<>();
     private final List<JavaMethod> invokedMethods = new ArrayList<>();
 
     public JavaMethod(JavaClass clazz, String name, String descriptor) {
@@ -86,7 +87,7 @@ public class JavaMethod extends JavaObject {
     }
 
     public void registerCoupling(JavaClass c) {
-        this.signature.add(c);
+        this.coupling.add(c);
     }
 
     public void addInvokeMethod(JavaMethod method) {
@@ -97,8 +98,8 @@ public class JavaMethod extends JavaObject {
         return Collections.unmodifiableList(invokedMethods);
     }
 
-    public List<JavaClass> getSignature() {
-        return Collections.unmodifiableList(signature);
+    public List<JavaClass> getCoupling() {
+        return Collections.unmodifiableList(coupling);
     }
 
     @Override
