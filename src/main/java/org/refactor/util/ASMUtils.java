@@ -93,7 +93,7 @@ public class ASMUtils {
         return (name.startsWith("java/") ||
                 name.startsWith("javax/") ||
                 name.startsWith("org/omg/") ||
-                name.startsWith("org/w3c/dom.") ||
+                name.startsWith("org/w3c/dom") ||
                 name.startsWith("org/xml/sax/"));
     }
 
