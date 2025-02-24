@@ -1,6 +1,8 @@
 package org.refactor.util;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,6 +72,21 @@ public class FileUtils {
                 String className = entry.getKey().toString();
                 Integer metric = entry.getValue();
                 writer.write(className + ", " + metric);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
+
+    public static void write(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
+        Path path = Paths.get(file);
+        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            for (Triple<JavaMethod, JavaClass, JavaClass> diff : diffs) {
+                String method = diff.getLeft().toString();
+                String originalClass = diff.getMiddle().toString();
+                String newClass = diff.getRight().toString();
+                writer.write(method + ", " + originalClass + ", " + newClass);
                 writer.newLine();
             }
         } catch (IOException e) {

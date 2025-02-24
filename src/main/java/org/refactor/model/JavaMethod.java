@@ -121,7 +121,8 @@ public class JavaMethod extends JavaObject {
 
     @Override
     public String toString() {
-        return this.clazz.toString() + "." + this.getName();
+//        return this.clazz.toString() + "." + this.getName();
+        return ASMUtils.methodToString(this.getName(), this.getDescriptor());
     }
 
 }

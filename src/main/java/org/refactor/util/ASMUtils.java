@@ -14,9 +14,18 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
+
+    public static String methodToString(String name, String descriptor) {
+        String arguments = Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
+                .map(Type::getClassName)
+                .collect(Collectors.joining(", "));
+
+        return name + "(" + arguments + ")";
+    }
 
     public static boolean isGetterOrSetter(String methodName, String descriptor, Map<String, String> privateFields) {
         Type returnType = Type.getMethodType(descriptor).getReturnType();
