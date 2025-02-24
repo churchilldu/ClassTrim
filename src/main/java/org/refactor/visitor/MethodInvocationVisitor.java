@@ -41,7 +41,7 @@ public class MethodInvocationVisitor extends ClassVisitor {
     }
 
     private class MV extends MethodVisitor {
-        protected MV() {
+        private MV() {
             super(Opcodes.ASM9);
         }
 

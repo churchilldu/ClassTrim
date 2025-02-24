@@ -86,7 +86,7 @@ public class FileUtils {
                 String method = diff.getLeft().toString();
                 String originalClass = diff.getMiddle().toString();
                 String newClass = diff.getRight().toString();
-                writer.write(method + ", " + originalClass + ", " + newClass);
+                writer.write(method + " " + originalClass + " " + newClass);
                 writer.newLine();
             }
         } catch (IOException e) {

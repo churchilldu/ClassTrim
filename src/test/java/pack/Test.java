@@ -13,6 +13,11 @@ import java.time.LocalDate;
 import java.util.Date;
 import java.util.Objects;
 
+/**
+ * Test strategy
+ * where is class from?
+ * partition: project; 3rd libs; jdk;
+ */
 @SuppressWarnings("unused")
 public interface Test {}
 
@@ -299,12 +304,13 @@ class K extends K0 {
  */
 class N0 {
     public static final Integer N1 = 1;
+    public static final int N2 = 1;
 }
 
 class N {
     public static final Integer CBO = 1;
     public void method_N() {
-        System.out.println("" + N0.N1);
+        System.out.println("" + N0.N1 + N0.N2);
     }
 }
 
