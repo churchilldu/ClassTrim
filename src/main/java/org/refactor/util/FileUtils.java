@@ -80,7 +80,7 @@ public class FileUtils {
     }
 
     public static void write(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
-        Path path = Paths.get(file);
+        Path path = Paths.get(file + ".tsv");
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             for (Triple<JavaMethod, JavaClass, JavaClass> diff : diffs) {
                 String method = diff.getLeft().toString();

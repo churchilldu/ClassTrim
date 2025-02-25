@@ -6,18 +6,18 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class DataSetConst {
-    private static final String MAVEN_REPO = "C:/Users/jesse/.m2/repository/";
-    private static final String DATESET_BASE = "C:/codeRefactoring/datasource/";
+public class DatasetConst {
+    private static final String MAVEN_REPO = "C:/Users/Churchill Du/.m2/repository/";
+    public static final String ROOT = "D:/datasource/";
     public static URLClassLoader urlCL;
 
     static {
-        DataSet.setBase(DATESET_BASE);
         try {
             List<URL> urlList = new ArrayList<>();
-            for (String jar : FileUtils.getAllJarFiles(MAVEN_REPO, DATESET_BASE)) {
+            for (String jar : FileUtils.getAllJarFiles(MAVEN_REPO, ROOT)) {
                 urlList.add(new URL("file:///" + jar));
             }
 
@@ -39,12 +39,4 @@ public class DataSetConst {
             "apache-tomcat-9.0.1-src/java",
             "roller-roller_5.1.1/app/src/main"
     };
-
-
-    public static final DataSet ANT_7 = new DataSet(
-            "org/apache/tools/",
-            "ant-1.7.0/",
-            "org",
-            new Threshold(8, 7, 7)
-    );
 }

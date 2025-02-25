@@ -1,6 +1,8 @@
 package org.refactor;
 
-import org.refactor.common.DataSet;
+import org.refactor.common.DatasetEnum;
+import org.refactor.model.JavaClass;
+import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
 import org.refactor.util.ObjectiveCalculator;
 import org.refactor.util.ProjectUtils;
@@ -9,6 +11,7 @@ import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -18,12 +21,13 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final ObjectiveCalculator objectiveCalculator;
     private int[] fixedMethods;
 
-    public RefactoringProblem(DataSet dataSet) {
+    public RefactoringProblem(DatasetEnum dataSet) {
         this.project = new JavaProject(dataSet);
         objectiveCalculator = new ObjectiveCalculator(project);
         this.project.start();
+        this.project.save();
         this.setBounds();
-//        this.initFixedAssignments();
+        this.initFixedAssignments();
 
         JMetalLogger.logger.info("Original number of class exceeds WMC threshold = " + ProjectUtils.countClassWmcOverThreshold(project));
         JMetalLogger.logger.info("Original number of class exceeds CBO threshold = " + ProjectUtils.countClassCboOverThreshold(project));
@@ -47,6 +51,24 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         JMetalLogger.logger.info("Number of method = " + numberOfMethod);
     }
 
+    private void initFixedAssignments() {
+        List<JavaClass> classList = project.getClassList();
+        List<JavaMethod> methodList = project.getMethodsToRefactor();
+        fixedMethods = new int[methodList.size()];
+
+        for (int i = 0; i < methodList.size(); i++) {
+            JavaMethod m = methodList.get(i);
+            if (m.canRefactor()) {
+                fixedMethods[i] = -1;
+            } else {
+                fixedMethods[i] = classList.indexOf(m.getClazz());
+            }
+        }
+
+        JMetalLogger.logger.info("Number of method to refactor = " +
+                Arrays.stream(fixedMethods).filter(i -> i < 0).count());
+    }
+
     @Override
     public int numberOfObjectives() {
         return 6;
@@ -63,35 +85,35 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     }
 
 
-//    @Override
-//    public IntegerSolution createSolution() {
-//        IntegerSolution solution = super.createSolution();
-//
-//        for (int i = 0; i < numberOfVariables(); i++) {
-//            if (fixedMethods[i] > 0) {
-//                solution.variables().set(i, fixedMethods[i]);
-//            }
-//        }
-//
-//        return solution;
-//    }
+    @Override
+    public IntegerSolution createSolution() {
+        IntegerSolution solution = super.createSolution();
+
+        for (int i = 0; i < numberOfVariables(); i++) {
+            if (fixedMethods[i] > 0) {
+                solution.variables().set(i, fixedMethods[i]);
+            }
+        }
+
+        return solution;
+    }
 
     @Override
     public IntegerSolution evaluate(IntegerSolution solution) {
         objectiveCalculator.setSolution(solution.variables());
         // WMC
-        solution.objectives()[0] = objectiveCalculator.sumClassWmcOverThreshold();
+        solution.objectives()[0] = objectiveCalculator.countClassWmcOverThreshold();
         // CBO
-        solution.objectives()[1] = objectiveCalculator.sumClassCboOverThreshold();
+        solution.objectives()[1] = objectiveCalculator.countClassCboOverThreshold();
         // RFC
-        solution.objectives()[2] = objectiveCalculator.sumClassRfcOverThreshold();
+        solution.objectives()[2] = objectiveCalculator.countClassRfcOverThreshold();
 
         // WMC
-        solution.objectives()[3] = objectiveCalculator.countClassWmcOverThreshold();
+        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
         // CBO
-        solution.objectives()[4] = objectiveCalculator.countClassCboOverThreshold();
+        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
         // RFC
-        solution.objectives()[5] = objectiveCalculator.countClassRfcOverThreshold();
+        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
 
         return solution;
     }

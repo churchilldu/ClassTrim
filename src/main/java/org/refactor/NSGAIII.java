@@ -1,6 +1,8 @@
 package org.refactor;
 
-import org.refactor.common.DataSetConst;
+import org.refactor.common.DatasetEnum;
+import org.refactor.model.JavaProject;
+import org.refactor.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;
@@ -23,7 +25,9 @@ import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
-        Problem<IntegerSolution> problem = new RefactoringProblem(DataSetConst.ANT_7);
+        String datasetName = args[0];
+        DatasetEnum dataset = DatasetEnum.of(datasetName);
+        Problem<IntegerSolution> problem = new RefactoringProblem(dataset);
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;
@@ -61,10 +65,11 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         long computingTime = algorithmRunner.getComputingTime();
 
         new SolutionListOutput(population)
-                .setVarFileOutputContext(new DefaultFileOutputContext("VAR.csv", ","))
-                .setFunFileOutputContext(new DefaultFileOutputContext("FUN.csv", ","))
+                .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "VAR.csv", ","))
+                .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "FUN.csv", ","))
                 .print();
-
+        JavaProject project = JavaProject.load(datasetName);
+        new RefactorOutput(project, population).diffOutput();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");

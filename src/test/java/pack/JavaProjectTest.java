@@ -1,8 +1,7 @@
 package pack;
 
 import org.junit.Test;
-import org.refactor.common.DataSet;
-import org.refactor.common.Threshold;
+import org.refactor.common.DatasetEnum;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -18,12 +17,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class JavaProjectTest {
-    private static final DataSet TEST_DATA = new DataSet(
-            "pack",
-            "",
-            "target/test-classes/pack",
-            new Threshold(0, 1, 1)
-    );
     public static final String CLASS_A = "pack/A";
     public static final String CLASS_B = "pack/B";
     public static final String CLASS_C = "pack/C";
@@ -43,7 +36,7 @@ public class JavaProjectTest {
     private static final Map<JavaClass, Integer> rfcOfClass;
 
     static {
-        project = new JavaProject(TEST_DATA);
+        project = new JavaProject(DatasetEnum.TEST);
         project.start();
         cboOfClass = MetricUtils.getCboOfClass(convertToMap(project));
         rfcOfClass = MetricUtils.getRfcOfClass(convertToMap(project));
@@ -113,6 +106,15 @@ public class JavaProjectTest {
     public void testRfc02() {
         this.doTestRfc(CLASS_M);
     }
+
+    @Test
+    public void testSerialization() {
+        project.save();
+        JavaProject deserialized = JavaProject.load(DatasetEnum.TEST.getName());
+        assertEquals(project, deserialized);
+    }
+
+
 
     private void doTestRfc(String className) {
         this.doTest(className, "RFC", rfcOfClass);

@@ -3,7 +3,7 @@ package org.refactor.model;
 import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
-import org.refactor.common.DataSet;
+import org.refactor.common.DatasetEnum;
 import org.refactor.common.Threshold;
 import org.refactor.util.ASMUtils;
 import org.refactor.util.FileUtils;
@@ -19,11 +19,11 @@ import java.util.stream.Collectors;
 
 public class JavaProject extends JavaObject {
     private final List<JavaClass> classList = new ArrayList<>();
-    private final DataSet dataSet;
+    private final transient DatasetEnum dataSet;
     private List<JavaClass> classToRefactor;
     private List<JavaMethod> methodsToRefactor;
 
-    public JavaProject(DataSet dataSet) {
+    public JavaProject(DatasetEnum dataSet) {
         super(dataSet.getName());
         this.dataSet = dataSet;
     }
@@ -38,9 +38,9 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    public void save(String fileName) {
+    public void save() {
         try {
-            File file = new File(fileName);
+            File file = new File(this.getName());
             if (file.isDirectory()) {
                 throw new IllegalArgumentException("cannot overwrite directory");
             }
@@ -120,7 +120,6 @@ public class JavaProject extends JavaObject {
         return Collections.unmodifiableList(classToRefactor);
     }
 
-    // todo Should I include all methods from class that can be refactored.
     public List<JavaMethod> getMethodsToRefactor() {
         if (methodsToRefactor == null) {
             methodsToRefactor = this.getClassCanRefactor().stream()

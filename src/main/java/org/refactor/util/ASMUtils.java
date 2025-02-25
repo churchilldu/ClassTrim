@@ -4,7 +4,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.refactor.common.DataSetConst;
+import org.refactor.common.DatasetConst;
 import org.refactor.model.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,7 +99,7 @@ public class ASMUtils {
 
     public static void loadMethodsToClass(JavaClass clazz) {
         try {
-            Class<?> aClass = DataSetConst.urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
+            Class<?> aClass = DatasetConst.urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
             for (Method m : aClass.getMethods()) {
                 clazz.createMethod(m.getName(), Type.getMethodDescriptor(m));
             }
@@ -112,7 +112,7 @@ public class ASMUtils {
                                      String methodName,
                                      String descriptor) {
         try {
-            Class<?> superClass = DataSetConst.urlCL.loadClass(Type.getObjectType(superName).getClassName());
+            Class<?> superClass = DatasetConst.urlCL.loadClass(Type.getObjectType(superName).getClassName());
             for (Method m : superClass.getMethods()) {
                 if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
                     return true;
