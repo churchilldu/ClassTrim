@@ -52,7 +52,8 @@ public class MetricUtils {
 
     public static Map<JavaClass, Integer> getWmcOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
         return methodsByClass.entrySet().stream().collect(
-                Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().size()));
+                Collectors.toMap(Map.Entry::getKey,
+                        entry -> (int) entry.getValue().stream().filter(Predicate.not(JavaMethod::canRefactor)).count()));
     }
 
     public static Map<JavaClass, Integer> getCboOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
@@ -62,6 +63,7 @@ public class MetricUtils {
 
     private static int computeCbo(JavaClass clazz, List<JavaMethod> methods) {
         List<JavaClass> coupling = methods.stream()
+                .filter(Predicate.not(JavaMethod::canRefactor))
                 .map(MetricUtils::getCouplingOfMethod)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
@@ -95,6 +97,7 @@ public class MetricUtils {
     private static int computeRfc(List<JavaMethod> methods) {
         return (int) Stream.concat(methods.stream(),
                         methods.stream().map(JavaMethod::getInvokeMethods).flatMap(List::stream))
+                .filter(Predicate.not(JavaMethod::canRefactor))
                 .distinct()
                 .count();
     }

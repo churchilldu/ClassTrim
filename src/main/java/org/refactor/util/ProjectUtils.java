@@ -2,6 +2,7 @@ package org.refactor.util;
 
 
 import org.refactor.common.DatasetConst;
+import org.refactor.common.DatasetEnum;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -17,6 +18,18 @@ import java.util.stream.Stream;
 
 public class ProjectUtils {
     private static final Logger logger = LoggerFactory.getLogger(ProjectUtils.class);
+
+    public static void main(String[] argv) {
+        JavaProject project = new JavaProject(DatasetEnum.ANT_7);
+        project.start();
+        Map<JavaClass, List<JavaMethod>> map = convertToMap(project);
+        Map<JavaClass, Integer> wmcOfClass = MetricUtils.getWmcOfClass(map);
+        Map<JavaClass, Integer> cboOfClass = MetricUtils.getCboOfClass(map);
+        Map<JavaClass, Integer> rfcOfClass = MetricUtils.getRfcOfClass(map);
+        FileUtils.write("fixed-wmc-ant7.csv", "wmc", wmcOfClass);
+        FileUtils.write("fixed-cbo-ant7.csv", "cbo", cboOfClass);
+        FileUtils.write("fixed-rfc-ant7.csv", "rfc", rfcOfClass);
+    }
 
     private static Set<JavaMethod> getResponseSetOf(JavaProject project, String className) {
         JavaClass clazz = project.findClass(className.replace(".", "/")).get();

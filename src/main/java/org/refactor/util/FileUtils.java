@@ -66,9 +66,10 @@ public class FileUtils {
         return false;
     }
 
-    public static void write(String file, Map<JavaClass, Integer> metricByClass) {
+    public static void write(String file, String metricName, Map<JavaClass, Integer> metricByClass) {
         Path path = Paths.get(file);
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            writer.write("class" + ", " + metricName);
             for (Map.Entry<JavaClass, Integer> entry : metricByClass.entrySet()) {
                 String className = entry.getKey().toString();
                 Integer metric = entry.getValue();
