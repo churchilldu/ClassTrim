@@ -85,8 +85,7 @@ public class ASMUtils {
 
     @SuppressWarnings("BooleanMethodIsAlwaysInverted")
     public static boolean isConstructor(String name) {
-        return StringUtils.equals(name, "<init>")
-                || StringUtils.equals(name, "<clinit>");
+        return StringUtils.equals(name, "<init>") || StringUtils.equals(name, "<clinit>");
     }
 
     public static boolean isFromJava(String name) {

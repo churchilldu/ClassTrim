@@ -38,8 +38,7 @@ public class RefactorOutput {
         int seq = 1;
         for (IntegerSolution solution : this.solutions) {
             List<Triple<JavaMethod, JavaClass, JavaClass>> diff = new ArrayList<>();
-            convertSolution(this.project, solution.variables()).forEach(
-                    (clazz, methods) -> {
+            convertSolution(this.project, solution.variables()).forEach((clazz, methods) -> {
                         for (JavaMethod method : methods) {
                             if (!clazz.equals(method.getClazz())) {
                                 diff.add(new ImmutableTriple<>(method, method.getClazz(), clazz));
@@ -47,7 +46,7 @@ public class RefactorOutput {
                         }
                     }
             );
-            FileUtils.write(project.getName() + "-" + "diff" + "-" + seq, diff);
+            FileUtils.writeDiff(project.getName() + "-" + "diff" + "-" + seq, diff);
             seq++;
         }
     }

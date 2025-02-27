@@ -52,7 +52,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     }
 
     private void initFixedAssignments() {
-        List<JavaClass> classList = project.getClassList();
+        List<JavaClass> classList = project.getClassCanRefactor();
         List<JavaMethod> methodList = project.getMethodsToRefactor();
         fixedMethods = new int[methodList.size()];
 

@@ -1,5 +1,6 @@
 package org.refactor.util;
 
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -79,18 +80,22 @@ public class FileUtils {
         }
     }
 
-    public static void write(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
-        Path path = Paths.get(file + ".tsv");
+    public static final char TAB = '\t';
+
+    public static void writeDiff(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
+        Path path = Paths.get(file + ".csv");
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+            writer.write("Method" + TAB + "From" + TAB + "To");
             for (Triple<JavaMethod, JavaClass, JavaClass> diff : diffs) {
                 String method = diff.getLeft().toString();
                 String originalClass = diff.getMiddle().toString();
                 String newClass = diff.getRight().toString();
-                writer.write(method + " " + originalClass + " " + newClass);
+                writer.write(method + TAB + originalClass + TAB + newClass);
                 writer.newLine();
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
+
 }
