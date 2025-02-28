@@ -21,6 +21,10 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
@@ -73,5 +77,27 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
+
+        notifyMyself();
+    }
+
+    @SuppressWarnings("CallToPrintStackTrace")
+    public static void notifyMyself() {
+          try {
+            URL url = new URL("https://ntfy.sh/codeRefactoring");
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestMethod("POST");
+            conn.setDoOutput(true);
+            conn.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
+            String message = "Finished, pray 😀";
+            try (OutputStream os = conn.getOutputStream()) {
+                os.write(message.getBytes(StandardCharsets.UTF_8));
+            }
+            int responseCode = conn.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+            conn.disconnect();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
