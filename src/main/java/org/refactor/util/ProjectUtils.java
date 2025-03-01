@@ -1,7 +1,6 @@
 package org.refactor.util;
 
 
-import org.refactor.common.DatasetConst;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;

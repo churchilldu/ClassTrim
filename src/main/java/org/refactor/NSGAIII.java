@@ -69,8 +69,8 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         long computingTime = algorithmRunner.getComputingTime();
 
         new SolutionListOutput(population)
-                .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "VAR.csv", ","))
-                .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "FUN.csv", ","))
+                .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "VAR.csv", ","))
+                .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "FUN.csv", ","))
                 .print();
         JavaProject project = JavaProject.load(datasetName);
         new RefactorOutput(project, population).diffOutput();

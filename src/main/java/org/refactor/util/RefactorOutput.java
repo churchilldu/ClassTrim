@@ -13,8 +13,9 @@ import java.util.List;
 import java.util.Map;
 
 public class RefactorOutput {
-    private JavaProject project;
-    private List<IntegerSolution> solutions;
+    private final JavaProject project;
+    private final List<IntegerSolution> solutions;
+
     public RefactorOutput(JavaProject project, List<IntegerSolution> solutions) {
         this.project = project;
         this.solutions = solutions;
