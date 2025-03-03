@@ -115,19 +115,22 @@ public class JavaProject extends JavaObject {
         if (classToRefactor == null) {
             classToRefactor = this.classList.stream()
                     .filter(JavaClass::canRefactor)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toUnmodifiableList());
         }
-        return Collections.unmodifiableList(classToRefactor);
+        return classToRefactor;
     }
 
+    /**
+     * The Declaring methods of class that can be refactored.
+     */
     public List<JavaMethod> getMethodsToRefactor() {
         if (methodsToRefactor == null) {
             methodsToRefactor = this.getClassCanRefactor().stream()
                     .map(JavaClass::getDeclaredMethods)
                     .flatMap(List::stream)
-                    .collect(Collectors.toList());
+                    .collect(Collectors.toUnmodifiableList());
         }
-        return Collections.unmodifiableList(methodsToRefactor);
+        return methodsToRefactor;
     }
 
     public Threshold getThreshold() {
