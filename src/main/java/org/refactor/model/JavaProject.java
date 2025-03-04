@@ -120,14 +120,12 @@ public class JavaProject extends JavaObject {
         return classToRefactor;
     }
 
-    /**
-     * The Declaring methods of class that can be refactored.
-     */
-    public List<JavaMethod> getMethodsToRefactor() {
+    public List<JavaMethod> getMethodsCanRefactor() {
         if (methodsToRefactor == null) {
             methodsToRefactor = this.getClassCanRefactor().stream()
                     .map(JavaClass::getDeclaredMethods)
                     .flatMap(List::stream)
+                    .filter(JavaMethod::canRefactor)
                     .collect(Collectors.toUnmodifiableList());
         }
         return methodsToRefactor;

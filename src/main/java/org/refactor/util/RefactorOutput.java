@@ -22,7 +22,7 @@ public class RefactorOutput {
     }
 
     public static Map<JavaClass, List<JavaMethod>> convertSolution(JavaProject project, List<Integer> solution) {
-        List<JavaMethod> methodList = project.getMethodsToRefactor();
+        List<JavaMethod> methodList = project.getMethodsCanRefactor();
         List<JavaClass> classList = project.getClassCanRefactor();
         Map<JavaClass, List<JavaMethod>> methodsByClass = new HashMap<>();
         for (int methodId = 0; methodId < solution.size(); methodId++) {

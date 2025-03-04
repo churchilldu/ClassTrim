@@ -28,14 +28,18 @@ public class JavaMethod extends JavaObject {
         this.descriptor = descriptor;
     }
 
+    private Boolean canRefactor = null;
     public boolean canRefactor() {
-        return this.clazz != null
-                && this.clazz.canRefactor()
-                && ASMUtils.isPublic(access)
-                && !ASMUtils.isAbstract(access)
-                && !ASMUtils.isConstructor(this.getName())
-                && !isGetterOrSetter
-                && !isOverride();
+        if (this.canRefactor == null) {
+            this.canRefactor = this.clazz != null
+                    && this.clazz.canRefactor()
+                    && ASMUtils.isPublic(access)
+                    && !ASMUtils.isAbstract(access)
+                    && !ASMUtils.isConstructor(this.getName())
+                    && !isGetterOrSetter
+                    && !isOverride();
+        }
+        return this.canRefactor;
     }
 
     private boolean isOverride() {

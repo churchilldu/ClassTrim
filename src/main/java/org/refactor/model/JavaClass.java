@@ -5,6 +5,8 @@ import org.objectweb.asm.Type;
 import org.refactor.util.ASMUtils;
 
 import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public class JavaClass extends JavaObject {
     private final JavaProject project;
@@ -29,13 +31,29 @@ public class JavaClass extends JavaObject {
         return Collections.unmodifiableList(declaredMethods);
     }
 
+    private List<JavaMethod> fixedMethods;
+    public List<JavaMethod> getFixedMethods() {
+        if (this.fixedMethods == null) {
+        this.fixedMethods = this.getDeclaredMethods().stream()
+                .filter(Predicate.not(JavaMethod::canRefactor))
+                .collect(Collectors.toUnmodifiableList());
+        }
+        return this.fixedMethods;
+    }
+
+
+    private Boolean canRefactor = null;
+
     public boolean canRefactor() {
-        return this.project != null
-                && ASMUtils.isPublic(access)
-                && !ASMUtils.isAbstract(access)
-                && !ASMUtils.isEnum(access)
-                && !ASMUtils.isInnerClass(this.getName())
-                && !ASMUtils.isInterface(access);
+        if (this.canRefactor == null) {
+            this.canRefactor = this.project != null
+                    && ASMUtils.isPublic(access)
+                    && !ASMUtils.isAbstract(access)
+                    && !ASMUtils.isEnum(access)
+                    && !ASMUtils.isInnerClass(this.getName())
+                    && !ASMUtils.isInterface(access);
+        }
+        return this.canRefactor;
     }
 
     @Override

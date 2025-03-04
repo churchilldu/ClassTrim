@@ -4,22 +4,22 @@ import org.refactor.common.DatasetEnum;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
-import org.refactor.util.ObjectiveCalculator;
+import org.refactor.util.MetricUtils;
 import org.refactor.util.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.IntStream;
 
 
 public class RefactoringProblem extends AbstractIntegerProblem {
     private final JavaProject project;
     private final ObjectiveCalculator objectiveCalculator;
-    private int[] fixedMethods;
 
     public RefactoringProblem(DatasetEnum dataSet) {
         this.project = new JavaProject(dataSet);
@@ -27,7 +27,6 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         this.project.start();
         this.project.save();
         this.setBounds();
-        this.initFixedAssignments();
 
         JMetalLogger.logger.info("Original number of class exceeds WMC threshold = " + ProjectUtils.countClassWmcOverThreshold(project));
         JMetalLogger.logger.info("Original number of class exceeds CBO threshold = " + ProjectUtils.countClassCboOverThreshold(project));
@@ -35,7 +34,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     }
 
     private void setBounds() {
-        int numberOfMethod = project.getMethodsToRefactor().size();
+        int numberOfMethod = project.getMethodsCanRefactor().size();
         int numberOfClass = project.getClassCanRefactor().size();
 
         List<Integer> lowerLimit = new ArrayList<>(numberOfMethod);
@@ -49,24 +48,6 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
         JMetalLogger.logger.info("Number of class = " + numberOfClass);
         JMetalLogger.logger.info("Number of method = " + numberOfMethod);
-    }
-
-    private void initFixedAssignments() {
-        List<JavaClass> classList = project.getClassCanRefactor();
-        List<JavaMethod> methodList = project.getMethodsToRefactor();
-        fixedMethods = new int[methodList.size()];
-
-        for (int i = 0; i < methodList.size(); i++) {
-            JavaMethod m = methodList.get(i);
-            if (m.canRefactor()) {
-                fixedMethods[i] = -1;
-            } else {
-                fixedMethods[i] = classList.indexOf(m.getClazz());
-            }
-        }
-
-        JMetalLogger.logger.info("Number of method to refactor = " +
-                Arrays.stream(fixedMethods).filter(i -> i < 0).count());
     }
 
     @Override
@@ -84,15 +65,13 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         return "Method refactoring";
     }
 
-
-    @Override
     public IntegerSolution createSolution() {
         IntegerSolution solution = super.createSolution();
 
+        List<JavaClass> classList = project.getClassCanRefactor();
+        List<JavaMethod> methodList = project.getMethodsCanRefactor();
         for (int i = 0; i < numberOfVariables(); i++) {
-            if (fixedMethods[i] > 0) {
-                solution.variables().set(i, fixedMethods[i]);
-            }
+            solution.variables().set(i, classList.indexOf(methodList.get(i).getClazz()));
         }
 
         return solution;
@@ -118,5 +97,49 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         return solution;
     }
 
+    private static class ObjectiveCalculator {
+        private Map<JavaClass, List<JavaMethod>> methodsByClass;
+        private final JavaProject project;
+
+        private ObjectiveCalculator(JavaProject project) {
+            this.project = project;
+        }
+
+        private void setSolution(List<Integer> solution) {
+            List<JavaMethod> methodList = project.getMethodsCanRefactor();
+            List<JavaClass> classList = project.getClassCanRefactor();
+            methodsByClass = new HashMap<>();
+            for (int methodId = 0; methodId < solution.size(); methodId++) {
+                Integer classId = solution.get(methodId);
+                methodsByClass.computeIfAbsent(
+                        classList.get(classId),
+                        k -> new ArrayList<>()).add(methodList.get(methodId));
+            }
+            methodsByClass.forEach((clazz, methods) -> methods.addAll(clazz.getFixedMethods()));
+        }
+
+        private long sumClassWmcOverThreshold() {
+            return MetricUtils.sumClassWmcOverThreshold(methodsByClass, project.getThreshold().getWMC());
+        }
+
+        private long sumClassCboOverThreshold() {
+            return MetricUtils.sumClassCboOverThreshold(methodsByClass, project.getThreshold().getCBO());
+        }
+
+        private long sumClassRfcOverThreshold() {
+            return MetricUtils.sumClassRfcOverThreshold(methodsByClass, project.getThreshold().getRFC());
+        }
+        private long countClassWmcOverThreshold() {
+            return MetricUtils.countClassWmcOverThreshold(methodsByClass, project.getThreshold().getWMC());
+        }
+
+        private long countClassCboOverThreshold() {
+            return MetricUtils.countClassCboOverThreshold(methodsByClass, project.getThreshold().getCBO());
+        }
+
+        private long countClassRfcOverThreshold() {
+            return MetricUtils.countClassRfcOverThreshold(methodsByClass, project.getThreshold().getRFC());
+        }
+    }
 }
 
