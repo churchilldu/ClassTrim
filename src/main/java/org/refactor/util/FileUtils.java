@@ -18,6 +18,7 @@ import java.util.*;
 public class FileUtils {
     public static final List<String> IGNORED_DIRECTORIES = new ArrayList<>();
     private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
+    public static final char TAB = '\t';
 
     //Initialize ignored directories with .git.
     static {
@@ -65,13 +66,13 @@ public class FileUtils {
         return false;
     }
 
-    public static void write(String file, Map<JavaClass, Integer> metricByClass) {
+    public static void writeLog(String file, Map<String, Object> configs) {
         Path path = Paths.get(file);
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            for (Map.Entry<JavaClass, Integer> entry : metricByClass.entrySet()) {
-                String className = entry.getKey().toString();
-                Integer metric = entry.getValue();
-                writer.write(className + ", " + metric);
+            for (Map.Entry<String, Object> entry : configs.entrySet()) {
+                String key = entry.getKey();
+                Object value = entry.getValue();
+                writer.write(key + TAB + value);
                 writer.newLine();
             }
         } catch (IOException e) {
@@ -79,23 +80,51 @@ public class FileUtils {
         }
     }
 
-    public static final char TAB = '\t';
 
     public static void writeDiff(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
         Path path = Paths.get(file + ".tsv");
         try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
             writer.write("Method" + TAB + "From" + TAB + "To");
-            writer.newLine();
             for (Triple<JavaMethod, JavaClass, JavaClass> diff : diffs) {
-                String method = diff.getLeft().toString();
-                String originalClass = diff.getMiddle().toString();
-                String newClass = diff.getRight().toString();
-                writer.write(method + TAB + originalClass + TAB + newClass);
                 writer.newLine();
+                String method = diff.getLeft().toString();
+                String from = diff.getMiddle().toString();
+                String to = diff.getRight().toString();
+                writer.write(method + TAB + from + TAB + to);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
+    }
+
+    public static Path getOutputPath(String projectName) {
+        Path outputPath = createPath("output/" + projectName);
+        File[] files = outputPath.toFile().listFiles();
+        String pathId = String.valueOf(getPathId(files) + 1);
+        if (pathId.length() == 1) {
+            pathId = "0".concat(pathId);
+        }
+
+        return createPath(outputPath + "/" + pathId);
+    }
+
+    private static Path createPath(String path) {
+        Path projectPath = Paths.get(path);
+        try {
+            return Files.createDirectories(projectPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static int getPathId(File[] files) {
+        return Arrays.stream(files)
+                .map(File::getName)
+                .mapToInt(Integer::valueOf)
+                .max()
+                // why optionalInt map is a stream?
+                .orElse(0);
+
     }
 
 }

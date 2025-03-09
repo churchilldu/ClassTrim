@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+/**
+ * Method invocation and method use the global variable from other class.
+ */
 public class MethodInvocationVisitor extends ClassVisitor {
     private final JavaProject project;
     private JavaClass clazz;
@@ -40,6 +43,9 @@ public class MethodInvocationVisitor extends ClassVisitor {
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
+    /**
+     * Method Visitor, distinct from asm's.
+     */
     private class MV extends MethodVisitor {
         private MV() {
             super(Opcodes.ASM9);

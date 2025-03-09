@@ -14,6 +14,10 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Class visitor (clazz not class is to distinct from asm's).
+ *
+ */
 public class ClazzVisitor extends ClassVisitor {
     private final Logger logger = LoggerFactory.getLogger(ClazzVisitor.class);
 

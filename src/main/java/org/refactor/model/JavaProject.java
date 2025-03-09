@@ -18,8 +18,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class JavaProject extends JavaObject {
+    private static final long serialVersionUID = 3242194786299334773L;
     private final List<JavaClass> classList = new ArrayList<>();
-    private final transient DatasetEnum dataSet;
+    private final DatasetEnum dataSet;
     private List<JavaClass> classToRefactor;
     private List<JavaMethod> methodsToRefactor;
 
@@ -52,7 +53,7 @@ public class JavaProject extends JavaObject {
         }
     }
 
-    public void start() {
+    public void parse() {
         String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
         Arrays.stream(allClassFiles).forEach(this::parseMethods);
         Arrays.stream(allClassFiles).forEach(this::parseInheritance);

@@ -37,7 +37,7 @@ public class JavaProjectTest {
 
     static {
         project = new JavaProject(DatasetEnum.TEST);
-        project.start();
+        project.parse();
         cboOfClass = MetricUtils.getCboOfClass(convertToMap(project));
         rfcOfClass = MetricUtils.getRfcOfClass(convertToMap(project));
     }

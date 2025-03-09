@@ -10,6 +10,7 @@ import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,10 +23,15 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final ObjectiveCalculator objectiveCalculator;
 
     public RefactoringProblem(DatasetEnum dataSet) {
-        this.project = new JavaProject(dataSet);
+        File file = new File(dataSet.getName());
+        if (file.exists()) {
+            this.project = JavaProject.load(dataSet.getName());
+        } else {
+            this.project = new JavaProject(dataSet);
+            this.project.parse();
+            this.project.save();
+        }
         objectiveCalculator = new ObjectiveCalculator(project);
-        this.project.start();
-        this.project.save();
         this.setBounds();
 
         JMetalLogger.logger.info("Original number of class exceeds WMC threshold = " + ProjectUtils.countClassWmcOverThreshold(project));
@@ -65,6 +71,10 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         return "Method refactoring";
     }
 
+    public JavaProject getProject() {
+        return this.project;
+    }
+
     public IntegerSolution createSolution() {
         IntegerSolution solution = super.createSolution();
 
@@ -87,6 +97,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         // RFC
         solution.objectives()[2] = objectiveCalculator.countClassRfcOverThreshold();
 
+        /* The following objectives is to guide algorithm to right direction. **/
         // WMC
         solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
         // CBO

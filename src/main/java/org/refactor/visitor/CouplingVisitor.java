@@ -11,6 +11,11 @@ import org.slf4j.LoggerFactory;
 
 import java.util.function.Predicate;
 
+/**
+ * Bind class with their super class and interface.
+ * Register class's field type.
+ * class's declaring methods' argument's type, return type and exception.
+ */
 public class CouplingVisitor extends ClassVisitor {
     private final JavaProject project;
     private JavaClass clazz;
@@ -53,6 +58,15 @@ public class CouplingVisitor extends ClassVisitor {
         return super.visitMethod(access, name, descriptor, signature, exceptions);
     }
 
+    private void registerFieldType(String descriptor) {
+        String className = ASMUtils.getFieldType(descriptor).getInternalName();
+        if (!ASMUtils.isPrimitiveType(className) && !ASMUtils.isFromJava(className)) {
+            project.findClass(className).ifPresentOrElse(clazz::registerFieldType,
+                    () -> clazz.registerFieldType(new JavaClass(className, null)));
+        }
+    }
+
+
     private void setSuperClass(JavaClass clazz, String className) {
         project.findClass(className).ifPresentOrElse(clazz::setSuperClass,
                 () -> clazz.setSuperClass(new JavaClass(className, null)));
@@ -80,14 +94,6 @@ public class CouplingVisitor extends ClassVisitor {
                 project.findClass(exception).ifPresentOrElse(e -> method.registerCoupling(e),
                         () -> method.registerCoupling(new JavaClass(exception, null)));
             }
-        }
-    }
-
-    private void registerFieldType(String descriptor) {
-        String className = ASMUtils.getFieldType(descriptor).getInternalName();
-        if (!ASMUtils.isPrimitiveType(className) && !ASMUtils.isFromJava(className)) {
-            project.findClass(className).ifPresentOrElse(clazz::registerFieldType,
-                    () -> clazz.registerFieldType(new JavaClass(className, null)));
         }
     }
 

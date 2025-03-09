@@ -321,7 +321,7 @@ class L0 {
     public void method_L0() {}
 }
 class L {
-    public static final Integer RFC = 3;
+    public static final Integer RFC = 8;
     public void method_L1() {
         new L0().method_L0();
         method_L2();

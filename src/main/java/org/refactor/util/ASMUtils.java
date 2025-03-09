@@ -16,6 +16,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/**
+ * Utils for org.objectweb.asm.
+ */
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
 
