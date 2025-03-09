@@ -4,12 +4,16 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.refactor.common.DatasetConst;
+import org.refactor.Config;
 import org.refactor.model.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.lang.reflect.Method;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +25,22 @@ import java.util.stream.Collectors;
  */
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
+
+    private static final URLClassLoader urlCL;
+
+    static {
+        try {
+            List<URL> urlList = new ArrayList<>();
+            for (String jar : FileUtils.getAllJarFiles(Config.MAVEN_REPO, Config.ROOT)) {
+                urlList.add(new File(jar).toURI().toURL());
+            }
+
+            urlCL = URLClassLoader.newInstance(urlList.toArray(new URL[0]));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
 
     public static String methodToString(String name, String descriptor) {
         String arguments = Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
@@ -101,7 +121,7 @@ public class ASMUtils {
 
     public static void loadMethodsToClass(JavaClass clazz) {
         try {
-            Class<?> aClass = DatasetConst.urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
+            Class<?> aClass = urlCL.loadClass(Type.getObjectType(clazz.getName()).getClassName());
             for (Method m : aClass.getMethods()) {
                 clazz.createMethod(m.getName(), Type.getMethodDescriptor(m));
             }
@@ -114,7 +134,7 @@ public class ASMUtils {
                                      String methodName,
                                      String descriptor) {
         try {
-            Class<?> superClass = DatasetConst.urlCL.loadClass(Type.getObjectType(superName).getClassName());
+            Class<?> superClass = urlCL.loadClass(Type.getObjectType(superName).getClassName());
             for (Method m : superClass.getMethods()) {
                 if (ASMUtils.isMethodEqual(m, methodName, descriptor)) {
                     return true;

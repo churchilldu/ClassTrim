@@ -1,6 +1,7 @@
 package org.refactor;
 
 import org.refactor.common.DatasetEnum;
+import org.refactor.util.NotifyUtils;
 import org.refactor.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
@@ -17,10 +18,6 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -79,26 +76,7 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
 
-        notifyMyself();
+        NotifyUtils.notifyMyself();
     }
 
-    @SuppressWarnings("CallToPrintStackTrace")
-    public static void notifyMyself() {
-          try {
-            URL url = new URL("https://ntfy.sh/codeRefactoring");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
-            String message = "Finished, pray 😀";
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(message.getBytes(StandardCharsets.UTF_8));
-            }
-            int responseCode = conn.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-            conn.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
 }

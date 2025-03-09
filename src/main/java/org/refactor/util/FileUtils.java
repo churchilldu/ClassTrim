@@ -1,6 +1,7 @@
 package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.refactor.Config;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
@@ -98,7 +99,7 @@ public class FileUtils {
     }
 
     public static Path getOutputPath(String projectName) {
-        Path outputPath = createPath("output/" + projectName);
+        Path outputPath = createPath(Config.OUTPUT_PATH + projectName);
         File[] files = outputPath.toFile().listFiles();
         String pathId = String.valueOf(getPathId(files) + 1);
         if (pathId.length() == 1) {

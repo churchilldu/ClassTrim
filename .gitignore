@@ -3,8 +3,10 @@ log/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+output/
 *.csv
 *.tsv
+Config.java
 
 ### IntelliJ IDEA ###
 .idea

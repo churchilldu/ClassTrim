@@ -1,6 +1,8 @@
 package org.refactor;
 
 import org.refactor.common.DatasetEnum;
+import org.refactor.util.NotifyUtils;
+import org.refactor.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;
@@ -18,11 +20,11 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class NSGAII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
@@ -46,7 +48,6 @@ public class NSGAII extends AbstractAlgorithmRunner {
                 new RankingAndCrowdingDistanceComparator<>());
 
         int populationSize = 100;
-        int maxIterations = 250;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIBuilder<>(problem, crossover, mutation, populationSize)
@@ -63,31 +64,19 @@ public class NSGAII extends AbstractAlgorithmRunner {
                 .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "VAR.csv", ","))
                 .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "FUN.csv", ","))
                 .print();
-//        new RefactorOutput(problem.getProject(), population).write();
+        Map<String, Object> configs = new HashMap<>();
+        configs.put("Algorithm", "NSGA2");
+        configs.put("Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
+        configs.put("Population size", populationSize);
+        configs.put("ComputingTime", computingTime);
+        new RefactorOutput(problem.getProject(), population, configs)
+                .write();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
 
-        notifyMyself();
+        NotifyUtils.notifyMyself();
     }
 
-    @SuppressWarnings("CallToPrintStackTrace")
-    public static void notifyMyself() {
-          try {
-            URL url = new URL("https://ntfy.sh/codeRefactoring");
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-            conn.setRequestProperty("Content-Type", "text/plain; charset=UTF-8");
-            String message = "Finished, pray 😀";
-            try (OutputStream os = conn.getOutputStream()) {
-                os.write(message.getBytes(StandardCharsets.UTF_8));
-            }
-            int responseCode = conn.getResponseCode();
-            System.out.println("Response Code: " + responseCode);
-            conn.disconnect();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
+
 }
