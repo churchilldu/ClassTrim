@@ -20,7 +20,7 @@ import org.uma.jmetal.util.errorchecking.JMetalException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,11 +64,12 @@ public class NSGAIII extends AbstractAlgorithmRunner {
 
         List<IntegerSolution> population = algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
-        Map<String, Object> configs = new HashMap<>();
+        Map<String, Object> configs = new LinkedHashMap<>();
         configs.put("Algorithm", "NSGA3");
         configs.put("Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
         configs.put("Population size", populationSize);
         configs.put("Iteration", maxIterations);
+        configs.put("Solutions", algorithm.result().size());
         configs.put("ComputingTime", computingTime);
         new RefactorOutput(problem.getProject(), population, configs)
                 .write();

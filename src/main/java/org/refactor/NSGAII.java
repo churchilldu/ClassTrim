@@ -22,7 +22,7 @@ import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -64,11 +64,12 @@ public class NSGAII extends AbstractAlgorithmRunner {
                 .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "VAR.csv", ","))
                 .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "FUN.csv", ","))
                 .print();
-        Map<String, Object> configs = new HashMap<>();
+        Map<String, Object> configs = new LinkedHashMap<>();
         configs.put("Algorithm", "NSGA2");
         configs.put("Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
         configs.put("Population size", populationSize);
         configs.put("ComputingTime", computingTime);
+        configs.put("Solutions", algorithm.result().size());
         new RefactorOutput(problem.getProject(), population, configs)
                 .write();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
