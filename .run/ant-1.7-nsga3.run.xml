@@ -1,8 +1,8 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="ant-1.6" type="Application" factoryName="Application" singleton="false">
+  <configuration default="false" name="ant-1.7-nsga3" type="Application" factoryName="Application" folderName="nsga3" singleton="false">
     <option name="MAIN_CLASS_NAME" value="org.refactor.NSGAIII" />
     <module name="RefactorByNSGA3" />
-    <option name="PROGRAM_PARAMETERS" value="ant-1.6" />
+    <option name="PROGRAM_PARAMETERS" value="ant-1.7" />
     <extension name="coverage">
       <pattern>
         <option name="PATTERN" value="org.refactor.*" />
