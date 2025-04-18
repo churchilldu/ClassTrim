@@ -1,6 +1,8 @@
 package org.refactor.model;
 
 
+import lombok.Getter;
+import lombok.Setter;
 import org.objectweb.asm.Type;
 import org.refactor.util.ASMUtils;
 
@@ -9,9 +11,12 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class JavaClass extends JavaObject {
+    @Getter
     private final JavaProject project;
+    @Setter
     private int access;
     private final List<JavaClass> fieldsType = new ArrayList<>();
+    @Setter
     private JavaClass superClass;
     private final List<JavaClass> interfaces = new ArrayList<>();
     private final List<JavaMethod> declaredMethods = new ArrayList<>();
@@ -61,10 +66,6 @@ public class JavaClass extends JavaObject {
         return Type.getObjectType(this.getName()).getClassName();
     }
 
-    public void setAccess(int access) {
-        this.access = access;
-    }
-
     public JavaMethod createMethod(String name, String descriptor) {
         JavaMethod method = new JavaMethod(this, name, descriptor);
         declaredMethods.add(method);
@@ -87,28 +88,8 @@ public class JavaClass extends JavaObject {
         return Optional.ofNullable(superClass);
     }
 
-    public void setSuperClass(JavaClass superClass) {
-        this.superClass = superClass;
-    }
-
     public List<JavaClass> getInterfaces() {
         return Collections.unmodifiableList(interfaces);
-    }
-
-    public JavaProject getProject() {
-        return project;
-    }
-
-    public boolean isInherited(JavaClass parent) {
-        JavaClass c = this;
-        while (c.getSuperClass().isPresent()) {
-            c = c.getSuperClass().get();
-            if (c.equals(parent)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     @Override

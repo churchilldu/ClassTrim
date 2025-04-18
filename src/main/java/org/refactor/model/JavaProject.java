@@ -15,6 +15,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class JavaProject extends JavaObject {
@@ -140,4 +141,13 @@ public class JavaProject extends JavaObject {
         return Collections.unmodifiableList(classList);
     }
 
+    /**
+     * Convert a JavaProject to a map with JavaClass and it's declaring methods.
+     * @return JavaClass and it's declaring methods.
+     */
+    public Map<JavaClass, List<JavaMethod>> toMap() {
+        return this.getClassCanRefactor()
+                .stream().unordered()
+                .collect(Collectors.toMap(Function.identity(), JavaClass::getDeclaredMethods));
+    }
 }

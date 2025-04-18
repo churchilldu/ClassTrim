@@ -1,7 +1,7 @@
 package org.refactor;
 
+import org.refactor.common.AlgorithmParameter;
 import org.refactor.common.DatasetEnum;
-import org.refactor.util.NotifyUtils;
 import org.refactor.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
@@ -17,14 +17,8 @@ import org.uma.jmetal.util.AbstractAlgorithmRunner;
 import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.errorchecking.JMetalException;
-import org.uma.jmetal.util.fileoutput.SolutionListOutput;
-import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 public class NSGAII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
@@ -47,10 +41,12 @@ public class NSGAII extends AbstractAlgorithmRunner {
         SelectionOperator<List<IntegerSolution>, IntegerSolution> selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
-        int populationSize = 100;
+        int populationSize = 500;
+        int maxEvaluations = 75000;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIBuilder<>(problem, crossover, mutation, populationSize)
+                        .setMaxEvaluations(maxEvaluations)
                         .build();
 
         JMetalLogger.logger.info("Population size = " + populationSize);
@@ -60,23 +56,13 @@ public class NSGAII extends AbstractAlgorithmRunner {
         List<IntegerSolution> population = algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
 
-        new SolutionListOutput(population)
-                .setVarFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "VAR.csv", ","))
-                .setFunFileOutputContext(new DefaultFileOutputContext(datasetName + "-" + "FUN.csv", ","))
-                .print();
-        Map<String, Object> configs = new LinkedHashMap<>();
-        configs.put("Algorithm", "NSGA2");
-        configs.put("Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
-        configs.put("Population size", populationSize);
-        configs.put("ComputingTime", computingTime);
-        configs.put("Solutions", algorithm.result().size());
-        new RefactorOutput(problem.getProject(), population, configs)
+        // generation = max evaluation / (number of objectives * population)
+        AlgorithmParameter nsga2 = new AlgorithmParameter("NSGA2", populationSize, maxEvaluations / (3 * populationSize));
+        new RefactorOutput(problem.getProject(), population, nsga2)
                 .write();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
-
-        NotifyUtils.notifyMyself();
     }
 
 

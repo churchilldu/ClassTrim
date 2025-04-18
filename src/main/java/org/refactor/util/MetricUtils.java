@@ -1,5 +1,6 @@
 package org.refactor.util;
 
+import org.apache.commons.lang3.tuple.Triple;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 
@@ -11,6 +12,14 @@ import java.util.stream.Stream;
 
 
 public class MetricUtils {
+    public static Map<JavaClass, Triple<Integer, Integer, Integer>> getMetricsOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
+        return methodsByClass.entrySet().stream()
+                .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey,
+                        entry -> Triple.of(entry.getValue().size(),
+                                computeCbo(entry.getKey(), entry.getValue()),
+                                computeRfc(entry.getValue()))));
+    }
+
     // WMC Weighted Method per Class
     public static long countClassWmcOverThreshold(Map<JavaClass, List<JavaMethod>> methodsByClass, int threshold) {
         return MetricUtils.getWmcOfClass(methodsByClass).values().stream().filter(

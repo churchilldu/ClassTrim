@@ -2,13 +2,18 @@ package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
+import org.refactor.Config;
+import org.refactor.common.AlgorithmParameter;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
+import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;
 import org.uma.jmetal.util.fileoutput.impl.DefaultFileOutputContext;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -16,17 +21,22 @@ import java.util.Map;
 
 public class RefactorOutput {
     private final JavaProject project;
+    private final String projectName;
     private final List<IntegerSolution> solutions;
-    private final String outputPath;
-    private final Map<String, Object> configs;
+    private final String folderId;
+    private final Path outputPath;
+    private final AlgorithmParameter parameter;
 
     public RefactorOutput(JavaProject project,
                           List<IntegerSolution> solutions,
-                          Map<String, Object> configs) {
+                          AlgorithmParameter parameter) {
         this.project = project;
+        this.projectName = project.getName();
         this.solutions = solutions;
-        this.outputPath = FileUtils.getOutputPath(project.getName()) + "/";
-        this.configs = configs;
+        this.folderId = FileUtils.getFolderId(projectName);
+        this.outputPath = Paths.get(Config.OUTPUT_FOLDER, projectName, folderId);
+        FileUtils.createDir(outputPath);
+        this.parameter = parameter;
     }
 
     public static Map<JavaClass, List<JavaMethod>> convertSolution(JavaProject project, List<Integer> solution) {
@@ -35,8 +45,7 @@ public class RefactorOutput {
         Map<JavaClass, List<JavaMethod>> methodsByClass = new HashMap<>();
         for (int methodId = 0; methodId < solution.size(); methodId++) {
             Integer classId = solution.get(methodId);
-            methodsByClass.computeIfAbsent(
-                    classList.get(classId),
+            methodsByClass.computeIfAbsent(classList.get(classId),
                     k -> new ArrayList<>()).add(methodList.get(methodId));
         }
 
@@ -44,9 +53,25 @@ public class RefactorOutput {
     }
 
     public void write() {
-        resultOutput();
+        algorithmResultOutput();
         solutionOutput();
-        configOutput();
+        metricsOutput();
+    }
+
+    private void metricsOutput() {
+        Map<JavaClass, List<JavaMethod>> before = this.project.toMap();
+        int seq = 1;
+        for (IntegerSolution solution : this.solutions) {
+            Map<JavaClass, List<JavaMethod>> after = convertSolution(this.project, solution.variables());
+            FileUtils.writeMetrics(getMetriceFilePath(seq),
+                    MetricUtils.getMetricsOfClass(before), MetricUtils.getMetricsOfClass(after));
+            seq++;
+        }
+    }
+
+    private Path getMetriceFilePath(int seq) {
+        return Paths.get(outputPath.toString(), projectName + "-" + "metrics" + "-" + String.format("%02d", seq)
+                + ".tsv");
     }
 
     private void solutionOutput() {
@@ -62,21 +87,32 @@ public class RefactorOutput {
                         }
                     }
             );
-            FileUtils.writeDiff(outputPath + project.getName() + "-" + "diff" + "-" + seq, diff);
+            FileUtils.writeDiff(this.getDiffFilePath(seq), diff);
             seq++;
         }
     }
 
-    private void resultOutput() {
-        new SolutionListOutput(solutions)
-                .setVarFileOutputContext(new DefaultFileOutputContext(
-                        outputPath + project.getName() + "-" + "VAR.csv", ","))
-                .setFunFileOutputContext(new DefaultFileOutputContext(
-                        outputPath + project.getName() + "-" + "FUN.csv", ","))
-                .print();
+    private Path getDiffFilePath(int seq) {
+        return Paths.get(outputPath.toString(), projectName + "-" + "diff" + "-" + String.format("%02d", seq)
+                + ".tsv");
     }
 
-    private void configOutput() {
-        FileUtils.writeLog(outputPath + "log.txt", configs);
+
+    @SuppressWarnings("rawtypes")
+    // Append population size, generation, algorithm name, wmc, cbo, rfc, folderName.
+    private void algorithmResultOutput() {
+        Triple[] objectives = solutions.stream()
+                .map(Solution::objectives)
+                .map(o -> Triple.of(o[0], o[1], o[2]))
+                .toArray(Triple[]::new);
+        FileUtils.writeSummary(Paths.get(Config.OUTPUT_FOLDER, projectName, projectName + "-" + "summary.tsv"),
+                parameter, objectives, folderId);
+
+        new SolutionListOutput(solutions)
+                .setVarFileOutputContext(new DefaultFileOutputContext(
+                        outputPath + "/" + projectName + "-" + "VAR.csv", ","))
+                .setFunFileOutputContext(new DefaultFileOutputContext(
+                        outputPath + "/" + projectName + "-" + "FUN.csv", ","))
+                .print();
     }
 }

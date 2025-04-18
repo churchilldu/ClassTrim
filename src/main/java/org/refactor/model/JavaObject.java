@@ -1,10 +1,12 @@
 package org.refactor.model;
 
+import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Getter
 public abstract class JavaObject implements Serializable {
     private static final long serialVersionUID = 1423480912791753005L;
 
@@ -12,10 +14,6 @@ public abstract class JavaObject implements Serializable {
 
     public JavaObject(String name) {
         this.name = name;
-    }
-
-    public String getName() {
-        return name;
     }
 
     @Override

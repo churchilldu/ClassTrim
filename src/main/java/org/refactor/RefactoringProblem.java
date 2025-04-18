@@ -1,5 +1,6 @@
 package org.refactor;
 
+import lombok.Getter;
 import org.refactor.common.DatasetEnum;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -19,6 +20,7 @@ import java.util.stream.IntStream;
 
 
 public class RefactoringProblem extends AbstractIntegerProblem {
+    @Getter
     private final JavaProject project;
     private final ObjectiveCalculator objectiveCalculator;
 
@@ -58,7 +60,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
     @Override
     public int numberOfObjectives() {
-        return 6;
+        return 3;
     }
 
     @Override
@@ -69,10 +71,6 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     @Override
     public String name() {
         return "Method refactoring";
-    }
-
-    public JavaProject getProject() {
-        return this.project;
     }
 
     public IntegerSolution createSolution() {
@@ -99,11 +97,11 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
         /* The following objectives is to guide algorithm to right direction. **/
         // WMC
-        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
+//        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
         // CBO
-        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
+//        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
         // RFC
-        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
+//        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
 
         return solution;
     }

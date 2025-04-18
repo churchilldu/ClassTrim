@@ -2,6 +2,7 @@ package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.refactor.Config;
+import org.refactor.common.AlgorithmParameter;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
@@ -14,12 +15,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.*;
 
 public class FileUtils {
     public static final List<String> IGNORED_DIRECTORIES = new ArrayList<>();
-    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
     public static final char TAB = '\t';
+    private static final Logger log = LoggerFactory.getLogger(FileUtils.class);
 
     //Initialize ignored directories with .git.
     static {
@@ -45,7 +47,7 @@ public class FileUtils {
         return getAllFiles(path, "class");
     }
 
-    private static String[] getAllFiles(String path, String ending){
+    private static String[] getAllFiles(String path, String ending) {
         try {
             return Files.walk(Paths.get(path))
                     .filter(Files::isRegularFile)
@@ -53,7 +55,7 @@ public class FileUtils {
                     .filter(x -> x.toAbsolutePath().toString().toLowerCase().endsWith(ending))
                     .map(x -> x.toAbsolutePath().toString())
                     .toArray(String[]::new);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -67,24 +69,49 @@ public class FileUtils {
         return false;
     }
 
-    public static void writeLog(String file, Map<String, Object> configs) {
-        Path path = Paths.get(file);
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
-            for (Map.Entry<String, Object> entry : configs.entrySet()) {
-                String key = entry.getKey();
-                Object value = entry.getValue();
-                writer.write(key + TAB + value);
+    /**
+     * Write the metrics of class that can be refactored before and after refactoring to a given file.
+     *
+     * @param file   File name that is going to be written.
+     * @param before JavaClass with its metrics before refactor.
+     * @param after  JavaClass with its metrics after refactor.
+     */
+    @SuppressWarnings("ConcatenationWithEmptyString")
+    public static void writeMetrics(Path file,
+                                    Map<JavaClass, Triple<Integer, Integer, Integer>> before,
+                                    Map<JavaClass, Triple<Integer, Integer, Integer>> after) {
+        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
+            writer.write("" + TAB +
+                    "WMC" + TAB + "" + TAB + "" + TAB +
+                    "CBO" + TAB + "" + TAB + "" + TAB +
+                    "RFC" + TAB + "" + TAB + "" + TAB);
+            writer.newLine();
+            writer.write("Class" + TAB +
+                    "before" + TAB + "after" + TAB + "delta" + TAB +
+                    "before" + TAB + "after" + TAB + "delta" + TAB +
+                    "before" + TAB + "after" + TAB + "delta" + TAB);
+            for (Map.Entry<JavaClass, Triple<Integer, Integer, Integer>> entry : after.entrySet()) {
+                JavaClass clazz = entry.getKey();
+                Triple<Integer, Integer, Integer> metrics = entry.getValue();
                 writer.newLine();
+                Integer metric1After = metrics.getLeft();
+                Integer metric2After = metrics.getMiddle();
+                Integer metric3After = metrics.getRight();
+                Integer metric1Before = before.get(clazz).getLeft();
+                Integer metric2Before = before.get(clazz).getMiddle();
+                Integer metric3Before = before.get(clazz).getRight();
+                writer.write(clazz.toString() + TAB +
+                        metric1Before + TAB + metric1After + TAB + Math.subtractExact(metric1Before, metric1After) + TAB +
+                        metric2Before + TAB + metric2After + TAB + Math.subtractExact(metric2Before, metric2After) + TAB +
+                        metric3Before + TAB + metric3After + TAB + Math.subtractExact(metric3Before, metric3After) + TAB);
             }
         } catch (IOException e) {
             log.error(e.getMessage());
         }
     }
 
-
-    public static void writeDiff(String file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
-        Path path = Paths.get(file + ".tsv");
-        try (BufferedWriter writer = Files.newBufferedWriter(path, StandardCharsets.UTF_8)) {
+    public static void writeDiff(Path file, List<Triple<JavaMethod, JavaClass, JavaClass>> diffs) {
+        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8)) {
             writer.write("Method" + TAB + "From" + TAB + "To");
             for (Triple<JavaMethod, JavaClass, JavaClass> diff : diffs) {
                 writer.newLine();
@@ -98,34 +125,73 @@ public class FileUtils {
         }
     }
 
-    public static Path getOutputPath(String projectName) {
-        Path outputPath = createPath(Config.OUTPUT_PATH + projectName);
-        File[] files = outputPath.toFile().listFiles();
-        String pathId = String.valueOf(getPathId(files) + 1);
-        if (pathId.length() == 1) {
-            pathId = "0".concat(pathId);
+    // Append population size, generation, algorithm name, wmc, cbo, rfc, folderName.
+    @SuppressWarnings("rawtypes")
+    public static void writeSummary(Path file, AlgorithmParameter parameter, Triple[] objectives, String folder) {
+        if (!file.toFile().exists()) {
+            writeSummaryTitle(file);
         }
-
-        return createPath(outputPath + "/" + pathId);
-    }
-
-    private static Path createPath(String path) {
-        Path projectPath = Paths.get(path);
-        try {
-            return Files.createDirectories(projectPath);
+        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8,
+                StandardOpenOption.APPEND)) {
+            for (Triple objective : objectives) {
+                writer.newLine();
+                writer.write(parameter.toString() +
+                        objective.getLeft() + TAB + objective.getMiddle() + TAB + objective.getRight() + TAB +
+                        folder);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static int getPathId(File[] files) {
-        return Arrays.stream(files)
+
+    private static void writeSummaryTitle(Path file) {
+        try (BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8, StandardOpenOption.CREATE)) {
+            writer.write("Population size" + TAB + "Generation" + TAB + "Algorithm" + TAB
+                    + "WMC" + TAB + "CBO" + TAB + "RFC" + TAB + "Folder");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String getFolderId(String projectName) {
+        Path path = Paths.get(Config.OUTPUT_FOLDER, projectName);
+        createDir(path);
+        return getFolderName(path);
+    }
+
+    public static void createFile(Path path) {
+        try {
+            Files.createFile(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void createDir(Path path) {
+        try {
+            Files.createDirectories(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Get folder to be written into of directory.
+     *
+     * @param directory Look for the folder of the directory.
+     * @return Folder's name to be written into.
+     */
+    @SuppressWarnings("DataFlowIssue")
+    private static String getFolderName(Path directory) {
+        return Arrays.stream(directory.toFile().listFiles())
+                .filter(File::isDirectory)
                 .map(File::getName)
                 .mapToInt(Integer::valueOf)
                 .max()
-                // why optionalInt map is a stream?
-                .orElse(0);
-
+                .stream().mapToObj(i -> String.format("%02d", i + 1))
+                .findFirst()
+                .orElse("01");
     }
 
 }

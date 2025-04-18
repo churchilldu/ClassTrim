@@ -1,5 +1,7 @@
 package org.refactor.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.refactor.util.ASMUtils;
 
 import java.util.ArrayList;
@@ -8,8 +10,11 @@ import java.util.List;
 import java.util.Objects;
 
 public class JavaMethod extends JavaObject {
+    @Getter
     private final JavaClass clazz;
+    @Getter
     private final String descriptor;
+    @Setter
     private int access;
     private boolean isGetterOrSetter;
     /**
@@ -72,18 +77,6 @@ public class JavaMethod extends JavaObject {
         }
 
         return false;
-    }
-
-    public JavaClass getClazz() {
-        return clazz;
-    }
-
-    public void setAccess(int access) {
-        this.access = access;
-    }
-
-    public String getDescriptor() {
-        return descriptor;
     }
 
     public void setGetterOrSetter(boolean getterOrSetter) {

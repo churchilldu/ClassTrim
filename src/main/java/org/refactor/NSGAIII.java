@@ -1,7 +1,7 @@
 package org.refactor;
 
+import org.refactor.common.AlgorithmParameter;
 import org.refactor.common.DatasetEnum;
-import org.refactor.util.NotifyUtils;
 import org.refactor.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
@@ -18,16 +18,14 @@ import org.uma.jmetal.util.JMetalLogger;
 import org.uma.jmetal.util.comparator.RankingAndCrowdingDistanceComparator;
 import org.uma.jmetal.util.errorchecking.JMetalException;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Objects;
 
 public class NSGAIII extends AbstractAlgorithmRunner {
     public static void main(String[] args) throws JMetalException {
         String datasetName = args[0];
         DatasetEnum dataset = DatasetEnum.of(datasetName);
+        Objects.requireNonNull(dataset, "Unsupported dataset.");
         RefactoringProblem problem = new RefactoringProblem(dataset);
 
         double crossoverProbability = 0.9;
@@ -45,8 +43,8 @@ public class NSGAIII extends AbstractAlgorithmRunner {
         SelectionOperator<List<IntegerSolution>, IntegerSolution> selection = new BinaryTournamentSelection<>(
                 new RankingAndCrowdingDistanceComparator<>());
 
-        int populationSize = 150;
-        int maxIterations = 300;
+        int populationSize = 500;
+        int maxIterations = 2000;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIIBuilder<>(problem)
@@ -64,20 +62,12 @@ public class NSGAIII extends AbstractAlgorithmRunner {
 
         List<IntegerSolution> population = algorithm.result();
         long computingTime = algorithmRunner.getComputingTime();
-        Map<String, Object> configs = new LinkedHashMap<>();
-        configs.put("Algorithm", "NSGA3");
-        configs.put("Date", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")));
-        configs.put("Population size", populationSize);
-        configs.put("Iteration", maxIterations);
-        configs.put("Solutions", algorithm.result().size());
-        configs.put("ComputingTime", computingTime);
-        new RefactorOutput(problem.getProject(), population, configs)
+        AlgorithmParameter nsga3 = new AlgorithmParameter("NSGA3", populationSize, maxIterations);
+        new RefactorOutput(problem.getProject(), population, nsga3)
                 .write();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
         JMetalLogger.logger.info("Objectives values have been written to file FUN.csv");
         JMetalLogger.logger.info("Variables values have been written to file VAR.csv");
-
-        NotifyUtils.notifyMyself();
     }
 
 }

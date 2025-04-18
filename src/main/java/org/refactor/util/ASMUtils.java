@@ -140,8 +140,8 @@ public class ASMUtils {
                     return true;
                 }
             }
-        } catch (Exception e) {
-            logger.error(e.getMessage());
+        } catch (Exception | Error e) {
+            logger.error("{}, {}.", e.getClass().getName(), e.getMessage());
             return false;
         }
 
