@@ -25,7 +25,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final ObjectiveCalculator objectiveCalculator;
 
     public RefactoringProblem(DatasetEnum dataSet) {
-        File file = new File(dataSet.getName());
+        File file = new File(".project/" + dataSet.getName());
         if (file.exists()) {
             this.project = JavaProject.load(dataSet.getName());
         } else {

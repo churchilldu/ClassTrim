@@ -16,6 +16,7 @@ public class JavaMethod extends JavaObject {
     private final String descriptor;
     @Setter
     private int access;
+    @Setter
     private boolean isGetterOrSetter;
     /**
      * Signature includes:
@@ -77,10 +78,6 @@ public class JavaMethod extends JavaObject {
         }
 
         return false;
-    }
-
-    public void setGetterOrSetter(boolean getterOrSetter) {
-        isGetterOrSetter = getterOrSetter;
     }
 
     public void registerCoupling(JavaClass c) {
