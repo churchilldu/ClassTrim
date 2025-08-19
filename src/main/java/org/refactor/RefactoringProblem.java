@@ -24,12 +24,12 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final JavaProject project;
     private final ObjectiveCalculator objectiveCalculator;
 
-    public RefactoringProblem(DatasetEnum dataSet) {
-        File file = new File(".project/" + dataSet.getName());
+    public RefactoringProblem(DatasetEnum dataset) {
+        File file = new File(".project/" + dataset.getName());
         if (file.exists()) {
-            this.project = JavaProject.load(dataSet.getName());
+            this.project = JavaProject.load(dataset.getName());
         } else {
-            this.project = new JavaProject(dataSet);
+            this.project = new JavaProject(dataset);
             this.project.parse();
             this.project.save();
         }

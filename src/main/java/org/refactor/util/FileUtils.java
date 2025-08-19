@@ -1,7 +1,7 @@
 package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.refactor.Config;
+import static org.refactor.util.AppProperties;
 import org.refactor.common.AlgorithmParameter;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -9,6 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedWriter;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -155,7 +156,7 @@ public class FileUtils {
     }
 
     public static String getFolderId(String projectName) {
-        Path path = Paths.get(Config.OUTPUT_FOLDER, projectName);
+        Path path = Paths.get(AppProperties.getString("outputFolder"), projectName);
         createDir(path);
         return getFolderName(path);
     }
@@ -192,6 +193,71 @@ public class FileUtils {
                 .stream().mapToObj(i -> String.format("%02d", i + 1))
                 .findFirst()
                 .orElse("01");
+    }
+
+    /**
+     * Read refactoring suggestions from a TSV file.
+     * The TSV file should have the format:
+     * Method Name    Source Class    Target Class
+     * org.example.Class.method(Type1, Type2)    org.example.Class    org.example.TargetClass
+     * Note: Move-field suggestions (lines where method string doesn't end with ')') are skipped.
+     *
+     * @param tsvFile Path to the TSV file
+     * @return List of Triple containing (method string, source class, target class)
+     */
+    public static List<Triple<String, String, String>> readRefactoringSuggestions(Path tsvFile) {
+        List<Triple<String, String, String>> suggestions = new ArrayList<>();
+        
+        try (BufferedReader reader = Files.newBufferedReader(tsvFile, StandardCharsets.UTF_8)) {
+            // Skip header line
+            reader.readLine();
+
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split("\t");
+                if (parts.length != 3) {
+                    continue; // Skip invalid lines
+                }
+
+                String methodString = parts[0].trim();
+                // Skip move-field suggestions (lines where method string doesn't end with ')')
+                if (!methodString.endsWith(")")) {
+                    continue;
+                }
+
+                String sourceClass = parts[1].trim();
+                String targetClass = parts[2].trim();
+
+                suggestions.add(Triple.of(methodString, sourceClass, targetClass));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return suggestions;
+    }
+
+    public static void appendToBaselineTsv(String datasetName, long wmcOverThreshold, long cboOverThreshold, long rfcOverThreshold) {
+        Path baselineFile = Paths.get("baseline/baseline.tsv");
+        boolean isNewFile = !Files.exists(baselineFile);
+
+        try (BufferedWriter writer = Files.newBufferedWriter(baselineFile, 
+                StandardCharsets.UTF_8, 
+                isNewFile ? StandardOpenOption.CREATE : StandardOpenOption.APPEND)) {
+            
+            // Write header if it's a new file
+            if (isNewFile) {
+                writer.write("Name" + TAB + "WMC" + TAB + "CBO" + TAB + "RFC");
+                writer.newLine();
+            }
+
+            // Write dataset results
+            writer.write(String.format("%s" + TAB + "%d" + TAB + "%d" + TAB + "%d", 
+                datasetName, wmcOverThreshold, cboOverThreshold, rfcOverThreshold));
+            writer.newLine();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to write to baseline.tsv", e);
+        }
     }
 
 }

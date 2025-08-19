@@ -1,6 +1,6 @@
 package org.refactor.util;
 
-import org.refactor.Config;
+import static org.refactor.util.AppProperties;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -11,7 +11,7 @@ public class NotifyUtils {
     @SuppressWarnings("CallToPrintStackTrace")
     public static void notifyMyself() {
         try {
-            URL url = new URL(Config.NOTIFY_URL);
+            URL url = new URL(AppProperties.getString("notifyUrl"));
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
             conn.setDoOutput(true);

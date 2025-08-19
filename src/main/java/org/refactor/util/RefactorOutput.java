@@ -2,7 +2,7 @@ package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.refactor.Config;
+import static org.refactor.util.AppProperties;
 import org.refactor.common.AlgorithmParameter;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
@@ -34,7 +34,7 @@ public class RefactorOutput {
         this.projectName = project.getName();
         this.solutions = solutions;
         this.folderId = FileUtils.getFolderId(projectName);
-        this.outputPath = Paths.get(Config.OUTPUT_FOLDER, projectName, folderId);
+        this.outputPath = Paths.get(AppProperties.getString("outputFolder"), projectName, folderId);
         FileUtils.createDir(outputPath);
         this.parameter = parameter;
     }
@@ -105,7 +105,7 @@ public class RefactorOutput {
                 .map(Solution::objectives)
                 .map(o -> Triple.of(o[0], o[1], o[2]))
                 .toArray(Triple[]::new);
-        FileUtils.writeSummary(Paths.get(Config.OUTPUT_FOLDER, projectName, projectName + "-" + "summary.tsv"),
+        FileUtils.writeSummary(Paths.get(AppProperties.getString("outputFolder"), projectName, projectName + "-" + "summary.tsv"),
                 parameter, objectives, folderId);
 
         new SolutionListOutput(solutions)

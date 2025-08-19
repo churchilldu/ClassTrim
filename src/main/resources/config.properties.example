@@ -1,0 +1,17 @@
+# Copy this file to config.properties
+
+
+# The path of your maven repository.
+mavenRepo=
+
+# The absolute path of dataset root.
+datasetRoot=
+
+# The path to store output result.
+outputFolder=output
+
+# The path to store the serialized project file.
+projectCacheFolder=.project
+
+# The URL to notify.
+notifyUrl=https://ntfy.sh/codeRefactoring

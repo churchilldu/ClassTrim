@@ -4,7 +4,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.refactor.Config;
+import static org.refactor.util.AppProperties;
 import org.refactor.model.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class ASMUtils {
     static {
         try {
             List<URL> urlList = new ArrayList<>();
-            for (String jar : FileUtils.getAllJarFiles(Config.MAVEN_REPO, Config.ROOT)) {
+            for (String jar : FileUtils.getAllJarFiles(AppProperties.getString("mavenRepo"), AppProperties.getString("datasetRoot"))) {
                 urlList.add(new File(jar).toURI().toURL());
             }
 

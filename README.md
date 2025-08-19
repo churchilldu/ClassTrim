@@ -12,6 +12,18 @@ following lower [CK metrics]() principle.
 5. Reduce the dependencies as much as possible.
 6. Auto record the experiment results and summary.
 
+## Quick start
+
+1) Configure environment
+
+- Copy `src/main/resources/config.properties.template` to `src/main/resources/config.properties`.
+- Edit the new `config.properties` and set values for your environment:
+  - `mavenRepo`: absolute path to your local Maven repository
+  - `datasetRoot`: absolute path to the datasets root folder
+  - `outputFolder`: output folder for results (optional; default `output`)
+  - `projectCacheFolder`: folder for serialized project cache (optional; default `.project`)
+  - `notifyUrl`: optional webhook for notifications
+
 ## Rule to compute metrics
 
 Strictly follow the tool [CKjm]() used in the paper []().
