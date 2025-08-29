@@ -1,0 +1,8 @@
+Refactoring Type	Source Method	Target Class
+Move Method	pack.A::throwException():void	pack.B
+Move Method	pack.F::method_F4(Integer, Long, String):Long	pack.G
+Move Method	pack.I::method_I1(int[], byte[]):long[]	pack.J
+Move Method	pack.H::build():Object	pack.K
+Move Method	pack.B::compareTo(pack.B):int	pack.A
+Move Method	pack.C::method_C():void	pack.D
+Move Method	pack.E::method_E2():void	pack.F

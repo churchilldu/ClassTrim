@@ -4,7 +4,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import static org.refactor.util.AppProperties;
 import org.refactor.model.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +39,12 @@ public class ASMUtils {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public static String[] getParameters(String descriptor) {
+        return Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
+                .map(Type::getClassName)
+                .toArray(String[]::new);
     }
 
     public static String methodToString(String name, String descriptor) {

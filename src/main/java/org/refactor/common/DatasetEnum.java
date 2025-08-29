@@ -27,7 +27,7 @@ public enum DatasetEnum {
     SYNAPSE_1 ("synapse-1_1",  "apache-synapse-1.1/org/", new Threshold(7, 11, 31)),
     SYNAPSE_2 ("synapse-1_2",  "apache-synapse-1.2/org/", new Threshold(5, 10, 29)),
 
-    TEST ("test",  "target/test-classes/pack", new Threshold(0, 0, 0));
+    TEST ("test",  "test/pack/", new Threshold(0, 0, 0));
 
     private final String name;
     private final String path;

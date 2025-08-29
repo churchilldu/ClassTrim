@@ -1,7 +1,5 @@
 package org.refactor.util;
 
-import static org.refactor.util.AppProperties;
-
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;

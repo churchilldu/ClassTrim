@@ -1,6 +1,8 @@
 package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.Triple;
+import org.refactor.common.Metric;
+import org.refactor.common.Threshold;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 
@@ -12,6 +14,18 @@ import java.util.stream.Stream;
 
 
 public class MetricUtils {
+        
+    /**
+     * Calculate the metric of the refactored code
+     */
+    public static Metric calculateMetric(Map<JavaClass, List<JavaMethod>> methodsByClass, Threshold threshold) {
+        long wmcOverThreshold = MetricUtils.countClassWmcOverThreshold(methodsByClass, threshold.getWMC());
+        long cboOverThreshold = MetricUtils.countClassCboOverThreshold(methodsByClass, threshold.getCBO());
+        long rfcOverThreshold = MetricUtils.countClassRfcOverThreshold(methodsByClass, threshold.getRFC());
+        
+        return Metric.of(wmcOverThreshold, cboOverThreshold, rfcOverThreshold);
+    }
+
     public static Map<JavaClass, Triple<Integer, Integer, Integer>> getMetricsOfClass(Map<JavaClass, List<JavaMethod>> methodsByClass) {
         return methodsByClass.entrySet().stream()
                 .collect(Collectors.toUnmodifiableMap(Map.Entry::getKey,

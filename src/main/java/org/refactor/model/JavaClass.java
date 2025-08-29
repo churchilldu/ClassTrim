@@ -3,6 +3,7 @@ package org.refactor.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.objectweb.asm.Type;
 import org.refactor.util.ASMUtils;
 
@@ -10,6 +11,7 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JavaClass extends JavaObject {
     @Getter
     private final JavaProject project;
@@ -26,10 +28,49 @@ public class JavaClass extends JavaObject {
         this.project = project;
     }
 
+    /**
+     * Find a method by its methodName and parameter types. (Return type doesn't matter)
+     * @param methodName The methodName of the method to find. e.g. "method"
+     * @param parameterTypes The parameter types of the method to find. e.g. "I"
+     * @return An Optional containing the JavaMethod if found, otherwise empty.
+     */
+    public Optional<JavaMethod> findMethod(String methodName, String... parameterTypes) {
+        List<JavaMethod> nameMatchedMethods = this.declaredMethods.stream()
+                .filter(m -> methodName.equals(m.getName()))
+                .collect(Collectors.toList());
+
+        if (nameMatchedMethods.isEmpty()) {
+            log.error("Method not found: {}.", methodName);
+            return Optional.empty();
+        }
+
+        if (nameMatchedMethods.size() == 1) {
+            return Optional.of(nameMatchedMethods.get(0));
+        }
+
+        for (JavaMethod method : nameMatchedMethods) {
+            String[] parameters = ASMUtils.getParameters(method.getDescriptor());
+            if (Arrays.equals(parameterTypes, parameters)) {
+                return Optional.of(method);
+            }
+        }
+        log.error("Unmatch argument types: methodName {}, parameterTypes {}.", methodName, parameterTypes);
+        return Optional.empty();
+    }
+
+    /**
+     * Find a method by its name and descriptor. 
+     * @param methodName The name of the method to find. e.g. "method"
+     * @param descriptor The descriptor of the method to find. e.g. "(I)I".
+     *  A descriptor is a string representation of the method's parameter types and return type.
+     *  For example, "(I)I" means a method with one int parameter and an int return type.
+     *  ASM's Type.getMethodDescriptor(Type[]) can be used to get the descriptor of a method.
+     * @return An Optional containing the JavaMethod if found, otherwise empty.
+     */
     public Optional<JavaMethod> findMethod(String methodName, String descriptor) {
-        return declaredMethods.stream().filter(m ->
-                methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor())
-        ).findFirst();
+        return this.declaredMethods.stream()
+                .filter(m -> methodName.equals(m.getName()) && descriptor.equals(m.getDescriptor()))
+                .findFirst();
     }
 
     public List<JavaMethod> getDeclaredMethods() {
@@ -62,6 +103,10 @@ public class JavaClass extends JavaObject {
     }
 
     @Override
+    /**
+     * Get the class name.
+     * @return The class name. e.g. "org.example.Class"
+     */
     public String toString() {
         return Type.getObjectType(this.getName()).getClassName();
     }

@@ -108,8 +108,16 @@ public class JavaProject extends JavaObject {
         return Optional.empty();
     }
 
+    /**
+     * Find a class by its fully qualified name. 
+     * Example: "org.refactor.model.JavaProject" or "org/refactor/model/JavaProject"
+     * Accepts names separated by '.' or '/'; internally normalizes to '/'.
+     * @param className The fully qualified name of the class to find.
+     * @return An Optional containing the JavaClass if found, otherwise empty.
+     */
     public Optional<JavaClass> findClass(String className) {
-        return classList.stream().filter(c -> className.equals(c.getName()))
+        String normalized = className.replace('.', '/');
+        return classList.stream().filter(c -> normalized.equals(c.getName()))
                 .findFirst();
     }
 

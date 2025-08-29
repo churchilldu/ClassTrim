@@ -16,6 +16,7 @@ public interface RefactorSuggestionParser {
      * @return A list of pairs of JavaMethod and JavaClass representing the refactoring suggestions.
      * the first element of the pair is the method to be refactored
      * the second element of the pair is the class to which the method will be refactored
+     * I use List of pair instead of Map, It's not a Mapping relationship, it's a List of refactoring suggestions.
      */
     List<Pair<JavaMethod, JavaClass>> parse(Path file, JavaProject project);
 }

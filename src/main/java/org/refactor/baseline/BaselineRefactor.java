@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.refactor.common.BaselineEnum;
 import org.refactor.common.DatasetEnum;
+import org.refactor.common.Metric;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
 import org.refactor.model.JavaProject;
@@ -35,7 +36,6 @@ public class BaselineRefactor {
             log.info("Processing dataset: {}", dataset.getName());
 
             JavaProject project = JavaProject.load(AppProperties.getString("datasetRoot") + dataset.getName());
-            Map<JavaClass, List<JavaMethod>> methodsByClass = convertToMap(project);
             Path file = Paths.get("baseline", dataset.getName(), dataset.getName() + ".tsv");
             if (!Files.exists(file)) {
                 log.warn("Suggestion file not found: {}", file);
@@ -43,26 +43,28 @@ public class BaselineRefactor {
             }
 
             List<Pair<JavaMethod, JavaClass>> suggestions = parser.parse(file, project);
-            for (Pair<JavaMethod, JavaClass> suggestion : suggestions) {
-                JavaMethod method = suggestion.getLeft();
-                JavaClass targetClass = suggestion.getRight();
-                JavaClass sourceClass = method.getClazz();
-                if (methodsByClass.containsKey(sourceClass)) {
-                    methodsByClass.get(sourceClass).remove(method);
-                    methodsByClass.computeIfAbsent(targetClass, k -> new ArrayList<>()).add(method);
-                } else {
-                    log.error("Class not refactorable: {}.", sourceClass.toString());
-                }
-            }
+            Map<JavaClass, List<JavaMethod>> methodsByClass = applySuggestions(project, suggestions);
 
-            // Calculate metrics
-            long wmcOverThreshold = MetricUtils.countClassWmcOverThreshold(methodsByClass, dataset.getThreshold().getWMC());
-            long cboOverThreshold = MetricUtils.countClassCboOverThreshold(methodsByClass, dataset.getThreshold().getCBO());
-            long rfcOverThreshold = MetricUtils.countClassRfcOverThreshold(methodsByClass, dataset.getThreshold().getRFC());
-
-            // Append results to baseline.tsv
-            FileUtils.appendToBaselineTsv(dataset.getName(), wmcOverThreshold, cboOverThreshold, rfcOverThreshold);
+            Metric metric = MetricUtils.calculateMetric(methodsByClass, dataset.getThreshold());
+            FileUtils.appendToBaselineTsv(baseline.getName(), dataset.getName(), metric);
         }
+    }
+
+    private static Map<JavaClass, List<JavaMethod>> applySuggestions(JavaProject project, 
+                                                                    List<Pair<JavaMethod, JavaClass>> suggestions) {
+        Map<JavaClass, List<JavaMethod>> methodsByClass = convertToMap(project);
+        for (Pair<JavaMethod, JavaClass> suggestion : suggestions) {
+            JavaMethod method = suggestion.getLeft();
+            JavaClass targetClass = suggestion.getRight();
+            JavaClass sourceClass = method.getClazz();
+            if (methodsByClass.containsKey(sourceClass)) {
+                methodsByClass.get(sourceClass).remove(method);
+                methodsByClass.computeIfAbsent(targetClass, k -> new ArrayList<>()).add(method);
+            } else {
+                log.error("Class not refactorable: {}.", sourceClass.toString());
+            }
+        }
+        return methodsByClass;
     }
 
     private static Map<JavaClass, List<JavaMethod>> convertToMap(JavaProject project) {

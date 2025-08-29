@@ -113,7 +113,12 @@ public class JavaMethod extends JavaObject {
         return Objects.hash(this.getName(), clazz, descriptor);
     }
 
+
     @Override
+    /**
+     * Get the method signature.
+     * @return The method signature. e.g. "method(Type1, Type2)"
+     */
     public String toString() {
 //        return this.clazz.toString() + "." + this.getName();
         return ASMUtils.methodToString(this.getName(), this.getDescriptor());

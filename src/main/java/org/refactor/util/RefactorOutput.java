@@ -2,7 +2,6 @@ package org.refactor.util;
 
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import static org.refactor.util.AppProperties;
 import org.refactor.common.AlgorithmParameter;
 import org.refactor.model.JavaClass;
 import org.refactor.model.JavaMethod;
