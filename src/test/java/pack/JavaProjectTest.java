@@ -36,8 +36,7 @@ public class JavaProjectTest {
     private static final Map<JavaClass, Integer> rfcOfClass;
 
     static {
-        project = new JavaProject(DatasetEnum.TEST);
-        project.parse();
+        project = JavaProject.load(DatasetEnum.TEST);
         cboOfClass = MetricUtils.getCboOfClass(convertToMap(project));
         rfcOfClass = MetricUtils.getRfcOfClass(convertToMap(project));
     }
@@ -109,8 +108,7 @@ public class JavaProjectTest {
 
     @Test
     public void testSerialization() {
-        project.save();
-        JavaProject deserialized = JavaProject.load(DatasetEnum.TEST.getName());
+        JavaProject deserialized = JavaProject.load(DatasetEnum.TEST);
         assertEquals(project, deserialized);
     }
 

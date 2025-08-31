@@ -11,7 +11,6 @@ import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,14 +24,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final ObjectiveCalculator objectiveCalculator;
 
     public RefactoringProblem(DatasetEnum dataset) {
-        File file = new File(".project/" + dataset.getName());
-        if (file.exists()) {
-            this.project = JavaProject.load(dataset.getName());
-        } else {
-            this.project = new JavaProject(dataset);
-            this.project.parse();
-            this.project.save();
-        }
+        this.project = JavaProject.load(dataset);
         objectiveCalculator = new ObjectiveCalculator(project);
         this.setBounds();
 

@@ -8,7 +8,6 @@ import org.refactor.model.JavaMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
@@ -198,7 +197,7 @@ public class FileUtils {
    
 
     public static void appendToBaselineTsv(String fileName, String datasetName, Metric metric) {
-        Path baselineFile = Paths.get("baseline", fileName + ".tsv");
+        Path baselineFile = Paths.get("baseline", fileName, fileName + ".tsv");
         boolean isNewFile = !Files.exists(baselineFile);
 
         try (BufferedWriter writer = Files.newBufferedWriter(baselineFile, 

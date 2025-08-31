@@ -11,6 +11,7 @@ following lower [CK metrics]() principle.
 4. Cache the object to improve performance.
 5. Reduce the dependencies as much as possible.
 6. Auto record the experiment results and summary.
+7. Unit test.
 
 ## Quick start
 

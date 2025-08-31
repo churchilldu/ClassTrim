@@ -1,21 +1,14 @@
 package org.refactor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.refactor.common.DatasetEnum;
 import org.refactor.model.JavaProject;
 
+@Slf4j
 public class Main {
     public static void main(String[] args) {
-//        for (int i = 0; i < 1; i++) {
-//            JMetalLogger.logger.info("------------- " + i + " -------------");
-////            NSGAIII.main(new String[]{DatasetEnum.ANT_7.getName()});
-//            NSGAIII.main(new String[]{DatasetEnum.CAMEL_4.getName()});
-//            NSGAIII.main(new String[]{DatasetEnum.CAMEL_6.getName()});
-//        }
-//        NotifyUtils.notifyMyself();
         for (DatasetEnum dataset : DatasetEnum.values()) {
-            JavaProject project = new JavaProject(dataset);
-            project.parse();
-            project.save();
+            JavaProject.load(dataset);
         }
     }
 }

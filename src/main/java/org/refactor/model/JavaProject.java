@@ -1,11 +1,13 @@
 package org.refactor.model;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.refactor.common.DatasetEnum;
 import org.refactor.common.Threshold;
 import org.refactor.util.ASMUtils;
+import org.refactor.util.AppProperties;
 import org.refactor.util.FileUtils;
 import org.refactor.visitor.ClazzVisitor;
 import org.refactor.visitor.CouplingVisitor;
@@ -13,11 +15,13 @@ import org.refactor.visitor.MethodInvocationVisitor;
 
 import java.io.*;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class JavaProject extends JavaObject {
     private static final long serialVersionUID = 3242194786299334773L;
     private final List<JavaClass> classList = new ArrayList<>();
@@ -25,36 +29,43 @@ public class JavaProject extends JavaObject {
     private List<JavaClass> classToRefactor;
     private List<JavaMethod> methodsToRefactor;
 
-    public JavaProject(DatasetEnum dataSet) {
+    private JavaProject(DatasetEnum dataSet) {
         super(dataSet.getName());
         this.dataSet = dataSet;
     }
 
-    public static JavaProject load(String fileName) {
+    public static JavaProject load(DatasetEnum dataSet) {
         try {
-            File file = new File(fileName);
-            return SerializationUtils.deserialize(new FileInputStream(file));
-
+            File file = getCacheFilePath(dataSet.getName()).toFile();
+            if (file.exists()) {
+                log.info("Load {} from cache.", dataSet.getName());
+                return SerializationUtils.deserialize(new FileInputStream(file));
+            }
+            JavaProject project = new JavaProject(dataSet);
+            project.parse();
+            project.save();
+            return project;
         } catch (IOException | ClassCastException excp) {
             throw new IllegalArgumentException(excp.getMessage());
         }
     }
 
-    public void save() {
+    private void save() {
         try {
-            File file = new File(this.getName());
+            File file = this.getCacheFilePath().toFile();
             if (file.isDirectory()) {
                 throw new IllegalArgumentException("cannot overwrite directory");
             }
             FileOutputStream str = new FileOutputStream(file);
             SerializationUtils.serialize(this, str);
             str.close();
+            log.info("Serialize {} to {}.", this.getName(), this.getCacheFilePath());
         } catch (IOException | ClassCastException excp) {
             throw new IllegalArgumentException(excp.getMessage());
         }
     }
 
-    public void parse() {
+    private void parse() {
         String[] allClassFiles = FileUtils.getAllClassFiles(dataSet.getPath());
         Arrays.stream(allClassFiles).forEach(this::parseMethods);
         Arrays.stream(allClassFiles).forEach(this::parseInheritance);
@@ -158,4 +169,14 @@ public class JavaProject extends JavaObject {
                 .stream().unordered()
                 .collect(Collectors.toMap(Function.identity(), JavaClass::getDeclaredMethods));
     }
+
+
+    private static Path getCacheFilePath(String projectName) {
+        return Paths.get(AppProperties.getString("projectCacheFolder"), projectName);
+    }
+
+    private Path getCacheFilePath() {
+        return getCacheFilePath(this.getName());
+    }
+
 }

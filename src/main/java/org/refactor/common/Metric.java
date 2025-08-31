@@ -10,9 +10,11 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Metric {
-    private final long wmcOverThreshold;
-    private final long cboOverThreshold;
-    private final long rfcOverThreshold;
+    private final long wmcOverThreshold; // weightedMethodComplexityOverThreshold    
+    private final long cboOverThreshold; // couplingBetweenObjectsOverThreshold
+    private final long rfcOverThreshold; // responseForClassOverThreshold
+
+    public static final Metric ZERO = new Metric(0, 0, 0);
 
     public static Metric of(long wmcOverThreshold, long cboOverThreshold, long rfcOverThreshold) {
         if (wmcOverThreshold < 0) {

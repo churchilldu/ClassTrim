@@ -40,7 +40,6 @@ public class JavaClass extends JavaObject {
                 .collect(Collectors.toList());
 
         if (nameMatchedMethods.isEmpty()) {
-            log.error("Method not found: {}.", methodName);
             return Optional.empty();
         }
 
