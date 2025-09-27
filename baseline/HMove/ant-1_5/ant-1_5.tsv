@@ -1,0 +1,63 @@
+Refactoring Type	Source Method	Target Class
+Move Method	org.apache.tools.ant.AntClassLoader::findClassInComponents(java.lang.String):java.lang.Class 	 org.apache.tools.ant.Project
+Move Method	org.apache.tools.ant.DefaultLogger::formatTime(long):java.lang.String 	 org.apache.tools.ant.util.DateUtils
+Move Method	org.apache.tools.ant.helper.ProjectHelperImpl.TargetHandler::init(java.lang.String, org.xml.sax.AttributeList):void 	 org.apache.tools.ant.helper.ProjectHelperImpl
+Move Method	org.apache.tools.ant.helper.ProjectHelperImpl.TaskHandler::init(java.lang.String, org.xml.sax.AttributeList):void 	 org.apache.tools.ant.helper.ProjectHelperImpl
+Move Method	org.apache.tools.ant.Project::setBaseDir(java.io.File):void 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.ProjectHelper::configure(java.lang.Object, org.xml.sax.AttributeList, org.apache.tools.ant.Project):void 	 org.apache.tools.ant.IntrospectionHelper
+Move Method	org.apache.tools.ant.ProjectHelper::storeChild(org.apache.tools.ant.Project, java.lang.Object, java.lang.Object, java.lang.String):void 	 org.apache.tools.ant.IntrospectionHelper
+Move Method	org.apache.tools.ant.taskdefs.compilers.CompilerAdapterFactory::getCompiler(java.lang.String, org.apache.tools.ant.Task):org.apache.tools.ant.taskdefs.compilers.CompilerAdapter 	 org.apache.tools.ant.util.JavaEnvUtils
+Move Method	org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter::setupJavacCommandlineSwitches(org.apache.tools.ant.types.Commandline, boolean):org.apache.tools.ant.types.Commandline 	 org.apache.tools.ant.taskdefs.Javac
+Move Method	org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter::setupModernJavacCommandlineSwitches(org.apache.tools.ant.types.Commandline):org.apache.tools.ant.types.Commandline 	 org.apache.tools.ant.taskdefs.Javac
+Move Method	org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter::logAndAddFilesToCompile(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter::executeExternalCompile(java.lang.String[], int):int 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.taskdefs.compilers.DefaultCompilerAdapter::addCurrentCompilerArgs(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.ExecTask::maybeSetResultPropertyValue(int):void 	 org.apache.tools.ant.Project
+Move Method	org.apache.tools.ant.taskdefs.Java::run(org.apache.tools.ant.types.CommandlineJava):void 	 org.apache.tools.ant.taskdefs.ExecuteJava
+Move Method	org.apache.tools.ant.taskdefs.Javac::createClasspath():org.apache.tools.ant.types.Path 	 org.apache.tools.ant.types.Path
+Move Method	org.apache.tools.ant.taskdefs.Javac::getCurrentCompilerArgs():java.lang.String[] 	 org.apache.tools.ant.util.facade.FacadeTaskHelper
+Move Method	org.apache.tools.ant.taskdefs.Javac::scanDir(java.io.File, java.io.File, java.lang.String[]):void 	 org.apache.tools.ant.util.SourceFileScanner
+Move Method	org.apache.tools.ant.taskdefs.Javac::setCompiler(java.lang.String):void 	 org.apache.tools.ant.util.facade.FacadeTaskHelper
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setMaxmemory(java.lang.String):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setAdditionalparam(java.lang.String):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setDestdir(java.io.File):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setOverview(java.io.File):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setAccess(org.apache.tools.ant.taskdefs.Javadoc.AccessType):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setExtdirs(java.lang.String):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Javadoc::setExtdirs(org.apache.tools.ant.types.Path):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.optional.depend.constantpool.ConstantPool::getNameAndTypeEntry(java.lang.String, java.lang.String):int 	 org.apache.tools.ant.taskdefs.optional.depend.constantpool.NameAndTypeCPInfo
+Move Method	org.apache.tools.ant.taskdefs.optional.ejb.GenericDeploymentTool::getLocation():org.apache.tools.ant.Location 	 org.apache.tools.ant.Task
+Move Method	org.apache.tools.ant.taskdefs.optional.ejb.GenericDeploymentTool::createAnalyzer():void 	 org.apache.tools.ant.Task
+Move Method	org.apache.tools.ant.taskdefs.optional.ejb.GenericDeploymentTool::checkAndAddDependants(java.util.Hashtable):void 	 org.apache.tools.ant.util.depend.DependencyAnalyzer
+Move Method	org.apache.tools.ant.taskdefs.optional.ejb.IPlanetEjbc::buildArgumentList(org.apache.tools.ant.taskdefs.optional.ejb.IPlanetEjbc.EjbInfo):java.lang.String[] 	 org.apache.tools.ant.taskdefs.optional.ejb.IPlanetEjbc.EjbInfo
+Move Method	org.apache.tools.ant.taskdefs.optional.extension.ExtensionUtil::loadExtensions(java.io.File, java.util.ArrayList, boolean, boolean):void 	 org.apache.tools.ant.taskdefs.optional.extension.Extension
+Move Method	org.apache.tools.ant.taskdefs.optional.extension.ExtensionUtil::addExtension(java.util.ArrayList, org.apache.tools.ant.taskdefs.optional.extension.Extension, boolean, boolean):void 	 org.apache.tools.ant.taskdefs.optional.extension.Extension
+Move Method	org.apache.tools.ant.taskdefs.optional.ide.VAJAntTool::saveBuildData(org.apache.tools.ant.taskdefs.optional.ide.VAJBuildInfo):void 	 org.apache.tools.ant.taskdefs.optional.ide.VAJLocalUtil
+Move Method	org.apache.tools.ant.taskdefs.optional.jdepend.JDependTask::createJvmarg(org.apache.tools.ant.types.CommandlineJava):org.apache.tools.ant.types.Commandline.Argument 	 org.apache.tools.ant.types.CommandlineJava
+Move Method	org.apache.tools.ant.taskdefs.optional.net.FTP::transferFiles(org.apache.tools.ant.taskdefs.optional.net.FTPClient, org.apache.tools.ant.types.FileSet):int 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.taskdefs.optional.sitraka.XMLReport::createDocument(java.lang.String[]):org.w3c.dom.Document 	 org.apache.tools.ant.taskdefs.optional.sitraka.bytecode.ClassPathLoader
+Move Method	org.apache.tools.ant.taskdefs.optional.vss.MSVSSADD::getRecursiveCommand(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.optional.vss.MSVSSCHECKIN::getRecursiveCommand(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.optional.vss.MSVSSCHECKOUT::getRecursiveCommand(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.optional.vss.MSVSSGET::getRecursiveCommand(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.optional.vss.MSVSSHISTORY::getRecursiveCommand(org.apache.tools.ant.types.Commandline):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Patch::setPatchfile(java.io.File):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Patch::setBackups(boolean):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Patch::setStrip(int):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Patch::setReverse(boolean):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.taskdefs.Rmic::setCompiler(java.lang.String):void 	 org.apache.tools.ant.util.facade.FacadeTaskHelper
+Move Method	org.apache.tools.ant.taskdefs.Rmic::createCompilerArg():org.apache.tools.ant.taskdefs.Rmic.ImplementationSpecificArgument 	 org.apache.tools.ant.util.facade.FacadeTaskHelper
+Move Method	org.apache.tools.ant.taskdefs.Rmic::getCurrentCompilerArgs():java.lang.String[] 	 org.apache.tools.ant.util.facade.FacadeTaskHelper
+Move Method	org.apache.tools.ant.taskdefs.Touch::touch(java.io.File):void 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.taskdefs.UpToDate::scanDir(java.io.File, java.lang.String[]):boolean 	 org.apache.tools.ant.util.SourceFileScanner
+Move Method	org.apache.tools.ant.taskdefs.XSLTProcess::ensureDirectoryFor(java.io.File):void 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.types.AbstractFileSet::setupDirectoryScanner(org.apache.tools.ant.FileScanner, org.apache.tools.ant.Project):void 	 org.apache.tools.ant.types.selectors.SelectorScanner
+Move Method	org.apache.tools.ant.types.Commandline::describeArguments(java.lang.String[], int):java.lang.String 	 org.apache.tools.ant.util.StringUtils
+Move Method	org.apache.tools.ant.types.CommandlineJava::createVmArgument():org.apache.tools.ant.types.Commandline.Argument 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.types.CommandlineJava::setClassname(java.lang.String):void 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.types.CommandlineJava::getClassname():java.lang.String 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.types.CommandlineJava::size():int 	 org.apache.tools.ant.types.Commandline
+Move Method	org.apache.tools.ant.util.JavaEnvUtils::findInDir(java.lang.String, java.lang.String):java.io.File 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.ant.util.SourceFileScanner::restrict(java.lang.String[], java.io.File, java.io.File, org.apache.tools.ant.util.FileNameMapper):java.lang.String[] 	 org.apache.tools.ant.util.FileUtils
+Move Method	org.apache.tools.mail.MailMessage::disconnect():void 	 org.apache.tools.mail.SmtpResponseReader
+Move Method	org.apache.tools.ant.types.XMLCatalogTest::toURLString(java.io.File):java.lang.String 	 org.apache.tools.ant.util.FileUtils

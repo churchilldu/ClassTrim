@@ -1,0 +1,66 @@
+Refactoring Type	Source Method	Target Class
+Move Method	org.apache.lucene.analysis.compound.HyphenationCompoundWordTokenFilter::getHyphenationTree(java.io.Reader):org.apache.lucene.analysis.compound.hyphenation.HyphenationTree 	 org.apache.lucene.analysis.compound.hyphenation.HyphenationTree
+Move Method	org.apache.lucene.benchmark.byTask.PerfRunData::resetInputs():void 	 org.apache.lucene.benchmark.byTask.feeds.DocMaker
+Move Method	org.apache.lucene.benchmark.standard.StandardBenchmarker::makeDocument(java.io.File, java.lang.String[], boolean, boolean, boolean):org.apache.lucene.document.Document 	 org.apache.lucene.document.Document
+Move Method	org.apache.lucene.search.highlight.WeightedSpanTermExtractor::extractWeightedSpanTerms(java.util.Map, org.apache.lucene.search.spans.SpanQuery):void 	 org.apache.lucene.search.spans.Spans
+Move Method	org.apache.lucene.store.instantiated.InstantiatedIndexWriter::commit():void 	 org.apache.lucene.store.instantiated.InstantiatedDocument
+Move Method	lucli.LuceneMethods::invertDocument(org.apache.lucene.document.Document):void 	 org.apache.lucene.document.Field
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getLoggingAnalyzer(org.apache.lucene.analysis.Analyzer, java.io.PrintStream, java.lang.String):org.apache.lucene.analysis.Analyzer 	 org.apache.lucene.analysis.TokenStream
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getMaxTokenAnalyzer(org.apache.lucene.analysis.Analyzer, int):org.apache.lucene.analysis.Analyzer 	 org.apache.lucene.analysis.TokenStream
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getPorterStemmerAnalyzer(org.apache.lucene.analysis.Analyzer):org.apache.lucene.analysis.Analyzer 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getSynonymAnalyzer(org.apache.lucene.analysis.Analyzer, org.apache.lucene.index.memory.SynonymMap, int):org.apache.lucene.analysis.Analyzer 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getTokenCachingAnalyzer(org.apache.lucene.analysis.Analyzer):org.apache.lucene.analysis.Analyzer 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.index.memory.AnalyzerUtil::getMostFrequentTerms(org.apache.lucene.analysis.Analyzer, java.lang.String, int):java.lang.String[] 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.index.TermVectorAccessor::accept(org.apache.lucene.index.IndexReader, int, java.lang.String, org.apache.lucene.index.TermVectorMapper):void 	 org.apache.lucene.index.TermVectorAccessor.TermVectorMapperDecorator
+Move Method	org.apache.lucene.queryParser.precedence.PrecedenceQueryParser::getFieldQuery(java.lang.String, java.lang.String):org.apache.lucene.search.Query 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.queryParser.precedence.PrecedenceQueryParser::jj_scan_token(int):boolean 	 org.apache.lucene.queryParser.precedence.Token
+Move Method	org.apache.lucene.queryParser.precedence.PrecedenceQueryParser::jj_ntk():int 	 org.apache.lucene.queryParser.precedence.Token
+Move Method	org.apache.lucene.search.FuzzyLikeThisQuery::addTerms(org.apache.lucene.index.IndexReader, org.apache.lucene.search.FuzzyLikeThisQuery.FieldVals):void 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.search.similar.MoreLikeThis::addTermFrequencies(java.io.Reader, java.util.Map, java.lang.String):void 	 org.apache.lucene.analysis.Analyzer
+Move Method	org.apache.lucene.search.similar.SimilarityQueries::formSimilarQuery(java.lang.String, org.apache.lucene.analysis.Analyzer, java.lang.String, java.util.Set):org.apache.lucene.search.Query 	 org.apache.lucene.analysis.Token
+Move Method	org.apache.lucene.queryParser.surround.parser.QueryParser::OptionalFields():java.util.ArrayList 	 org.apache.lucene.queryParser.surround.parser.Token
+Move Method	org.apache.lucene.queryParser.surround.parser.QueryParser::jj_consume_token(int):org.apache.lucene.queryParser.surround.parser.Token 	 org.apache.lucene.queryParser.surround.parser.Token
+Move Method	org.apache.lucene.queryParser.surround.parser.QueryParser::jj_scan_token(int):boolean 	 org.apache.lucene.queryParser.surround.parser.Token
+Move Method	org.apache.lucene.queryParser.surround.parser.QueryParserTokenManager::jjMoveNfa_1(int, int):int 	 org.apache.lucene.queryParser.surround.parser.CharStream
+Move Method	org.apache.lucene.queryParser.surround.parser.QueryParserTokenManager::jjFillToken():org.apache.lucene.queryParser.surround.parser.Token 	 org.apache.lucene.queryParser.surround.parser.Token
+Move Method	org.apache.lucene.wordnet.SynExpand::expand(java.lang.String, org.apache.lucene.search.Searcher, org.apache.lucene.analysis.Analyzer, java.lang.String, float):org.apache.lucene.search.Query 	 org.apache.lucene.wordnet.Syns2Index
+Move Method	org.apache.lucene.wordnet.SynLookup::expand(java.lang.String, org.apache.lucene.search.Searcher, org.apache.lucene.analysis.Analyzer, java.lang.String, float):org.apache.lucene.search.Query 	 org.apache.lucene.wordnet.Syns2Index
+Move Method	org.apache.lucene.demo.FileDocument::Document(java.io.File):org.apache.lucene.document.Document 	 org.apache.lucene.document.DateTools
+Move Method	org.apache.lucene.demo.HTMLDocument::uid(java.io.File):java.lang.String 	 org.apache.lucene.document.DateTools
+Move Method	org.apache.lucene.demo.HTMLDocument::Document(java.io.File):org.apache.lucene.document.Document 	 org.apache.lucene.document.DateTools
+Move Method	org.apache.lucene.index.DocFieldProcessorPerThread::trimFields(org.apache.lucene.index.DocumentsWriter.FlushState):void 	 org.apache.lucene.index.DocumentsWriter.FlushState
+Move Method	org.apache.lucene.index.FreqProxTermsWriterPerField::writeProx(org.apache.lucene.analysis.Token, org.apache.lucene.index.FreqProxTermsWriter.PostingList, int):void 	 org.apache.lucene.index.TermsHashPerField
+Move Method	org.apache.lucene.index.IndexReader::isLocked(java.lang.String):boolean 	 org.apache.lucene.store.FSDirectory
+Move Method	org.apache.lucene.index.IndexWriter::setInfoStream(java.io.PrintStream):void 	 org.apache.lucene.index.IndexFileDeleter
+Move Method	org.apache.lucene.index.IndexWriter::updateDocument(org.apache.lucene.index.Term, org.apache.lucene.document.Document, org.apache.lucene.analysis.Analyzer):void 	 org.apache.lucene.index.IndexFileDeleter
+Move Method	org.apache.lucene.index.IndexWriter::addIndexes(org.apache.lucene.index.IndexReader[]):void 	 org.apache.lucene.index.IndexFileDeleter
+Move Method	org.apache.lucene.index.IndexWriter::ensureContiguousMerge(org.apache.lucene.index.MergePolicy.OneMerge):int 	 org.apache.lucene.index.MergePolicy.OneMerge
+Move Method	org.apache.lucene.index.IndexWriter::decrefMergeSegments(org.apache.lucene.index.MergePolicy.OneMerge):void 	 org.apache.lucene.index.IndexFileDeleter
+Move Method	org.apache.lucene.index.IndexWriter::merge(org.apache.lucene.index.MergePolicy.OneMerge):void 	 org.apache.lucene.index.IndexFileDeleter
+Move Method	org.apache.lucene.index.IndexWriter::mergeMiddle(org.apache.lucene.index.MergePolicy.OneMerge):int 	 org.apache.lucene.index.SegmentMerger
+Move Method	org.apache.lucene.index.MultipleTermPositions::skipTo(int):boolean 	 org.apache.lucene.index.MultipleTermPositions.TermPositionsQueue
+Move Method	org.apache.lucene.index.SegmentInfos::getCurrentSegmentFileName(java.lang.String[]):java.lang.String 	 org.apache.lucene.index.IndexFileNames
+Move Method	org.apache.lucene.index.SegmentInfos::getCurrentSegmentFileName(org.apache.lucene.store.Directory):java.lang.String 	 org.apache.lucene.index.IndexFileNames
+Move Method	org.apache.lucene.index.SegmentMerger::mergeFields():int 	 org.apache.lucene.index.SegmentMerger.CheckAbort
+Move Method	org.apache.lucene.index.SegmentMerger::mergeVectors():void 	 org.apache.lucene.index.SegmentMerger.CheckAbort
+Move Method	org.apache.lucene.index.SegmentMerger::mergeTerms():void 	 org.apache.lucene.store.Directory
+Move Method	org.apache.lucene.index.SegmentMerger::mergeTermInfos():void 	 org.apache.lucene.index.SegmentMerger.CheckAbort
+Move Method	org.apache.lucene.index.SegmentMerger::mergeTermInfo(org.apache.lucene.index.SegmentMergeInfo[], int):int 	 org.apache.lucene.index.TermInfo
+Move Method	org.apache.lucene.index.SegmentMerger::mergeNorms():void 	 org.apache.lucene.index.SegmentMerger.CheckAbort
+Move Method	org.apache.lucene.index.SegmentMerger.CheckAbort::work(double):void 	 org.apache.lucene.index.MergePolicy.OneMerge
+Move Method	org.apache.lucene.index.TermsHashPerField::initReader(org.apache.lucene.index.ByteSliceReader, org.apache.lucene.index.RawPostingList, int):void 	 org.apache.lucene.index.IntBlockPool
+Move Method	org.apache.lucene.index.TermsHashPerField::comparePostings(org.apache.lucene.index.RawPostingList, org.apache.lucene.index.RawPostingList):int 	 org.apache.lucene.index.CharBlockPool
+Move Method	org.apache.lucene.index.TermsHashPerField::rehashPostings(int):void 	 org.apache.lucene.index.TermsHashPerThread
+Move Method	org.apache.lucene.index.TermsHashPerThread::reset(boolean):void 	 org.apache.lucene.index.TermsHash
+Move Method	org.apache.lucene.index.TermVectorsReader::checkValidFormat(org.apache.lucene.store.IndexInput):int 	 org.apache.lucene.store.IndexInput
+Move Method	org.apache.lucene.index.TermVectorsReader::readFields(int):java.lang.String[] 	 org.apache.lucene.store.IndexInput
+Move Method	org.apache.lucene.index.TermVectorsWriter::addAllDocVectors(org.apache.lucene.index.TermFreqVector[]):void 	 org.apache.lucene.index.TermPositionVector
+Move Method	org.apache.lucene.queryParser.QueryParser::getFieldQuery(java.lang.String, java.lang.String):org.apache.lucene.search.Query 	 org.apache.lucene.search.MultiPhraseQuery
+Move Method	org.apache.lucene.queryParser.QueryParser::jj_consume_token(int):org.apache.lucene.queryParser.Token 	 org.apache.lucene.queryParser.Token
+Move Method	org.apache.lucene.queryParser.QueryParser::jj_scan_token(int):boolean 	 org.apache.lucene.queryParser.Token
+Move Method	org.apache.lucene.queryParser.QueryParserTokenManager::jjMoveNfa_3(int, int):int 	 org.apache.lucene.queryParser.CharStream
+Move Method	org.apache.lucene.queryParser.QueryParserTokenManager::jjMoveNfa_2(int, int):int 	 org.apache.lucene.queryParser.CharStream
+Move Method	org.apache.lucene.queryParser.QueryParserTokenManager::jjFillToken():org.apache.lucene.queryParser.Token 	 org.apache.lucene.queryParser.Token
+Move Method	org.apache.lucene.search.payloads.BoostingTermQuery.BoostingTermWeight.BoostingSpanScorer::processPayload(org.apache.lucene.search.Similarity):void 	 org.apache.lucene.search.Similarity
+Move Method	org.apache.lucene.store.RAMInputStream::switchCurrentBuffer(boolean):void 	 org.apache.lucene.store.RAMFile
+Move Method	org.apache.lucene.store.RAMOutputStream::sizeInBytes():long 	 org.apache.lucene.store.RAMFile

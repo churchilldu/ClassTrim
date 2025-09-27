@@ -1,0 +1,6 @@
+Refactoring Type	Source Method	Target Class
+Move Method	org.apache.synapse.config.SynapseConfiguration::getEntry(java.lang.String):java.lang.Object 	 org.apache.synapse.registry.Registry
+Move Method	org.apache.synapse.config.xml.EntryFactory::createEntry(org.apache.synapse.config.xml.OMElement):org.apache.synapse.config.Entry 	 org.apache.synapse.config.Util
+Move Method	org.apache.synapse.config.xml.XMLConfigurationBuilder::getConfiguration(java.io.InputStream):org.apache.synapse.config.SynapseConfiguration 	 org.apache.synapse.config.Util
+Move Method	org.apache.synapse.core.axis2.Axis2Sender::sendBack(org.apache.synapse.MessageContext):void 	 org.apache.synapse.util.UUIDGenerator
+Move Method	org.apache.synapse.core.axis2.SynapseModule::initializeSynapse(org.apache.synapse.core.axis2.ConfigurationContext):org.apache.synapse.config.SynapseConfiguration 	 org.apache.synapse.config.SynapseConfigurationBuilder

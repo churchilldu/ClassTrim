@@ -1,0 +1,51 @@
+Refactoring Type	Source Method	Target Class
+Move Method	org.apache.camel.builder.DeadLetterChannelBuilder::useCollisionAvoidance():org.apache.camel.builder.DeadLetterChannelBuilder 	 org.apache.camel.processor.RedeliveryPolicy
+Move Method	org.apache.camel.builder.ExpressionBuilder::convertTo(org.apache.camel.Expression, java.lang.Class):org.apache.camel.Expression<E> 	 org.apache.camel.Expression
+Move Method	org.apache.camel.builder.PredicateBuilder::toPredicate(org.apache.camel.Expression<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.PredicateBuilder::or(org.apache.camel.Predicate<E>, org.apache.camel.Predicate<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.PredicateBuilder::isEqualTo(org.apache.camel.Expression<E>, org.apache.camel.Expression<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.PredicateBuilder::isNotEqualTo(org.apache.camel.Expression<E>, org.apache.camel.Expression<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.PredicateBuilder::isLessThanOrEqualTo(org.apache.camel.Expression<E>, org.apache.camel.Expression<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.PredicateBuilder::isGreaterThanOrEqualTo(org.apache.camel.Expression<E>, org.apache.camel.Expression<E>):org.apache.camel.Predicate<E> 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.builder.xml.Namespaces::isMatchingNamespaceOrEmptyNamespace(java.lang.String, java.lang.String):boolean 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.component.dataset.DataSetEndpoint::assertEquals(java.lang.String, java.lang.Object, java.lang.Object, org.apache.camel.Exchange):void 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.model.dataformat.DataFormatType::getDataFormat(org.apache.camel.spi.RouteContext, org.apache.camel.model.dataformat.DataFormatType, java.lang.String):org.apache.camel.spi.DataFormat 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.model.loadbalancer.LoadBalancerType::getLoadBalancer(org.apache.camel.spi.RouteContext, org.apache.camel.model.loadbalancer.LoadBalancerType, java.lang.String):org.apache.camel.processor.loadbalancer.LoadBalancer 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.model.ProcessorType::wrapInErrorHandler(org.apache.camel.spi.RouteContext, org.apache.camel.Processor):org.apache.camel.Processor 	 org.apache.camel.spi.RouteContext
+Move Method	org.apache.camel.processor.RoutingSlip::copyOutToIn(org.apache.camel.Exchange, org.apache.camel.Exchange):void 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.util.CamelContextHelper::getMandatoryEndpoint(org.apache.camel.CamelContext, java.lang.String, java.lang.Class<T>):T 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.util.CamelContextHelper::convertTo(org.apache.camel.CamelContext, java.lang.Class<T>, java.lang.Object):T 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.util.CamelContextHelper::newInstance(org.apache.camel.CamelContext, java.lang.Class<T>):T 	 org.apache.camel.CamelContext
+Move Method	org.apache.camel.util.CamelContextHelper::lookup(org.apache.camel.CamelContext, java.lang.String):java.lang.Object 	 org.apache.camel.CamelContext
+Move Method	org.apache.camel.util.CamelContextHelper::lookup(org.apache.camel.CamelContext, java.lang.String, java.lang.Class<T>):T 	 org.apache.camel.CamelContext
+Move Method	org.apache.camel.util.CamelContextHelper::resolveMandatoryLanguage(org.apache.camel.CamelContext, java.lang.String):org.apache.camel.spi.Language 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.util.ExchangeHelper::resolveEndpoint(E, java.lang.Object):org.apache.camel.Endpoint<E> 	 org.apache.camel.util.CamelContextHelper
+Move Method	org.apache.camel.util.ExchangeHelper::convertToType(org.apache.camel.Exchange, java.lang.Class<T>, java.lang.Object):T 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.util.ExchangeHelper::isInCapable(org.apache.camel.Exchange):boolean 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.util.ExchangeHelper::newInstance(org.apache.camel.Exchange, java.lang.Class<T>):T 	 org.apache.camel.spi.Injector
+Move Method	org.apache.camel.util.ExchangeHelper::lookupBean(org.apache.camel.Exchange, java.lang.String):java.lang.Object 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.util.ExchangeHelper::lookupBean(org.apache.camel.Exchange, java.lang.String, java.lang.Class<T>):T 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.util.IntrospectionSupport::findSetterMethod(org.apache.camel.TypeConverter, java.lang.Class, java.lang.String, java.lang.Object):java.lang.reflect.Method 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.util.ServiceHelper::startServices(java.util.Collection):void 	 org.apache.camel.Service
+Move Method	org.apache.camel.util.ServiceHelper::stopServices(java.lang.Object[]):void 	 org.apache.camel.Service
+Move Method	org.apache.camel.util.ServiceHelper::stopServices(java.util.Collection):void 	 org.apache.camel.Service
+Move Method	org.apache.camel.bam.model.ActivityState::isActivity(org.apache.camel.bam.rules.ActivityRules):boolean 	 org.apache.camel.bam.rules.ActivityRules
+Move Method	org.apache.camel.bam.model.ProcessInstance::getOrCreateActivityState(org.apache.camel.bam.rules.ActivityRules):org.apache.camel.bam.model.ActivityState 	 org.apache.camel.bam.rules.ActivityRules
+Move Method	org.apache.camel.component.cxf.CxfSoapBinding::getCxfInMessage(org.apache.camel.Exchange, boolean):org.apache.cxf.message.Message 	 org.apache.camel.Exchange
+Move Method	org.apache.camel.component.cxf.CxfSoapBinding::getCxfOutMessage(org.apache.camel.Exchange, boolean):org.apache.cxf.message.Message 	 org.apache.camel.Message
+Move Method	org.apache.camel.component.cxf.util.CxfEndpointUtils::getPortName(org.apache.camel.component.cxf.CxfEndpoint):javax.xml.namespace.QName 	 org.apache.camel.component.cxf.CxfEndpoint
+Move Method	org.apache.camel.component.cxf.util.CxfEndpointUtils::getEndpointInfo(org.apache.camel.component.cxf.util.Service, org.apache.camel.component.cxf.CxfEndpoint):org.apache.camel.component.cxf.util.EndpointInfo 	 org.apache.camel.component.cxf.CxfEndpoint
+Move Method	org.apache.camel.component.cxf.util.CxfEndpointUtils::checkEndpiontIntegration(org.apache.camel.component.cxf.CxfEndpoint, org.apache.camel.component.cxf.util.Bus):void 	 org.apache.camel.component.cxf.util.UriUtils
+Move Method	org.apache.camel.component.cxf.util.CxfEndpointUtils::getSetDefaultBus(org.apache.camel.component.cxf.CxfEndpoint):boolean 	 org.apache.camel.component.cxf.CxfEndpoint
+Move Method	org.apache.camel.component.cxf.util.CxfEndpointUtils::getDataFormat(org.apache.camel.component.cxf.CxfEndpoint):org.apache.camel.component.cxf.DataFormat 	 org.apache.camel.component.cxf.CxfEndpoint
+Move Method	org.apache.camel.component.jms.JmsComponent::setReceiveTimeout(long):void 	 org.apache.camel.component.jms.JmsConfiguration
+Move Method	org.apache.camel.component.jms.JmsComponent::tryCreateDefaultQueueBrowseStrategy():org.apache.camel.component.jms.QueueBrowseStrategy 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.component.mail.MailEndpoint::createConsumer(org.apache.camel.Processor, org.apache.camel.component.mail.JavaMailSenderImpl):org.apache.camel.Consumer<org.apache.camel.component.mail.MailExchange> 	 org.apache.camel.component.mail.MailConsumer
+Move Method	org.apache.camel.component.mail.MailMessage::extractAttachments(org.apache.camel.component.mail.Message, java.util.Map<java.lang.String,org.apache.camel.component.mail.DataHandler>):void 	 org.apache.camel.util.CollectionHelper
+Move Method	org.apache.camel.component.xquery.XQueryBuilder::xquery(java.io.File):org.apache.camel.component.xquery.XQueryBuilder 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.component.xquery.XQueryBuilder::xquery(java.net.URL):org.apache.camel.component.xquery.XQueryBuilder 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.spring.Main::aggregateSpringCamelContext(org.apache.camel.spring.ApplicationContext):org.apache.camel.spring.SpringCamelContext 	 org.apache.camel.impl.DefaultCamelContext
+Move Method	org.apache.camel.model.dataformat.DataFormatType::getDataFormat(org.apache.camel.spi.RouteContext, org.apache.camel.model.dataformat.DataFormatType, java.lang.String):org.apache.camel.spi.DataFormat 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.model.loadbalancer.LoadBalancerType::getLoadBalancer(org.apache.camel.spi.RouteContext, org.apache.camel.model.loadbalancer.LoadBalancerType, java.lang.String):org.apache.camel.processor.loadbalancer.LoadBalancer 	 org.apache.camel.util.ObjectHelper
+Move Method	org.apache.camel.model.ProcessorType::wrapInErrorHandler(org.apache.camel.spi.RouteContext, org.apache.camel.Processor):org.apache.camel.Processor 	 org.apache.camel.spi.RouteContext
+Move Method	org.apache.camel.component.stream.StreamConsumer::resolveStreamFromUrl():java.io.InputStream 	 org.apache.camel.component.stream.StreamEndpoint

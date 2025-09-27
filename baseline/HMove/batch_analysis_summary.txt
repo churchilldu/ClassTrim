@@ -1,0 +1,22 @@
+Batch FeTruth Analysis Summary
+Generated: Sat, Sep 27, 2025  6:45:37 PM
+==========================================
+Total Projects: 14
+Successful Analyses: 14
+Failed Analyses: 0
+
+Project Results:
+  ant-1_5: 62 refactoring opportunities
+  ant-1_6: 97 refactoring opportunities
+  ant-1_7: 133 refactoring opportunities
+  jEdit-4_0: 116 refactoring opportunities
+  jEdit-4_1: 129 refactoring opportunities
+  jEdit-4_2: 162 refactoring opportunities
+  camel-1_4: 50 refactoring opportunities
+  camel-1_6: 59 refactoring opportunities
+  lucene-2_0: 41 refactoring opportunities
+  lucene-2_2: 51 refactoring opportunities
+  lucene-2_4: 65 refactoring opportunities
+  synapse-1_0: 5 refactoring opportunities
+  synapse-1_1: 7 refactoring opportunities
+  synapse-1_2: 10 refactoring opportunities

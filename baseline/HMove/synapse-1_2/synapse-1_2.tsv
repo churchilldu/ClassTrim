@@ -1,0 +1,11 @@
+Refactoring Type	Source Method	Target Class
+Move Method	org.apache.synapse.config.xml.EntryFactory::createEntry(org.apache.synapse.config.xml.OMElement):org.apache.synapse.config.Entry 	 org.apache.synapse.config.SynapseConfigUtils
+Move Method	org.apache.synapse.config.xml.SynapseXMLConfigurationFactory::defineEntry(org.apache.synapse.config.SynapseConfiguration, org.apache.synapse.config.xml.OMElement):void 	 org.apache.synapse.config.xml.EntryFactory
+Move Method	org.apache.synapse.config.xml.SynapseXMLConfigurationFactory::setDefaultMainSequence(org.apache.synapse.config.SynapseConfiguration):void 	 org.apache.synapse.mediators.base.SequenceMediator
+Move Method	org.apache.synapse.config.xml.SynapseXMLConfigurationFactory::setDefaultFaultSequence(org.apache.synapse.config.SynapseConfiguration):void 	 org.apache.synapse.mediators.builtin.LogMediator
+Move Method	org.apache.synapse.core.axis2.Axis2FlexibleMEPClient::send(org.apache.synapse.endpoints.utils.EndpointDefinition, org.apache.synapse.MessageContext):void 	 org.apache.synapse.core.axis2.SOAPUtils
+Move Method	org.apache.synapse.core.axis2.Axis2Sender::sendBack(org.apache.synapse.MessageContext):void 	 org.apache.synapse.util.POXUtils
+Move Method	org.apache.synapse.handler.SynapseModule::engageNotify(org.apache.synapse.handler.AxisDescription):void 	 org.apache.synapse.core.axis2.SynapseInitializationModule
+Move Method	org.apache.synapse.transport.amqp.AMQPUtils::getTransportHeaders(org.apache.qpidity.api.Message):java.util.Map 	 org.apache.qpidity.transport.MessageProperties
+Move Method	org.apache.synapse.transport.fix.FIXTransportSender::sendUsingAcceptorSession(java.lang.String, quickfix.Message, java.lang.String, int):boolean 	 quickfix.Acceptor
+Move Method	org.apache.synapse.transport.udp.Utils::hexDump(java.lang.StringBuilder, byte[], int):void 	 org.apache.commons.lang.StringUtils

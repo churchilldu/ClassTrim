@@ -1,0 +1,163 @@
+Refactoring Type	Source Method	Target Class
+Move Method	bsh.BSHAllocationExpression::constructWithClassBody(java.lang.Class, java.lang.Object[], bsh.BSHBlock, bsh.CallStack, bsh.Interpreter):java.lang.Object 	 bsh.Modifiers
+Move Method	bsh.BshMethod::invoke(java.lang.Object[], bsh.Interpreter, bsh.CallStack, bsh.SimpleNode, boolean):java.lang.Object 	 bsh.Modifiers
+Move Method	bsh.BshMethod::invokeImpl(java.lang.Object[], bsh.Interpreter, bsh.CallStack, bsh.SimpleNode, boolean):java.lang.Object 	 bsh.Interpreter
+Move Method	bsh.ClassGeneratorImpl::generateClassImpl(java.lang.String, bsh.Modifiers, java.lang.Class[], java.lang.Class, bsh.BSHBlock, boolean, bsh.CallStack, bsh.Interpreter):java.lang.Class 	 bsh.ClassGeneratorUtil
+Move Method	bsh.ClassGeneratorImpl::invokeSuperclassMethodImpl(bsh.BshClassManager, java.lang.Object, java.lang.String, java.lang.Object[]):java.lang.Object 	 bsh.Types
+Move Method	bsh.ClassGeneratorUtil::getASMModifiers(bsh.Modifiers):int 	 bsh.Modifiers
+Move Method	bsh.ClassGeneratorUtil::generateConstructorSwitch(int, int, int, org.objectweb.asm.CodeVisitor):void 	 org.objectweb.asm.CodeVisitor
+Move Method	bsh.ClassGeneratorUtil::generateReturnCode(java.lang.String, org.objectweb.asm.CodeVisitor):void 	 org.objectweb.asm.CodeVisitor
+Move Method	bsh.ClassGeneratorUtil::getClassStaticThis(java.lang.Class, java.lang.String):bsh.This 	 bsh.Reflect
+Move Method	bsh.commands.dir::invoke(bsh.Interpreter, bsh.CallStack, java.lang.String):void 	 bsh.StringUtil
+Move Method	bsh.Interpreter::invokeMain(java.lang.Class, java.lang.String[]):void 	 bsh.Reflect
+Move Method	bsh.NameSpace::getImportedClassImpl(java.lang.String):java.lang.Class 	 bsh.BshClassManager
+Move Method	bsh.Parser::ClassDeclaration():void 	 bsh.Token
+Move Method	bsh.Parser::MethodDeclaration():void 	 bsh.Token
+Move Method	bsh.Parser::ImportDeclaration():void 	 bsh.BSHImportDeclaration
+Move Method	bsh.Parser::VariableDeclarator():void 	 bsh.Token
+Move Method	bsh.Parser::AssignmentOperator():int 	 bsh.Token
+Move Method	bsh.Parser::InclusiveOrExpression():void 	 bsh.Token
+Move Method	bsh.Parser::ExclusiveOrExpression():void 	 bsh.Token
+Move Method	bsh.Parser::PostfixExpression():void 	 bsh.Token
+Move Method	bsh.Parser::TypedVariableDeclaration():void 	 bsh.Modifiers
+Move Method	bsh.Parser::jj_consume_token(int):bsh.Token 	 bsh.Token
+Move Method	bsh.Parser::jj_scan_token(int):boolean 	 bsh.Token
+Move Method	bsh.Parser::getToken(int):bsh.Token 	 bsh.Token
+Move Method	bsh.ParserTokenManager::getNextToken():bsh.Token 	 bsh.Token
+Move Method	bsh.Reflect::invokeOnMethod(java.lang.reflect.Method, java.lang.Object, java.lang.Object[]):java.lang.Object 	 bsh.Types
+Move Method	bsh.Reflect::findAccessibleField(java.lang.Class, java.lang.String):java.lang.reflect.Field 	 bsh.ReflectManager
+Move Method	bsh.Reflect::resolveExpectedJavaMethod(bsh.BshClassManager, java.lang.Class, java.lang.Object, java.lang.String, java.lang.Object[], boolean):java.lang.reflect.Method 	 bsh.StringUtil
+Move Method	bsh.Reflect::resolveJavaMethod(bsh.BshClassManager, java.lang.Class, java.lang.Object, java.lang.String, java.lang.Object[], boolean):java.lang.reflect.Method 	 bsh.Primitive
+Move Method	bsh.Reflect::resolveJavaMethod(bsh.BshClassManager, java.lang.Class, java.lang.String, java.lang.Class[], boolean):java.lang.reflect.Method 	 bsh.StringUtil
+Move Method	bsh.Reflect::findAccessibleMethod(java.lang.Class, java.lang.String, java.lang.Class[]):java.lang.reflect.Method 	 bsh.Capabilities
+Move Method	bsh.Reflect::constructObject(java.lang.Class, java.lang.Object[]):java.lang.Object 	 bsh.StringUtil
+Move Method	bsh.Reflect::findMostSpecificSignature(java.lang.Class[], java.lang.Class[][]):int 	 bsh.Types
+Move Method	bsh.Types::getTypes(java.lang.Object[]):java.lang.Class[] 	 bsh.Primitive
+Move Method	gnu.regexp.RE::getAllMatchesImpl(gnu.regexp.CharIndexed, int, int):gnu.regexp.REMatch[] 	 gnu.regexp.REMatch
+Move Method	gnu.regexp.RE::substituteImpl(gnu.regexp.CharIndexed, java.lang.String, int, int):java.lang.String 	 gnu.regexp.REMatch
+Move Method	gnu.regexp.RE::substituteAllImpl(gnu.regexp.CharIndexed, java.lang.String, int, int):java.lang.String 	 gnu.regexp.REMatch
+Move Method	gnu.regexp.RE::getMinMax(char[], int, gnu.regexp.IntPair, gnu.regexp.RESyntax):int 	 gnu.regexp.RESyntax
+Move Method	installer.TarEntry::writeEntryHeader(byte[]):void 	 installer.TarHeader
+Move Method	LatestVersionPlugin::doVersionCheck(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	LatestVersionPlugin::doVersionCheck(org.gjt.sp.jedit.View, java.lang.String, java.lang.String):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Abbrevs::expandAbbrev(org.gjt.sp.jedit.View, boolean):boolean 	 org.gjt.sp.jedit.TextUtilities
+Move Method	org.gjt.sp.jedit.Abbrevs::save():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Abbrevs::load():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.BeanShell::showEvaluateDialog(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.BeanShell::showEvaluateLinesDialog(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.BeanShell::_runScript(org.gjt.sp.jedit.View, java.lang.String, java.io.Reader, bsh.NameSpace):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.browser.BrowserCommandsMenu::update():void 	 org.gjt.sp.jedit.browser.VFSBrowser
+Move Method	org.gjt.sp.jedit.browser.BrowserView::maybeReloadDirectory(java.lang.String):void 	 org.gjt.sp.jedit.browser.VFSBrowser
+Move Method	org.gjt.sp.jedit.browser.VFSBrowser::browseDirectoryInNewWindow(org.gjt.sp.jedit.View, java.lang.String):void 	 org.gjt.sp.jedit.gui.DockableWindowManager
+Move Method	org.gjt.sp.jedit.browser.VFSBrowser::browseDirectory(org.gjt.sp.jedit.View, java.lang.String):void 	 org.gjt.sp.jedit.gui.DockableWindowManager
+Move Method	org.gjt.sp.jedit.browser.VFSBrowser::rename(java.lang.String):void 	 org.gjt.sp.jedit.io.VFS
+Move Method	org.gjt.sp.jedit.browser.VFSBrowser::filesActivated(int, boolean):void 	 org.gjt.sp.jedit.browser.BrowserView
+Move Method	org.gjt.sp.jedit.browser.VFSBrowser::filesSelected():void 	 org.gjt.sp.jedit.View
+Move Method	org.gjt.sp.jedit.buffer.KillRing::load():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.buffer.KillRing::save():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Buffer::insert(int, java.lang.String):void 	 org.gjt.sp.jedit.buffer.ContentManager
+Move Method	org.gjt.sp.jedit.Buffer::insert(int, javax.swing.text.Segment):void 	 org.gjt.sp.jedit.buffer.ContentManager
+Move Method	org.gjt.sp.jedit.BufferHistory::load():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.BufferHistory::save():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.EditServer::handleClient(boolean, boolean, boolean, java.lang.String, java.lang.String[]):org.gjt.sp.jedit.Buffer 	 org.gjt.sp.jedit.PerspectiveManager
+Move Method	org.gjt.sp.jedit.gui.CompleteWord::completeWord(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.gui.CompleteWord::getWordToComplete(org.gjt.sp.jedit.Buffer, int, int, java.lang.String):java.lang.String 	 org.gjt.sp.jedit.TextUtilities
+Move Method	org.gjt.sp.jedit.gui.DockableWindowManager::showDockableWindow(java.lang.String):void 	 org.gjt.sp.jedit.View
+Move Method	org.gjt.sp.jedit.gui.DockableWindowManager::closeCurrentArea():void 	 org.gjt.sp.jedit.gui.PanelWindowContainer
+Move Method	org.gjt.sp.jedit.gui.HistoryModel::loadHistory():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.gui.HistoryModel::saveHistory():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.gui.PanelWindowContainer::showMostRecent():void 	 org.gjt.sp.jedit.gui.DockableWindowManager
+Move Method	org.gjt.sp.jedit.GUIUtilities::loadIcon(java.lang.String):javax.swing.Icon 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.GUIUtilities::loadMenuItem(org.gjt.sp.jedit.ActionContext, java.lang.String, boolean):javax.swing.JMenuItem 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::showVFSFileDialog(org.gjt.sp.jedit.View, java.lang.String, int, boolean):java.lang.String[] 	 org.gjt.sp.jedit.browser.VFSFileChooserDialog
+Move Method	org.gjt.sp.jedit.GUIUtilities::loadStyles(java.lang.String, int, boolean):org.gjt.sp.jedit.syntax.SyntaxStyle[] 	 org.gjt.sp.jedit.syntax.Token
+Move Method	org.gjt.sp.jedit.GUIUtilities::loadGeometry(java.awt.Window, java.lang.String):void 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::adjustForScreenBounds(java.awt.Rectangle):void 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::setExtendedState(java.awt.Frame, int):void 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::createMultilineLabel(java.lang.String):javax.swing.JComponent 	 org.gjt.sp.jedit.gui.VariableGridLayout
+Move Method	org.gjt.sp.jedit.GUIUtilities::isMiddleButton(int):boolean 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::isRightButton(int):boolean 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.GUIUtilities::getComponentParent(java.awt.Component, java.lang.Class):java.awt.Component 	 org.gjt.sp.jedit.gui.FloatingWindowContainer
+Move Method	org.gjt.sp.jedit.io.FavoritesVFS::addToFavorites(java.lang.String, int):void 	 org.gjt.sp.jedit.io.VFSManager
+Move Method	org.gjt.sp.jedit.io.FileRootsVFS::listRoots():java.io.File[] 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.io.FileVFS::getPermissions(java.lang.String):int 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.io.FileVFS::setPermissions(java.lang.String, int):void 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.io.VFS::_listDirectory(java.lang.Object, java.lang.String, java.lang.String, boolean, java.awt.Component):java.lang.String[] 	 gnu.regexp.RE
+Move Method	org.gjt.sp.jedit.io.VFS::loadColors():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.io.VFSManager::getVFSByName(java.lang.String):org.gjt.sp.jedit.io.VFS 	 org.gjt.sp.jedit.ServiceManager
+Move Method	org.gjt.sp.jedit.io.VFSManager::getVFSForProtocol(java.lang.String):org.gjt.sp.jedit.io.VFS 	 org.gjt.sp.jedit.ServiceManager
+Move Method	org.gjt.sp.jedit.io.VFSManager::getVFSForPath(java.lang.String):org.gjt.sp.jedit.io.VFS 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.io.VFSManager::registerVFS(java.lang.String, org.gjt.sp.jedit.io.VFS):void 	 org.gjt.sp.jedit.io.VFS
+Move Method	org.gjt.sp.jedit.io.VFSManager::getVFSs():java.lang.String[] 	 org.gjt.sp.jedit.ServiceManager
+Move Method	org.gjt.sp.jedit.io.VFSManager::sendVFSUpdate(org.gjt.sp.jedit.io.VFS, java.lang.String, boolean):void 	 org.gjt.sp.jedit.msg.VFSUpdate
+Move Method	org.gjt.sp.jedit.jEdit::getVersion():java.lang.String 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::getColorProperty(java.lang.String, java.awt.Color):java.awt.Color 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::setColorProperty(java.lang.String, java.awt.Color):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::reloadModes():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::openFile(org.gjt.sp.jedit.View, java.lang.String, java.lang.String, boolean, java.util.Hashtable):org.gjt.sp.jedit.Buffer 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::openTemporary(org.gjt.sp.jedit.View, java.lang.String, java.lang.String, boolean):org.gjt.sp.jedit.Buffer 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::closeBuffer(org.gjt.sp.jedit.View, org.gjt.sp.jedit.Buffer):boolean 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::_closeBuffer(org.gjt.sp.jedit.View, org.gjt.sp.jedit.Buffer):void 	 org.gjt.sp.jedit.io.VFSManager
+Move Method	org.gjt.sp.jedit.jEdit::closeAllBuffers(org.gjt.sp.jedit.View, boolean):boolean 	 org.gjt.sp.jedit.textarea.DisplayManager
+Move Method	org.gjt.sp.jedit.jEdit::saveAllBuffers(org.gjt.sp.jedit.View, boolean):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::reloadAllBuffers(org.gjt.sp.jedit.View, boolean):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::_getBuffer(java.lang.String):org.gjt.sp.jedit.Buffer 	 org.gjt.sp.jedit.io.VFSManager
+Move Method	org.gjt.sp.jedit.jEdit::getBuffer(java.lang.String):org.gjt.sp.jedit.Buffer 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::newView(org.gjt.sp.jedit.View, org.gjt.sp.jedit.Buffer, org.gjt.sp.jedit.View.ViewConfig):org.gjt.sp.jedit.View 	 org.gjt.sp.jedit.gui.DockableWindowManager
+Move Method	org.gjt.sp.jedit.jEdit::backupSettingsFile(java.io.File):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::saveSettings():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::exit(org.gjt.sp.jedit.View, boolean):void 	 org.gjt.sp.jedit.io.VFSManager
+Move Method	org.gjt.sp.jedit.jEdit::loadMode(org.gjt.sp.jedit.Mode):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::initMisc():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::initSiteProperties():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::initPlugins():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::initUserProperties():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.jEdit::finishStartup(boolean, boolean, java.lang.String, java.lang.String[]):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.jEdit::loadModeCatalog(java.lang.String, boolean):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Macros::showRunScriptDialog(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::runScript(org.gjt.sp.jedit.View, java.lang.String, boolean):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Macros::message(java.awt.Component, java.lang.String):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::error(java.awt.Component, java.lang.String):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::input(java.awt.Component, java.lang.String):java.lang.String 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::confirm(java.awt.Component, java.lang.String, int):int 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::confirm(java.awt.Component, java.lang.String, int, int):int 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::loadMacros():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Macros::recordTemporaryMacro(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::recordMacro(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::stopRecording(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.Macros::runTemporaryMacro(org.gjt.sp.jedit.View):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Macros.Handler::accept(java.lang.String):boolean 	 gnu.regexp.RE
+Move Method	org.gjt.sp.jedit.MiscUtilities::canonPath(java.lang.String):java.lang.String 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.MiscUtilities::resolveSymlinks(java.lang.String):java.lang.String 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.MiscUtilities::isAbsolutePath(java.lang.String):boolean 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.MiscUtilities::constructPath(java.lang.String, java.lang.String):java.lang.String 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.MiscUtilities::getEncodings():java.lang.String[] 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.MiscUtilities::isSupportedEncoding(java.lang.String):boolean 	 org.gjt.sp.jedit.OperatingSystem
+Move Method	org.gjt.sp.jedit.Mode::accept(java.lang.String, java.lang.String):boolean 	 gnu.regexp.RE
+Move Method	org.gjt.sp.jedit.options.ToolBarOptionPane::updateButtons():void 	 org.gjt.sp.jedit.gui.RolloverButton
+Move Method	org.gjt.sp.jedit.PerspectiveManager::loadPerspective(boolean):org.gjt.sp.jedit.View 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.PerspectiveManager::savePerspective(boolean):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.pluginmgr.PluginList.Dependency::isSatisfied():boolean 	 org.gjt.sp.jedit.pluginmgr.PluginList.Plugin
+Move Method	org.gjt.sp.jedit.print.BufferPrinter1_4::getPrintJob(java.lang.String):java.awt.print.PrinterJob 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.print.BufferPrinter1_4::savePrintSpec():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Registers::saveRegisters():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.Registers::loadRegisters():void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::getSmartCaseReplace():boolean 	 org.gjt.sp.jedit.TextUtilities
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::hyperSearch(org.gjt.sp.jedit.View, boolean):boolean 	 org.gjt.sp.jedit.io.VFSManager
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::find(org.gjt.sp.jedit.View):boolean 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::replaceAll(org.gjt.sp.jedit.View):boolean 	 org.gjt.sp.jedit.TextUtilities
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::record(org.gjt.sp.jedit.View, java.lang.String, boolean, boolean):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.search.SearchAndReplace::replaceOne(org.gjt.sp.jedit.Buffer, org.gjt.sp.jedit.search.SearchMatcher.Match, int, java.lang.String, boolean):int 	 org.gjt.sp.jedit.TextUtilities
+Move Method	org.gjt.sp.jedit.search.SearchDialog::showSearchDialog(org.gjt.sp.jedit.View, java.lang.String, int):void 	 org.gjt.sp.jedit.GUIUtilities
+Move Method	org.gjt.sp.jedit.ServiceManager::getService(java.lang.String, java.lang.String):java.lang.Object 	 org.gjt.sp.jedit.ServiceManager.Descriptor
+Move Method	org.gjt.sp.jedit.syntax.DisplayTokenHandler::merge(org.gjt.sp.jedit.syntax.Chunk, javax.swing.text.Segment):org.gjt.sp.jedit.syntax.Chunk 	 org.gjt.sp.jedit.syntax.Token
+Move Method	org.gjt.sp.jedit.syntax.DisplayTokenHandler::canMerge(org.gjt.sp.jedit.syntax.Chunk, org.gjt.sp.jedit.syntax.Chunk, javax.swing.text.Segment):boolean 	 org.gjt.sp.jedit.syntax.Token
+Move Method	org.gjt.sp.jedit.textarea.DisplayManager::_notifyScreenLineChanges():void 	 org.gjt.sp.jedit.textarea.DisplayManager.FirstLine
+Move Method	org.gjt.sp.jedit.textarea.JEditTextArea::getRectParams(int, int):org.gjt.sp.jedit.textarea.JEditTextArea.RectParams 	 org.gjt.sp.jedit.textarea.Selection
+Move Method	org.gjt.sp.jedit.TextUtilities::getTokenAtOffset(org.gjt.sp.jedit.syntax.Token, int):org.gjt.sp.jedit.syntax.Token 	 org.gjt.sp.jedit.syntax.Token
+Move Method	org.gjt.sp.jedit.TextUtilities::spacesToTabs(java.lang.String, int):java.lang.String 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.TextUtilities::formatParagraph(java.lang.String, int, int, java.lang.StringBuffer):void 	 org.gjt.sp.jedit.MiscUtilities
+Move Method	org.gjt.sp.jedit.View::nextTextArea():void 	 org.gjt.sp.jedit.EditPane
+Move Method	org.gjt.sp.jedit.View::loadToolBars():void 	 org.gjt.sp.jedit.gui.ToolBarManager
+Move Method	org.gjt.sp.jedit.View::updateGutterBorders():void 	 org.gjt.sp.jedit.EditPane
+Move Method	org.objectweb.asm.ClassWriter::toByteArray():byte[] 	 org.objectweb.asm.CodeWriter
