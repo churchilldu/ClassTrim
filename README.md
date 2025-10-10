@@ -29,13 +29,13 @@ Refactor methods to another class by NSGA (Non-dominated Sorting Genetic Algorit
     - Run and evaluate baselines: `BaselineRefactor`
     - Parsers for baseline outputs: `JDeodorantParser`, `JMoveParser`, `HMoveParser`, `REsolutionParser`, `ParserFactory`
   - `org.refactor.common`
-    - Shared types/config: `DatasetEnum`, `BaselineEnum`, `Threshold`, `Metric`, `AlgorithmParameter`
+    - Constants: `DatasetEnum`, `BaselineEnum`, `Threshold`, `Metric`, `AlgorithmParameter`
   - `org.refactor.model`
     - Program model: `JavaProject`, `JavaClass`, `JavaMethod`, `JavaObject`
   - `org.refactor.util`
-    - Utilities: `ASMUtils`, `AppProperties`, `FileUtils`, `MetricUtils`, `RefactorOutput`, `ProjectUtils`, `DebugUtils`, `NotifyUtils`
+    - Utils: `ASMUtils`, `AppProperties`, `FileUtils`, `MetricUtils`, `RefactorOutput`, `ProjectUtils`, `DebugUtils`, `NotifyUtils`
   - `org.refactor.visitor`
-    - ASM visitors: `ClazzVisitor`, `CouplingVisitor`, `MethodInvocationVisitor`
+    - Class to parse bytecode: `ClazzVisitor`, `CouplingVisitor`, `MethodInvocationVisitor`
 - `src/main/resources`
   - App config template: `config.properties.example`
 - `src/test/java`
