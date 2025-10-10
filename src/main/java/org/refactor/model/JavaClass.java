@@ -49,12 +49,52 @@ public class JavaClass extends JavaObject {
 
         for (JavaMethod method : nameMatchedMethods) {
             String[] parameters = ASMUtils.getParameters(method.getDescriptor());
-            if (Arrays.equals(parameterTypes, parameters)) {
+            if (parameterTypesEqual(parameterTypes, parameters)) {
                 return Optional.of(method);
             }
         }
         log.error("Unmatch argument types: methodName {}, parameterTypes {}.", methodName, parameterTypes);
         return Optional.empty();
+    }
+
+    /**
+     * Compare parameter types by their simple class names only
+     * @param types1 First array of parameter types
+     * @param types2 Second array of parameter types
+     * @return true if all corresponding types have the same simple class name
+     */
+    private boolean parameterTypesEqual(String[] types1, String[] types2) {
+        if (types1.length != types2.length) {
+            return false;
+        } 
+        
+        for (int i = 0; i < types1.length; i++) {
+            String simpleName1 = getSimpleClassName(types1[i]);
+            String simpleName2 = getSimpleClassName(types2[i]);
+            if (!simpleName1.equals(simpleName2)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Extract simple class name from full class name
+     * @param fullClassName Full class name like "java.lang.Class" or "java.util.List"
+     * @return Simple class name like "Class" or "List"
+     */
+    private String getSimpleClassName(String fullClassName) {
+        if (fullClassName == null || fullClassName.isEmpty()) {
+            return fullClassName;
+        }
+        
+        int lastDotIndex = fullClassName.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return fullClassName;
+        }
+        
+        return fullClassName.substring(lastDotIndex + 1);
     }
 
     /**

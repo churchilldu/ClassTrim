@@ -80,6 +80,8 @@ public class JDeodorantParser implements RefactorSuggestionParser {
         String[] parameterTypes = parameters.isEmpty() ? new String[0] : parameters.split(",");
         for (int i = 0; i < parameterTypes.length; i++) {
             parameterTypes[i] = parameterTypes[i].trim();
+            // Remove all generic type parameters from class types
+            parameterTypes[i] = parameterTypes[i].replaceAll("<.*>", "");
         }
         
         return new ParsedMethodInfo(sourceClass, methodName, parameterTypes, returnType);

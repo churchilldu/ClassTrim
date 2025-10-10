@@ -44,6 +44,7 @@ public class ASMUtils {
     public static String[] getParameters(String descriptor) {
         return Arrays.stream(Type.getMethodType(descriptor).getArgumentTypes())
                 .map(Type::getClassName)
+                .map(s -> s.replace("$", "."))
                 .toArray(String[]::new);
     }
 

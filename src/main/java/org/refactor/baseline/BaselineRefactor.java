@@ -23,11 +23,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class BaselineRefactor {
     public static void main(String[] args) {
-        doRefactor(BaselineEnum.JDEODORANT);
-        doRefactor(BaselineEnum.JMOVE);
-//        for (BaselineEnum baseline : BaselineEnum.values()) {
-//            doRefactor(baseline);
-//        }
+        for (BaselineEnum baseline : BaselineEnum.values()) {
+            doRefactor(baseline);
+        }
     }
 
     private static void doRefactor(BaselineEnum baseline) {
