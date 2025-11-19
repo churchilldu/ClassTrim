@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="jEdit-4.1-nsga2" type="Application" factoryName="Application" folderName="nsag2" singleton="false">
+    <option name="MAIN_CLASS_NAME" value="org.refactor.NSGAII" />
+    <module name="RefactorByNSGA3" />
+    <option name="PROGRAM_PARAMETERS" value="jEdit-4.1" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.refactor.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
