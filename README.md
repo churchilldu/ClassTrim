@@ -1,6 +1,6 @@
-# GMove
+# ClassTrim
 
-Refactor methods to another class by NSGA (Non-dominated Sorting Genetic Algorithm).
+ClassTrim is a framework to recommend move method refactoring using Non-dominated Sorting Genetic Algorithm-III (NSGA-III) to minimizing the number of classes that exceed predefined metric thresholds.
 
 ## Quick start
 
@@ -68,7 +68,7 @@ Typical subfolders include `JDeodorant/`, `JMove/`, `HMove/` and `REsolution/`, 
 
 ## Rule to compute metrics
 
-Strictly follow the tool [CKjm]() used in the paper []().
+Strictly follow the tool [CKjm](https://github.com/dspinellis/ckjm) used in the paper *Shatnawi, R. The application of ROC analysis in threshold identification, data imbalance and metrics selection for software fault prediction. Innovations Syst Softw Eng 13, 201–217 (2017). https://doi.org/10.1007/s11334-017-0295-0*.
 
 Where are the parsed classes and methods possibly from?
 1. JDK
@@ -103,3 +103,4 @@ Number of methods that can execute in response to a message to the class: sum of
 
 2. Why not use a database instead of files?
    - The dataset size is modest, and TSV files (not csv file becasue method name may contain comma) plus object serialization keep the footprint and complexity low. A database could improve querying, but is intentionally avoided to reduce operational overhead.
+
