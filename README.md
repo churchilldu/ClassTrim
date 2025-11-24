@@ -6,7 +6,7 @@ ClassTrim is a framework to recommend move method refactoring using Non-dominate
 
 1) Prerequisites
 
-- Java 8+
+- JDK 17+
 - Maven 3.8+
 
 2) Configure environment
@@ -104,3 +104,11 @@ Number of methods that can execute in response to a message to the class: sum of
 2. Why not use a database instead of files?
    - The dataset size is modest, and TSV files (not csv file becasue method name may contain comma) plus object serialization keep the footprint and complexity low. A database could improve querying, but is intentionally avoided to reduce operational overhead.
 
+## Thanks
+
+- [ASM](https://asm.ow2.io/)
+- [JMetal](https://github.com/jMetal/jMetal)
+
+## License
+
+[MIT](./LICENSE)
