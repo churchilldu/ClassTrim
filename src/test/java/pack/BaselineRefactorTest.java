@@ -1,11 +1,11 @@
 package pack;
 
 import org.junit.Test;
-import org.refactor.baseline.BaselineRefactor;
-import org.refactor.common.DatasetEnum;
-import org.refactor.model.JavaClass;
-import org.refactor.model.JavaMethod;
-import org.refactor.model.JavaProject;
+import org.classtrim.baseline.BaselineRefactor;
+import org.classtrim.common.DatasetEnum;
+import org.classtrim.model.JavaClass;
+import org.classtrim.model.JavaMethod;
+import org.classtrim.model.JavaProject;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;

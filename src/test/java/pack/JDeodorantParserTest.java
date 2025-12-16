@@ -3,11 +3,11 @@ package pack;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
-import org.refactor.baseline.JDeodorantParser;
-import org.refactor.common.DatasetEnum;
-import org.refactor.model.JavaClass;
-import org.refactor.model.JavaMethod;
-import org.refactor.model.JavaProject;
+import org.classtrim.baseline.JDeodorantParser;
+import org.classtrim.common.DatasetEnum;
+import org.classtrim.model.JavaClass;
+import org.classtrim.model.JavaMethod;
+import org.classtrim.model.JavaProject;
 
 import java.io.File;
 import java.io.IOException;
