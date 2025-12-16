@@ -42,7 +42,7 @@ public class NSGAII extends AbstractAlgorithmRunner {
                 new RankingAndCrowdingDistanceComparator<>());
 
         int populationSize = 500;
-        int maxEvaluations = 75000;
+        int maxEvaluations = 2000;
 
         Algorithm<List<IntegerSolution>> algorithm =
                 new NSGAIIBuilder<>(problem, crossover, mutation, populationSize)
