@@ -25,6 +25,8 @@ NSGA-III) to minimizing the number of classes that exceed predefined metric thre
     - `org.classtrim.NSGAII` or `org.classtrim.NSGAIII` run it once.
     - `org.classtrim.baseline.BaselineRefactor` run baseline comparison experiment.
 
+How I calculate metrics and some common question are in [wiki](https://github.com/churchilldu/ClassTrim/wiki).
+
 ## Baseline comparison (`baseline/`)
 
 ![](./connected-baseline.png)
