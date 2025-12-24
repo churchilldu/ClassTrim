@@ -52,7 +52,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
     @Override
     public int numberOfObjectives() {
-        return 3;
+        return 6;
     }
 
     @Override
@@ -87,13 +87,13 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         // RFC
         solution.objectives()[2] = objectiveCalculator.countClassRfcOverThreshold();
 
-        /* The following objectives is to guide algorithm to right direction. **/
+        /** The following objectives is to guide algorithm to right direction. */
         // WMC
-//        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
+        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
         // CBO
-//        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
+        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
         // RFC
-//        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
+        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
 
         return solution;
     }

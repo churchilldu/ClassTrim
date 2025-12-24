@@ -57,7 +57,7 @@ public class NSGAII extends AbstractAlgorithmRunner {
         long computingTime = algorithmRunner.getComputingTime();
 
         // generation = max evaluation / (number of objectives * population)
-        AlgorithmParameter nsga2 = new AlgorithmParameter("NSGA2", populationSize, maxEvaluations / (3 * populationSize));
+        AlgorithmParameter nsga2 = new AlgorithmParameter("NSGA2", populationSize, maxEvaluations);
         new RefactorOutput(problem.getProject(), population, nsga2)
                 .write();
         JMetalLogger.logger.info("Total execution time: " + computingTime + "ms");
