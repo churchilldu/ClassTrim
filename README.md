@@ -3,6 +3,8 @@
 ClassTrim is a framework to recommend move method refactoring using Non-dominated Sorting Genetic Algorithm-III (
 NSGA-III) to minimizing the number of classes that exceed predefined metric thresholds.
 
+Raw experiment data doi: 10.17632/8b3fd45kp6.1
+
 ## Quick start
 
 1) Prerequisites
