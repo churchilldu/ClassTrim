@@ -16,32 +16,30 @@ import com.intellij.openapi.actionSystem.CommonDataKeys;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.OpenFileDescriptor;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.ui.table.JBTable;
 import org.classtrim.core.engine.RefactoringSuggestion;
-import org.classtrim.model.JavaMethod;
 
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Tool-window panel that displays move-method suggestions and supports:
+ * Tool-window panel that displays move-method suggestions with:
  * <ul>
- *   <li><strong>Single-click navigation</strong> — selecting a row navigates
- *       the editor to the method's declaration and highlights it.</li>
- *   <li><strong>Per-row "Move" button</strong> — invokes IntelliJ's standard
- *       Move Instance Method refactoring dialog on the selected suggestion.</li>
+ *   <li>A checkbox column for selecting rows</li>
+ *   <li>Single-click navigation to the method declaration</li>
+ *   <li>A toolbar with "Select All" and "Move Selected" buttons</li>
+ *   <li>Applied rows are greyed out and cannot be re-selected</li>
  * </ul>
  */
 public class ClassTrimToolWindowPanel extends JPanel {
@@ -51,51 +49,132 @@ public class ClassTrimToolWindowPanel extends JPanel {
     private final DefaultTableModel model;
     private final JBTable table;
     private final List<RefactoringSuggestion> suggestions = new ArrayList<>();
+    private final Set<Integer> appliedRows = new HashSet<>();
+    private final JButton moveButton;
+    private final JButton selectAllButton;
 
     public ClassTrimToolWindowPanel(Project project) {
         super(new BorderLayout());
         this.project = project;
-        this.model = new DefaultTableModel(new Object[]{"Method", "From", "To", "Action"}, 0) {
+
+        // Table model: columns are [✓, Method, From, To]
+        this.model = new DefaultTableModel(new Object[]{"✓", "Method", "From", "To"}, 0) {
+            @Override
+            public Class<?> getColumnClass(int column) {
+                return column == 0 ? Boolean.class : String.class;
+            }
+
             @Override
             public boolean isCellEditable(int row, int column) {
-                // Only the "Action" column (index 3) is editable (for the button click).
-                return column == 3;
+                // Only the checkbox column is editable, and only if the row hasn't been applied.
+                return column == 0 && !appliedRows.contains(row);
             }
         };
+
         this.table = new JBTable(model);
+        table.getColumnModel().getColumn(0).setPreferredWidth(30);
+        table.getColumnModel().getColumn(0).setMaxWidth(40);
 
-        // Set up the "Action" column with a button renderer + editor.
-        table.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
-        table.getColumnModel().getColumn(3).setCellEditor(new ButtonEditor(this));
-        table.getColumnModel().getColumn(3).setPreferredWidth(70);
-        table.getColumnModel().getColumn(3).setMaxWidth(90);
+        // Grey out applied rows.
+        table.setDefaultRenderer(Object.class, new AppliedRowRenderer());
+        table.setDefaultRenderer(Boolean.class, new AppliedCheckboxRenderer());
 
-        // Single-click navigation: when the selection changes, navigate to the method.
+        // Single-click navigation (fires on selection change, not on checkbox toggle).
         table.getSelectionModel().addListSelectionListener(this::onRowSelected);
 
+        // Toolbar with Select All + Move Selected buttons.
+        JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        selectAllButton = new JButton("Select All");
+        selectAllButton.addActionListener(e -> selectAll());
+        toolbar.add(selectAllButton);
+
+        moveButton = new JButton("Move Selected");
+        moveButton.addActionListener(e -> moveSelected());
+        moveButton.setEnabled(false);
+        toolbar.add(moveButton);
+
+        add(toolbar, BorderLayout.NORTH);
         add(new JScrollPane(table), BorderLayout.CENTER);
+
+        // Listen for checkbox changes to enable/disable the Move button.
+        model.addTableModelListener(e -> updateMoveButtonState());
+
         PANELS.put(project.getLocationHash(), this);
     }
 
     /**
-     * Replaces the current suggestion list with a new one. Called from the
-     * coordinator's success path on the EDT.
+     * Replaces the current suggestion list with a new one.
      */
     public static void updateSuggestions(Project project, List<RefactoringSuggestion> newSuggestions) {
         ClassTrimToolWindowPanel panel = PANELS.get(project.getLocationHash());
-        if (panel == null) {
-            return;
-        }
+        if (panel == null) return;
         SwingUtilities.invokeLater(() -> {
             panel.suggestions.clear();
             panel.suggestions.addAll(newSuggestions);
+            panel.appliedRows.clear();
             panel.model.setRowCount(0);
             for (RefactoringSuggestion s : newSuggestions) {
                 panel.model.addRow(new Object[]{
+                        Boolean.FALSE,
                         s.getMethod().toString(),
                         s.getSourceClass().toString(),
-                        s.getTargetClass().toString(),
-                        "Move"
+                        s.getTargetClass().toString()
+                });
+            }
+            panel.updateMoveButtonState();
+        });
+    }
+
+    // -------------------------------------------------------------------------
+    // Toolbar actions.
+    // -------------------------------------------------------------------------
+
+    private void selectAll() {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (!appliedRows.contains(i)) {
+                model.setValueAt(Boolean.TRUE, i, 0);
+            }
+        }
+    }
+
+    private void moveSelected() {
+        // Collect checked, non-applied row indices.
+        List<Integer> toMove = new ArrayList<>();
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (Boolean.TRUE.equals(model.getValueAt(i, 0)) && !appliedRows.contains(i)) {
+                toMove.add(i);
+            }
+        }
+        if (toMove.isEmpty()) return;
+
+        // Process one at a time sequentially. Each invocation opens the Move dialog;
+        // the user confirms or cancels per suggestion.
+        ApplicationManager.getApplication().executeOnPooledThread(() -> {
+            for (int row : toMove) {
+                RefactoringSuggestion suggestion = suggestions.get(row);
+                String sourceClassFqn = suggestion.getSourceClass().toString();
+                String methodName = suggestion.getMethod().getName();
+
+                PsiMethod psiMethod = ReadAction.compute(() -> findPsiMethod(sourceClassFqn, methodName));
+                if (psiMethod == null) {
+                    ApplicationManager.getApplication().invokeLater(() ->
+                            Messages.showWarningDialog(project,
+                                    "Cannot find method '" + methodName + "' in " + sourceClassFqn,
+                                    "ClassTrim"));
+                    continue;
+                }
+
+                // Invoke the Move dialog on the EDT and wait for it to complete.
+                final int currentRow = row;
+                ApplicationManager.getApplication().invokeAndWait(() -> {
+                    psiMethod.navigate(true);
+                    invokeMove(psiMethod);
+                    // Mark as applied after the dialog closes (whether user confirmed or cancelled,
+                    // we grey it out to indicate it was processed).
+                    appliedRows.add(currentRow);
+                    model.setValueAt(Boolean.FALSE, currentRow, 0);
+                    model.fireTableRowsUpdated(currentRow, currentRow);
+                    updateMoveButtonState();
                 });
             }
         });
@@ -115,75 +194,25 @@ public class ClassTrimToolWindowPanel extends JPanel {
     }
 
     private void navigateToMethod(RefactoringSuggestion suggestion) {
-        String classFqn = suggestion.getSourceClass().toString(); // e.g. "org.example.Foo"
+        String classFqn = suggestion.getSourceClass().toString();
         String methodName = suggestion.getMethod().getName();
 
         ApplicationManager.getApplication().executeOnPooledThread(() -> {
             PsiMethod psiMethod = ReadAction.compute(() -> findPsiMethod(classFqn, methodName));
             if (psiMethod == null) return;
-
-            // Navigate on the EDT.
-            ApplicationManager.getApplication().invokeLater(() -> {
-                psiMethod.navigate(true); // opens the file, scrolls, and highlights
-            });
+            ApplicationManager.getApplication().invokeLater(() -> psiMethod.navigate(true));
         });
     }
 
     // -------------------------------------------------------------------------
-    // Apply: per-row "Move" button invokes Move Instance Method refactoring.
+    // Move refactoring invocation.
     // -------------------------------------------------------------------------
 
-    void applyMove(int row) {
-        if (row < 0 || row >= suggestions.size()) return;
-        RefactoringSuggestion suggestion = suggestions.get(row);
-
-        String sourceClassFqn = suggestion.getSourceClass().toString();
-        String targetClassFqn = suggestion.getTargetClass().toString();
-        String methodName = suggestion.getMethod().getName();
-
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            PsiMethod psiMethod = ReadAction.compute(() -> findPsiMethod(sourceClassFqn, methodName));
-            PsiClass targetClass = ReadAction.compute(() -> findPsiClass(targetClassFqn));
-
-            if (psiMethod == null) {
-                ApplicationManager.getApplication().invokeLater(() ->
-                        Messages.showWarningDialog(project,
-                                "Cannot find method '" + methodName + "' in " + sourceClassFqn,
-                                "ClassTrim"));
-                return;
-            }
-            if (targetClass == null) {
-                ApplicationManager.getApplication().invokeLater(() ->
-                        Messages.showWarningDialog(project,
-                                "Cannot find target class '" + targetClassFqn + "'",
-                                "ClassTrim"));
-                return;
-            }
-
-            // Navigate to the method first so the editor is focused on it,
-            // then invoke the Move refactoring dialog.
-            ApplicationManager.getApplication().invokeLater(() -> {
-                psiMethod.navigate(true);
-
-                // Give the editor a moment to focus, then invoke the refactoring.
-                ApplicationManager.getApplication().invokeLater(() -> {
-                    invokeMove(psiMethod);
-                });
-            });
-        });
-    }
-
-    /**
-     * Invokes IntelliJ's Move refactoring on the given method. This opens
-     * the standard "Move Instance Method" dialog where the user can confirm
-     * the target, review visibility changes, and apply.
-     */
     private void invokeMove(PsiMethod method) {
         RefactoringActionHandler handler =
                 RefactoringActionHandlerFactory.getInstance().createMoveHandler();
         if (handler == null) return;
 
-        // Build a DataContext pointing at the method's containing file + editor.
         PsiFile file = method.getContainingFile();
         if (file == null || file.getVirtualFile() == null) return;
 
@@ -203,6 +232,21 @@ public class ClassTrimToolWindowPanel extends JPanel {
     }
 
     // -------------------------------------------------------------------------
+    // UI state helpers.
+    // -------------------------------------------------------------------------
+
+    private void updateMoveButtonState() {
+        boolean anyChecked = false;
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if (Boolean.TRUE.equals(model.getValueAt(i, 0)) && !appliedRows.contains(i)) {
+                anyChecked = true;
+                break;
+            }
+        }
+        moveButton.setEnabled(anyChecked);
+    }
+
+    // -------------------------------------------------------------------------
     // PSI lookup helpers.
     // -------------------------------------------------------------------------
 
@@ -219,58 +263,46 @@ public class ClassTrimToolWindowPanel extends JPanel {
     }
 
     // -------------------------------------------------------------------------
-    // Button renderer + editor for the "Action" column.
+    // Custom renderers for greying out applied rows.
     // -------------------------------------------------------------------------
 
     /**
-     * Renders a "Move" button in each row of the Action column.
+     * Renders text cells with a grey foreground + strikethrough-like dimming
+     * for rows that have already been applied.
      */
-    private static class ButtonRenderer extends JButton implements TableCellRenderer {
-        ButtonRenderer() {
-            setOpaque(true);
+    private class AppliedRowRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                                                       boolean isSelected, boolean hasFocus,
+                                                       int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            if (appliedRows.contains(row)) {
+                c.setForeground(Color.GRAY);
+                c.setEnabled(false);
+            } else {
+                c.setForeground(isSelected ? table.getSelectionForeground() : table.getForeground());
+                c.setEnabled(true);
+            }
+            return c;
+        }
+    }
+
+    /**
+     * Renders the checkbox column: disabled + unchecked for applied rows.
+     */
+    private class AppliedCheckboxRenderer extends JCheckBox implements TableCellRenderer {
+        AppliedCheckboxRenderer() {
+            setHorizontalAlignment(SwingConstants.CENTER);
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                                                        boolean isSelected, boolean hasFocus,
                                                        int row, int column) {
-            setText(value == null ? "Move" : value.toString());
+            setSelected(value instanceof Boolean && (Boolean) value);
+            setEnabled(!appliedRows.contains(row));
+            setBackground(isSelected ? table.getSelectionBackground() : table.getBackground());
             return this;
-        }
-    }
-
-    /**
-     * Handles clicks on the "Move" button in the Action column.
-     */
-    private static class ButtonEditor extends DefaultCellEditor {
-        private final ClassTrimToolWindowPanel panel;
-        private int currentRow;
-
-        ButtonEditor(ClassTrimToolWindowPanel panel) {
-            super(new JCheckBox()); // DefaultCellEditor requires a component
-            this.panel = panel;
-
-            JButton button = new JButton("Move");
-            button.setOpaque(true);
-            button.addActionListener(e -> {
-                fireEditingStopped();
-                panel.applyMove(currentRow);
-            });
-            editorComponent = button;
-            setClickCountToStart(1);
-        }
-
-        @Override
-        public Component getTableCellEditorComponent(JTable table, Object value,
-                                                     boolean isSelected, int row, int column) {
-            currentRow = row;
-            ((JButton) editorComponent).setText(value == null ? "Move" : value.toString());
-            return editorComponent;
-        }
-
-        @Override
-        public Object getCellEditorValue() {
-            return "Move";
         }
     }
 }
