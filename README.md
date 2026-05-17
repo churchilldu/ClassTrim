@@ -14,7 +14,7 @@ Raw experiment data doi: 10.17632/8b3fd45kp6.1
 
 2) Configure environment
 
-- Copy `src/main/resources/config.properties.example` to `src/main/resources/config.properties`.
+- Copy `classtrim-core/src/main/resources/config.properties.example` to `classtrim-core/src/main/resources/config.properties`.
 - Edit the new `config.properties` and set values for your environment:
     - `mavenRepo`: absolute path to your local Maven repository
     - `datasetRoot`: absolute path to the datasets root folder
@@ -24,8 +24,35 @@ Raw experiment data doi: 10.17632/8b3fd45kp6.1
 
 3) Entry point
     - `org.classtrim.Main` run the move method refactoring algorithm on each project.
-    - `org.classtrim.NSGAII` or `org.classtrim.NSGAIII` run it once.
+    - `org.classtrim.NSGAII`, `org.classtrim.NSGAIII`, or `org.classtrim.MOEAD` run it once.
     - `org.classtrim.baseline.BaselineRefactor` run baseline comparison experiment.
+
+4) Build and test modules
+
+- Run all modules: `mvn test`
+- Run core only: `mvn -pl classtrim-core test`
+- Run CLI only: `mvn -pl classtrim-cli test`
+
+5) Build IntelliJ plugin
+
+- Package plugin zip: `mvn -pl classtrim-plugin -am package`
+- Output: `classtrim-plugin/target/classtrim-plugin-1.0-SNAPSHOT-idea-plugin.zip`
+
+## Module extraction (in progress)
+
+This repository now includes extraction scaffolding for library-style usage:
+
+- `classtrim-core/`: Maven module packaging the current core code and new injectable APIs under `org.classtrim.core.*`
+- `classtrim-cli/`: Maven module with `org.classtrim.cli.RunNsgaiii` example entrypoint using the extracted service API
+- `classtrim-plugin/`: IntelliJ IDEA plugin scaffold wired to run core analysis and show notifications
+
+New core API entrypoints:
+
+- `org.classtrim.core.analyzer.ProjectAnalyzer` / `StandardProjectAnalyzer`
+- `org.classtrim.core.engine.RefactoringEngine` / `NSGAIIIRefactoringEngine`
+- `org.classtrim.core.service.ClassTrimService`
+- `org.classtrim.core.model.ProjectSource` / `BinaryPathProjectSource`
+- `org.classtrim.core.repository.ProjectRepository` (in-memory and filesystem implementations)
 
 How I calculate metrics and some common question are in [wiki](https://github.com/churchilldu/ClassTrim/wiki).
 
