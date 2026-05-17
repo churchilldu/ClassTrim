@@ -24,14 +24,20 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     private final JavaProject project;
     private final Threshold threshold;
     private final ObjectiveCalculator objectiveCalculator;
+    private final boolean useGuidingObjectives;
 
     public RefactoringProblem(DatasetEnum dataset) {
-        this(JavaProject.load(dataset), dataset.getThreshold());
+        this(JavaProject.load(dataset), dataset.getThreshold(), true);
     }
 
     public RefactoringProblem(JavaProject project, Threshold threshold) {
+        this(project, threshold, true);
+    }
+
+    public RefactoringProblem(JavaProject project, Threshold threshold, boolean useGuidingObjectives) {
         this.project = project;
         this.threshold = threshold;
+        this.useGuidingObjectives = useGuidingObjectives;
         objectiveCalculator = new ObjectiveCalculator(project, threshold);
         this.setBounds();
 
@@ -59,7 +65,7 @@ public class RefactoringProblem extends AbstractIntegerProblem {
 
     @Override
     public int numberOfObjectives() {
-        return 6;
+        return useGuidingObjectives ? 6 : 3;
     }
 
     @Override
@@ -94,13 +100,15 @@ public class RefactoringProblem extends AbstractIntegerProblem {
         // RFC
         solution.objectives()[2] = objectiveCalculator.countClassRfcOverThreshold();
 
-        /** The following objectives is to guide algorithm to right direction. */
-        // WMC
-        solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
-        // CBO
-        solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
-        // RFC
-        solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
+        if (useGuidingObjectives) {
+            /** The following objectives is to guide algorithm to right direction. */
+            // WMC
+            solution.objectives()[3] = objectiveCalculator.sumClassWmcOverThreshold();
+            // CBO
+            solution.objectives()[4] = objectiveCalculator.sumClassCboOverThreshold();
+            // RFC
+            solution.objectives()[5] = objectiveCalculator.sumClassRfcOverThreshold();
+        }
 
         return solution;
     }

@@ -46,6 +46,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
     private JSpinner populationSpinner;
     private JSpinner iterationsSpinner;
     private JCheckBox debugCheckbox;
+    private JCheckBox guidingObjectivesCheckbox;
 
     public ClassTrimSettingsConfigurable(Project project) {
         this.project = project;
@@ -74,12 +75,17 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         debugCheckbox = new JCheckBox("Enable debug logging");
         debugCheckbox.setSelected(ClassTrimSettingsState.getInstance(project).isDebugEnabled());
 
+        guidingObjectivesCheckbox = new JCheckBox("Use guiding objectives (guide algorithm to right direction)");
+        guidingObjectivesCheckbox.setSelected(ClassTrimSettingsState.getInstance(project).isUseGuidingObjectives());
+
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent("WMC threshold", wmcSpinner)
                 .addLabeledComponent("CBO threshold", cboSpinner)
                 .addLabeledComponent("RFC threshold", rfcSpinner)
                 .addLabeledComponent("Population size", populationSpinner)
                 .addLabeledComponent("Max iterations", iterationsSpinner)
+                .addSeparator()
+                .addComponent(guidingObjectivesCheckbox)
                 .addSeparator()
                 .addComponent(debugCheckbox)
                 .addComponentFillVertically(new JPanel(), 0)
@@ -100,7 +106,8 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
                 || view.rfc() != intValue(rfcSpinner)
                 || view.populationSize() != intValue(populationSpinner)
                 || view.maxIterations() != intValue(iterationsSpinner)
-                || settings.isDebugEnabled() != debugCheckbox.isSelected();
+                || settings.isDebugEnabled() != debugCheckbox.isSelected()
+                || settings.isUseGuidingObjectives() != guidingObjectivesCheckbox.isSelected();
     }
 
     @Override
@@ -117,6 +124,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
                 intValue(iterationsSpinner)
         );
         settings.setDebugEnabled(debugCheckbox.isSelected());
+        settings.setUseGuidingObjectives(guidingObjectivesCheckbox.isSelected());
     }
 
     @Override
@@ -125,12 +133,14 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
             return;
         }
         SettingsView view = ClassTrimSettingsState.getInstance(project).view();
+        ClassTrimSettingsState settings = ClassTrimSettingsState.getInstance(project);
         wmcSpinner.setValue(view.wmc());
         cboSpinner.setValue(view.cbo());
         rfcSpinner.setValue(view.rfc());
         populationSpinner.setValue(view.populationSize());
         iterationsSpinner.setValue(view.maxIterations());
-        debugCheckbox.setSelected(ClassTrimSettingsState.getInstance(project).isDebugEnabled());
+        debugCheckbox.setSelected(settings.isDebugEnabled());
+        guidingObjectivesCheckbox.setSelected(settings.isUseGuidingObjectives());
     }
 
     @Override
@@ -142,6 +152,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         populationSpinner = null;
         iterationsSpinner = null;
         debugCheckbox = null;
+        guidingObjectivesCheckbox = null;
     }
 
     private static int intValue(JSpinner spinner) {

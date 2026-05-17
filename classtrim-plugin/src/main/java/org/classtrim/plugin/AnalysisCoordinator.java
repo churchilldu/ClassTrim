@@ -277,7 +277,8 @@ public final class AnalysisCoordinator {
             if (debug) LOG.info("[ClassTrim DEBUG] sourceName=" + sourceName
                     + ", settings=" + settings.view());
             Result<RunInputs, ValidationError> result =
-                    AnalysisRunFactory.validate(settings.view(), roots, sourceName);
+                    AnalysisRunFactory.validate(settings.view(), roots, sourceName,
+                            settings.isUseGuidingObjectives());
             if (result.isFailure()) {
                 ValidationError err = result.error().orElseThrow();
                 if (debug) LOG.info("[ClassTrim DEBUG] Validation failed: " + err);

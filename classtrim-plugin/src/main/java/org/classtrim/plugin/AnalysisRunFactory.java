@@ -59,6 +59,21 @@ public final class AnalysisRunFactory {
     }
 
     /**
+     * Builds the {@link RefactoringConfig} for an Analysis_Run with explicit
+     * control over guiding objectives.
+     *
+     * @param t                      the metric threshold, forwarded as-is
+     * @param populationSize         the NSGA-III population size, forwarded as-is
+     * @param maxIterations          the NSGA-III maximum iteration count, forwarded as-is
+     * @param useGuidingObjectives   whether to include the sum-based guiding objectives (4–6)
+     * @return a {@link RefactoringConfig} carrying the supplied values
+     */
+    public static RefactoringConfig buildConfig(Threshold t, int populationSize, int maxIterations,
+                                                boolean useGuidingObjectives) {
+        return new RefactoringConfig(t, populationSize, maxIterations, useGuidingObjectives);
+    }
+
+    /**
      * Builds a {@link Threshold} directly from a {@link SettingsView} snapshot. The view's
      * {@code wmc}, {@code cbo}, and {@code rfc} fields are forwarded to the
      * {@link Threshold} constructor in that order with no transformation.
@@ -130,6 +145,11 @@ public final class AnalysisRunFactory {
      */
     public static Result<RunInputs, ValidationError> validate(
             SettingsView v, List<String> roots, String projectName) {
+        return validate(v, roots, projectName, true);
+    }
+
+    public static Result<RunInputs, ValidationError> validate(
+            SettingsView v, List<String> roots, String projectName, boolean useGuidingObjectives) {
         if (roots == null || roots.isEmpty()) {
             return Result.failure(new ValidationError.NoCompilerRoots());
         } else if (v.populationSize() < 1) {
@@ -145,7 +165,7 @@ public final class AnalysisRunFactory {
             // sealed hierarchy for future expansion.
             Threshold t = threshold(v);
             ProjectSource source = buildSource(projectName, roots, t);
-            RefactoringConfig config = buildConfig(t, v.populationSize(), v.maxIterations());
+            RefactoringConfig config = buildConfig(t, v.populationSize(), v.maxIterations(), useGuidingObjectives);
             return Result.success(new RunInputs(source, config));
         }
     }

@@ -26,6 +26,7 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
         public int populationSize = Defaults.DEFAULTS.populationSize();
         public int maxIterations = Defaults.DEFAULTS.maxIterations();
         public boolean debugEnabled = false;
+        public boolean useGuidingObjectives = true;
     }
 
     /**
@@ -107,5 +108,13 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
 
     public void setDebugEnabled(boolean enabled) {
         state.debugEnabled = enabled;
+    }
+
+    public boolean isUseGuidingObjectives() {
+        return state.useGuidingObjectives;
+    }
+
+    public void setUseGuidingObjectives(boolean enabled) {
+        state.useGuidingObjectives = enabled;
     }
 }

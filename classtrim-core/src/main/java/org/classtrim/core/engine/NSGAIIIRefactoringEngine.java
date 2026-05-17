@@ -23,7 +23,7 @@ import java.util.List;
 public class NSGAIIIRefactoringEngine implements RefactoringEngine {
     @Override
     public RefactoringResult run(JavaProject project, RefactoringConfig refactoringConfig) {
-        RefactoringProblem problem = new RefactoringProblem(project, refactoringConfig.getThreshold());
+        RefactoringProblem problem = new RefactoringProblem(project, refactoringConfig.getThreshold(), refactoringConfig.isUseGuidingObjectives());
 
         double crossoverProbability = 0.9;
         double crossoverDistributionIndex = 20.0;
