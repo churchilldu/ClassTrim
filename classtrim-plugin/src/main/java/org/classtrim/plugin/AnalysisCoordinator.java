@@ -11,6 +11,7 @@ import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
 import org.classtrim.core.analyzer.StandardProjectAnalyzer;
 import org.classtrim.core.engine.NSGAIIIRefactoringEngine;
+import org.classtrim.core.engine.RefactoringEngine;
 import org.classtrim.core.engine.RefactoringResult;
 import org.classtrim.core.repository.InMemoryProjectRepository;
 import org.classtrim.core.service.ClassTrimService;
@@ -324,7 +325,9 @@ public final class AnalysisCoordinator {
                         }
                         InMemoryProjectRepository repository = new InMemoryProjectRepository();
                         StandardProjectAnalyzer analyzer = new StandardProjectAnalyzer(repository);
-                        NSGAIIIRefactoringEngine engine = new NSGAIIIRefactoringEngine();
+                        org.classtrim.core.engine.AlgorithmType algorithmType =
+                                ClassTrimSettingsState.getInstance(project).getAlgorithmType();
+                        RefactoringEngine engine = algorithmType.createEngine();
                         ClassTrimService service = new ClassTrimService(analyzer, engine);
 
                         if (debug) {

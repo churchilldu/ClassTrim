@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -23,6 +24,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
     private JSpinner iterationsSpinner;
     private JCheckBox guidingObjectivesCheckbox;
     private JCheckBox debugCheckbox;
+    private JComboBox<String> algorithmCombo;
 
     public ClassTrimSettingsConfigurable(Project project) {
         this.project = project;
@@ -47,6 +49,12 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         guidingObjectivesCheckbox = new JCheckBox("Use guiding objectives (6 objectives instead of 3)");
         guidingObjectivesCheckbox.setSelected(settings.isUseGuidingObjectives());
 
+        algorithmCombo = new JComboBox<>(java.util.Arrays.stream(
+                org.classtrim.core.engine.AlgorithmType.values())
+                .map(org.classtrim.core.engine.AlgorithmType::getDisplayName)
+                .toArray(String[]::new));
+        algorithmCombo.setSelectedItem(settings.getAlgorithm());
+
         debugCheckbox = new JCheckBox("Enable debug logging");
         debugCheckbox.setSelected(settings.isDebugEnabled());
 
@@ -56,6 +64,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
                 .addLabeledComponent("RFC threshold", rfcSpinner)
                 .addLabeledComponent("Population size", populationSpinner)
                 .addLabeledComponent("Max iterations", iterationsSpinner)
+                .addLabeledComponent("Algorithm", algorithmCombo)
                 .addSeparator()
                 .addComponent(guidingObjectivesCheckbox)
                 .addComponent(debugCheckbox)
@@ -76,6 +85,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
                 || view.populationSize() != intValue(populationSpinner)
                 || view.maxIterations() != intValue(iterationsSpinner)
                 || settings.isUseGuidingObjectives() != guidingObjectivesCheckbox.isSelected()
+                || !settings.getAlgorithm().equals(algorithmCombo.getSelectedItem())
                 || settings.isDebugEnabled() != debugCheckbox.isSelected();
     }
 
@@ -91,6 +101,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
                 intValue(iterationsSpinner)
         );
         settings.setUseGuidingObjectives(guidingObjectivesCheckbox.isSelected());
+        settings.setAlgorithm((String) algorithmCombo.getSelectedItem());
         settings.setDebugEnabled(debugCheckbox.isSelected());
     }
 
@@ -105,6 +116,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         populationSpinner.setValue(view.populationSize());
         iterationsSpinner.setValue(view.maxIterations());
         guidingObjectivesCheckbox.setSelected(settings.isUseGuidingObjectives());
+        algorithmCombo.setSelectedItem(settings.getAlgorithm());
         debugCheckbox.setSelected(settings.isDebugEnabled());
     }
 
@@ -117,6 +129,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         populationSpinner = null;
         iterationsSpinner = null;
         guidingObjectivesCheckbox = null;
+        algorithmCombo = null;
         debugCheckbox = null;
     }
 

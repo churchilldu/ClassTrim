@@ -27,6 +27,7 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
         public int maxIterations = Defaults.DEFAULTS.maxIterations();
         public boolean debugEnabled = false;
         public boolean useGuidingObjectives = true;
+        public String algorithm = "NSGA-III";
     }
 
     /**
@@ -116,5 +117,17 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
 
     public void setUseGuidingObjectives(boolean use) {
         state.useGuidingObjectives = use;
+    }
+
+    public String getAlgorithm() {
+        return state.algorithm;
+    }
+
+    public org.classtrim.core.engine.AlgorithmType getAlgorithmType() {
+        return org.classtrim.core.engine.AlgorithmType.fromDisplayName(state.algorithm);
+    }
+
+    public void setAlgorithm(String algorithm) {
+        state.algorithm = algorithm;
     }
 }
