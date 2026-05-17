@@ -5,6 +5,12 @@ NSGA-III) to minimizing the number of classes that exceed predefined metric thre
 
 Raw experiment data doi: 10.17632/8b3fd45kp6.1
 
+## Demo
+
+Run ClassTrim plugin on smelly-demo
+
+![](classtrim-plugin-demo.gif)
+
 ## Quick start
 
 1) Prerequisites
