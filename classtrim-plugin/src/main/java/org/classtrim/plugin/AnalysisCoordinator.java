@@ -362,12 +362,32 @@ public final class AnalysisCoordinator {
                             }
                         };
                         System.setErr(teeErr);
+                        // Also capture JMetal's java.util.logging output (JMetalLogger.logger
+                        // uses a ConsoleHandler that writes to System.err by default, but some
+                        // JMetal versions write to the root logger's handlers). Install a
+                        // temporary JUL Handler that pipes to the console tab.
+                        java.util.logging.Logger jmetalJulLogger =
+                                java.util.logging.Logger.getLogger("org.uma.jmetal");
+                        java.util.logging.Handler consoleHandler = new java.util.logging.Handler() {
+                            @Override
+                            public void publish(java.util.logging.LogRecord record) {
+                                if (record == null) return;
+                                String msg = record.getMessage();
+                                if (msg != null && !msg.isBlank()) {
+                                    console.log("[jmetal] " + msg);
+                                }
+                            }
+                            @Override public void flush() {}
+                            @Override public void close() {}
+                        };
+                        jmetalJulLogger.addHandler(consoleHandler);
                         long startMs = System.currentTimeMillis();
                         RefactoringResult result;
                         try {
                             result = service.analyze(inputs.source(), inputs.config());
                         } finally {
                             System.setErr(originalErr);
+                            jmetalJulLogger.removeHandler(consoleHandler);
                         }
                         long elapsedMs = System.currentTimeMillis() - startMs;
 
