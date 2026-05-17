@@ -24,7 +24,7 @@ public class ClassTrimToolWindowFactory implements ToolWindowFactory {
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ClassTrimToolWindowPanel panel = new ClassTrimToolWindowPanel(project);
         ContentManager cm = toolWindow.getContentManager();
-        Content content = ContentFactory.getInstance().createContent(panel, "", false);
+        Content content = ContentFactory.getInstance().createContent(panel, "Suggestions", false);
         cm.addContent(content);
     }
 }

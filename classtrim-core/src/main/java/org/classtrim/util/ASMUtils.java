@@ -190,7 +190,7 @@ public class ASMUtils {
                 clazz.createMethod(m.getName(), Type.getMethodDescriptor(m));
             }
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            logger.debug("loadMethodsToClass: {}", e.getMessage());
         }
     }
 

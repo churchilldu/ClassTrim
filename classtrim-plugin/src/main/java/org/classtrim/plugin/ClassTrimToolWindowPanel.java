@@ -85,7 +85,7 @@ public class ClassTrimToolWindowPanel extends JPanel {
         // Toolbar with Select All + Move Selected buttons.
         JPanel toolbar = new JPanel(new FlowLayout(FlowLayout.LEFT));
         selectAllButton = new JButton("Select All");
-        selectAllButton.addActionListener(e -> selectAll());
+        selectAllButton.addActionListener(e -> toggleSelectAll());
         toolbar.add(selectAllButton);
 
         moveButton = new JButton("Move Selected");
@@ -122,6 +122,7 @@ public class ClassTrimToolWindowPanel extends JPanel {
                 });
             }
             panel.updateMoveButtonState();
+            panel.selectAllButton.setText("Select All");
         });
     }
 
@@ -129,11 +130,31 @@ public class ClassTrimToolWindowPanel extends JPanel {
     // Toolbar actions.
     // -------------------------------------------------------------------------
 
-    private void selectAll() {
+    private void toggleSelectAll() {
+        // Check if any non-applied row is currently unchecked
+        boolean anyUnchecked = false;
         for (int i = 0; i < model.getRowCount(); i++) {
-            if (!appliedRows.contains(i)) {
-                model.setValueAt(Boolean.TRUE, i, 0);
+            if (!appliedRows.contains(i) && !Boolean.TRUE.equals(model.getValueAt(i, 0))) {
+                anyUnchecked = true;
+                break;
             }
+        }
+        if (anyUnchecked) {
+            // Select all non-applied rows
+            for (int i = 0; i < model.getRowCount(); i++) {
+                if (!appliedRows.contains(i)) {
+                    model.setValueAt(Boolean.TRUE, i, 0);
+                }
+            }
+            selectAllButton.setText("Unselect All");
+        } else {
+            // Unselect all
+            for (int i = 0; i < model.getRowCount(); i++) {
+                if (!appliedRows.contains(i)) {
+                    model.setValueAt(Boolean.FALSE, i, 0);
+                }
+            }
+            selectAllButton.setText("Select All");
         }
     }
 
