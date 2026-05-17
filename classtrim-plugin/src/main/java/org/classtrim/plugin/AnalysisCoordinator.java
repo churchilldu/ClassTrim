@@ -322,6 +322,11 @@ public final class AnalysisCoordinator {
                             LOG.info("[ClassTrim DEBUG] Constructing service stack...");
                             console.log("Constructing service stack...");
                         }
+                        // Feed the project's compiled class roots into ASMUtils so
+                        // loadMethodsToClass / isOverride can resolve the project's
+                        // own classes for accurate override detection.
+                        org.classtrim.util.ASMUtils.setProjectRoots(
+                                new java.util.ArrayList<>(inputs.source().getBinaryRoots()));
                         InMemoryProjectRepository repository = new InMemoryProjectRepository();
                         StandardProjectAnalyzer analyzer = new StandardProjectAnalyzer(repository);
                         NSGAIIIRefactoringEngine engine = new NSGAIIIRefactoringEngine();

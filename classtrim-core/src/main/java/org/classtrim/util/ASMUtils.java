@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 public class ASMUtils {
     private static final Logger logger = LoggerFactory.getLogger(ASMUtils.class);
 
-    private static final URLClassLoader urlCL;
+    private static volatile URLClassLoader urlCL;
 
     static {
         // Build a URLClassLoader from the optional `mavenRepo` and `datasetRoot`
@@ -63,6 +63,40 @@ public class ASMUtils {
         }
 
         urlCL = URLClassLoader.newInstance(urlList.toArray(new URL[0]));
+    }
+
+    /**
+     * Adds the given filesystem paths (directories or JARs) to the auxiliary
+     * classloader used by {@link #loadMethodsToClass} and {@link #isOverride}.
+     * Call this before analysis starts so the project's own compiled classes
+     * are loadable for accurate override detection.
+     *
+     * <p>This replaces the current classloader with a new one that includes
+     * both the previously configured paths (from config.properties) and the
+     * supplied roots. Thread-safe via volatile write.</p>
+     *
+     * @param roots filesystem paths to directories containing .class files
+     *              or to JAR files
+     */
+    public static void setProjectRoots(List<String> roots) {
+        if (roots == null || roots.isEmpty()) return;
+        try {
+            // Collect existing URLs from the current classloader.
+            List<URL> urls = new ArrayList<>(Arrays.asList(urlCL.getURLs()));
+            // Add the new roots.
+            for (String root : roots) {
+                if (root == null || root.isEmpty()) continue;
+                File f = new File(root);
+                if (f.exists()) {
+                    urls.add(f.toURI().toURL());
+                }
+            }
+            urlCL = URLClassLoader.newInstance(urls.toArray(new URL[0]));
+            logger.info("Updated auxiliary classloader with {} URLs (added {} project roots).",
+                    urls.size(), roots.size());
+        } catch (Throwable t) {
+            logger.warn("Failed to update auxiliary classloader with project roots: {}", t.getMessage());
+        }
     }
 
     public static String[] getParameters(String descriptor) {
