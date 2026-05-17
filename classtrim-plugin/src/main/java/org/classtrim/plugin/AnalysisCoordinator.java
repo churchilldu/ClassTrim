@@ -331,8 +331,39 @@ public final class AnalysisCoordinator {
                             LOG.info("[ClassTrim DEBUG] Starting analysis...");
                             console.log("Starting analysis...");
                         }
+                        // Redirect System.err to capture slf4j-simple output from classtrim-core
+                        // and pipe it to the ClassTrim Log console tab in real time.
+                        java.io.PrintStream originalErr = System.err;
+                        java.io.ByteArrayOutputStream capturedErr = new java.io.ByteArrayOutputStream();
+                        java.io.PrintStream teeErr = new java.io.PrintStream(capturedErr, true) {
+                            @Override
+                            public void println(String x) {
+                                originalErr.println(x);
+                                if (x != null && x.contains("org.classtrim")) {
+                                    console.log("[core] " + x);
+                                } else if (debug) {
+                                    console.log("[core] " + x);
+                                }
+                            }
+                            @Override
+                            public void write(byte[] buf, int off, int len) {
+                                originalErr.write(buf, off, len);
+                                String s = new String(buf, off, len).trim();
+                                if (!s.isEmpty()) {
+                                    if (s.contains("org.classtrim") || debug) {
+                                        console.log("[core] " + s);
+                                    }
+                                }
+                            }
+                        };
+                        System.setErr(teeErr);
                         long startMs = System.currentTimeMillis();
-                        RefactoringResult result = service.analyze(inputs.source(), inputs.config());
+                        RefactoringResult result;
+                        try {
+                            result = service.analyze(inputs.source(), inputs.config());
+                        } finally {
+                            System.setErr(originalErr);
+                        }
                         long elapsedMs = System.currentTimeMillis() - startMs;
 
                         indicator.checkCanceled();
