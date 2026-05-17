@@ -1,0 +1,38 @@
+<idea-plugin>
+    <id>org.classtrim.plugin</id>
+    <name>ClassTrim Refactoring</name>
+    <vendor>ClassTrim</vendor>
+    <description>Runs ClassTrim NSGA-III and shows move method suggestions.</description>
+
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="ClassTrim Notifications"
+                           displayType="BALLOON"
+                           isLogByDefault="true"/>
+        <projectService serviceImplementation="org.classtrim.plugin.settings.ClassTrimSettingsState"/>
+        <projectService serviceImplementation="org.classtrim.plugin.AnalysisCoordinator"/>
+        <projectConfigurable instance="org.classtrim.plugin.settings.ClassTrimSettingsConfigurable"
+                             displayName="ClassTrim"
+                             id="org.classtrim.plugin.settings"/>
+        <toolWindow id="ClassTrim"
+                    factoryClass="org.classtrim.plugin.ClassTrimToolWindowFactory"
+                    anchor="right"/>
+    </extensions>
+
+    <actions>
+        <action id="ClassTrim.RunAnalysis"
+                class="org.classtrim.plugin.RunClassTrimAnalysisAction"
+                text="Run ClassTrim Analysis"
+                description="Run bytecode analysis and NSGA-III suggestions">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+            <!-- Right-click on a module / file in the Project view to run
+                 the analysis scoped to the containing module. The action's
+                 update() method picks the module out of the data context
+                 and relabels the entry as
+                 "Run ClassTrim Analysis on '<module>'". -->
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+    </actions>
+</idea-plugin>

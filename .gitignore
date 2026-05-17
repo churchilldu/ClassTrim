@@ -42,3 +42,19 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+### Gradle ###
+.gradle/
+**/.gradle/
+!gradle/wrapper/gradle-wrapper.jar
+!gradle/wrapper/gradle-wrapper.properties
+
+### Property-based testing ###
+.jqwik-database
+
+### IntelliJ Platform Gradle Plugin sandbox ###
+.intellijPlatform/
+**/.intellijPlatform/
+
+### Build / debug log files ###
+classtrim-plugin/*.txt
