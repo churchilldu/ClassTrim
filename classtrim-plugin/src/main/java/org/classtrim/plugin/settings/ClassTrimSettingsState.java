@@ -25,6 +25,7 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
         public int rfc = Defaults.DEFAULTS.rfc();
         public int populationSize = Defaults.DEFAULTS.populationSize();
         public int maxIterations = Defaults.DEFAULTS.maxIterations();
+        public boolean debugEnabled = false;
     }
 
     /**
@@ -98,5 +99,13 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
         state.rfc = rfc;
         state.populationSize = populationSize;
         state.maxIterations = maxIterations;
+    }
+
+    public boolean isDebugEnabled() {
+        return state.debugEnabled;
+    }
+
+    public void setDebugEnabled(boolean enabled) {
+        state.debugEnabled = enabled;
     }
 }

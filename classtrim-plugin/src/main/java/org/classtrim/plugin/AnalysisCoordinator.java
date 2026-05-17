@@ -68,6 +68,8 @@ import java.util.concurrent.atomic.AtomicReference;
 @Service(Service.Level.PROJECT)
 public final class AnalysisCoordinator {
 
+    private static final Logger LOG = Logger.getInstance(AnalysisCoordinator.class);
+
     /**
      * Info-notification body emitted when a second {@link #requestRun()}
      * arrives while a prior run still holds the slot. Required by R4.7.
@@ -229,6 +231,10 @@ public final class AnalysisCoordinator {
             return;
         }
 
+        boolean debug = ClassTrimSettingsState.getInstance(project).isDebugEnabled();
+        if (debug) LOG.info("[ClassTrim DEBUG] requestRun called. moduleScope="
+                + (moduleScope == null ? "<project-wide>" : moduleScope.getName()));
+
         // (2) Slot reservation (R4.5/R4.7). Reserve with a placeholder
         // indicator; the real ProgressIndicator replaces the placeholder
         // from inside Task.Backgroundable.run via setRunningIndicator(...).
@@ -247,6 +253,7 @@ public final class AnalysisCoordinator {
             List<String> roots = (moduleScope == null)
                     ? CompilerOutputResolver.resolve(project)
                     : CompilerOutputResolver.resolve(moduleScope);
+            if (debug) LOG.info("[ClassTrim DEBUG] Resolved roots: " + roots);
             if (roots.isEmpty()) {
                 String body = (moduleScope == null)
                         ? BUILD_BEFORE_RUN_MESSAGE
@@ -267,77 +274,58 @@ public final class AnalysisCoordinator {
             String sourceName = (moduleScope == null)
                     ? project.getName()
                     : project.getName() + ":" + moduleScope.getName();
+            if (debug) LOG.info("[ClassTrim DEBUG] sourceName=" + sourceName
+                    + ", settings=" + settings.view());
             Result<RunInputs, ValidationError> result =
                     AnalysisRunFactory.validate(settings.view(), roots, sourceName);
             if (result.isFailure()) {
                 ValidationError err = result.error().orElseThrow();
+                if (debug) LOG.info("[ClassTrim DEBUG] Validation failed: " + err);
                 notifier.error(project, NOTIFICATION_TITLE, formatValidationError(err));
                 releaseSlot();
                 return;
             }
-            // The success-branch RunInputs is materialised here so it is
-            // captured by the Task.Backgroundable body below. It is final
-            // (effectively-final) so the lambda-style anonymous-class capture
-            // works without extra ceremony.
             RunInputs inputs = result.value().orElseThrow();
+            if (debug) LOG.info("[ClassTrim DEBUG] Validation passed. Scheduling background task.");
 
-            // (5) Schedule the background task. Submission happens only after
-            // every precondition passes (R4.1/R4.2). Task body wires
-            // analyze → publish → notify, with deterministic success / failure /
-            // cancellation paths (R4.3, R4.4, R4.6, R5.1, R5.2, R5.3, R5.4,
-            // R5.5, R6.2, R6.3, R6.4).
+            // (5) Schedule the background task.
             String taskTitle = (moduleScope == null)
                     ? BACKGROUND_TASK_TITLE
                     : BACKGROUND_TASK_TITLE + " — " + moduleScope.getName();
             Task.Backgroundable task = new Task.Backgroundable(project, taskTitle, true) {
                 @Override
                 public void run(@NotNull ProgressIndicator indicator) {
-                    // Replace the placeholder reserved at slot-acquisition
-                    // time with the real ProgressIndicator owned by the
-                    // IntelliJ progress manager. This lets cancelRunning()
-                    // (R4.3) target the actual indicator rather than the
-                    // disposable placeholder.
                     setRunningIndicator(indicator);
 
                     try {
-                        // Bracket the analyse call with cooperative-cancellation
-                        // checkpoints (R4.3). checkCanceled() throws
-                        // ProcessCanceledException when the developer cancels
-                        // the indicator from the IDE status bar.
                         indicator.checkCanceled();
 
-                        // Construct a fresh service stack per Analysis_Run.
-                        // The repository is intentionally short-lived so that
-                        // re-running analysis after a rebuild does not return
-                        // cached stale results (design "Key Design Decisions").
+                        if (debug) LOG.info("[ClassTrim DEBUG] Constructing service stack...");
                         InMemoryProjectRepository repository = new InMemoryProjectRepository();
                         StandardProjectAnalyzer analyzer = new StandardProjectAnalyzer(repository);
                         NSGAIIIRefactoringEngine engine = new NSGAIIIRefactoringEngine();
                         ClassTrimService service = new ClassTrimService(analyzer, engine);
 
+                        if (debug) LOG.info("[ClassTrim DEBUG] Starting analysis...");
+                        long startMs = System.currentTimeMillis();
                         RefactoringResult result = service.analyze(inputs.source(), inputs.config());
+                        long elapsedMs = System.currentTimeMillis() - startMs;
 
                         indicator.checkCanceled();
 
-                        // Success path (R5.1, R5.2, R5.3): publish the
-                        // suggestions to the tool window and emit an info
-                        // notification reporting the count.
+                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis completed in " + elapsedMs
+                                + " ms. Suggestions: " + result.getSuggestions().size());
+
                         ClassTrimToolWindowPanel.updateSuggestions(project, result.getSuggestions());
                         notifier.info(project, NOTIFICATION_TITLE,
                                 ClassTrimNotifier.formatSuccessBody(result.getSuggestions().size()));
                     } catch (ProcessCanceledException pce) {
-                        // Cancellation path (R4.4, R6.4): emit the info
-                        // notification, then rethrow so IntelliJ marks the
-                        // task as cancelled in the status bar. R5.5 — do NOT
-                        // call updateSuggestions on cancellation; the
-                        // previously-published list must remain unchanged.
+                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis cancelled by user.");
                         notifier.info(project, NOTIFICATION_TITLE, ANALYSIS_CANCELLED_MESSAGE);
                         throw pce;
                     } catch (Throwable t) {
-                        // Failure path (R6.2, R6.3): log with stack trace and
-                        // surface a typed error notification. R5.5 — do NOT
-                        // call updateSuggestions on failure; the previously-
-                        // published list must remain unchanged.
+                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis failed: "
+                                + t.getClass().getName() + ": " + t.getMessage());
                         Logger.getInstance(AnalysisCoordinator.class).error(t);
                         notifier.error(project, NOTIFICATION_TITLE,
                                 ClassTrimNotifier.formatFailureBody(
@@ -347,21 +335,14 @@ public final class AnalysisCoordinator {
 
                 @Override
                 public void onFinished() {
-                    // R4.6: release the slot once the task terminates by
-                    // completion, failure, or cancellation. Clearing the
-                    // running indicator flips AnalysisCoordinator.isRunning()
-                    // back to false; the IntelliJ Platform automatically
-                    // refreshes the action's enabled state the next time it
-                    // polls RunClassTrimAnalysisAction.update(...), so no
-                    // explicit refresh call is required here.
+                    if (debug) LOG.info("[ClassTrim DEBUG] Task finished. Releasing slot.");
                     releaseSlot();
                 }
             };
             ProgressManager.getInstance().run(task);
         } catch (Throwable t) {
-            // Defensive: if any precondition step throws unexpectedly,
-            // release the slot so the action becomes clickable again and
-            // surface the failure as an error notification.
+            if (debug) LOG.info("[ClassTrim DEBUG] Precondition pipeline threw: "
+                    + t.getClass().getName() + ": " + t.getMessage());
             releaseSlot();
             notifier.error(project, NOTIFICATION_TITLE,
                     ClassTrimNotifier.formatFailureBody(t.getClass().getName(), t.getMessage()));

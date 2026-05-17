@@ -7,6 +7,7 @@ import org.classtrim.plugin.SettingsView;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
@@ -44,6 +45,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
     private JSpinner rfcSpinner;
     private JSpinner populationSpinner;
     private JSpinner iterationsSpinner;
+    private JCheckBox debugCheckbox;
 
     public ClassTrimSettingsConfigurable(Project project) {
         this.project = project;
@@ -69,12 +71,17 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         iterationsSpinner = new JSpinner(
                 new SpinnerNumberModel(view.maxIterations(), 1, Integer.MAX_VALUE, 1));
 
+        debugCheckbox = new JCheckBox("Enable debug logging");
+        debugCheckbox.setSelected(ClassTrimSettingsState.getInstance(project).isDebugEnabled());
+
         panel = FormBuilder.createFormBuilder()
                 .addLabeledComponent("WMC threshold", wmcSpinner)
                 .addLabeledComponent("CBO threshold", cboSpinner)
                 .addLabeledComponent("RFC threshold", rfcSpinner)
                 .addLabeledComponent("Population size", populationSpinner)
                 .addLabeledComponent("Max iterations", iterationsSpinner)
+                .addSeparator()
+                .addComponent(debugCheckbox)
                 .addComponentFillVertically(new JPanel(), 0)
                 .getPanel();
 
@@ -87,11 +94,13 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
             return false;
         }
         SettingsView view = ClassTrimSettingsState.getInstance(project).view();
+        ClassTrimSettingsState settings = ClassTrimSettingsState.getInstance(project);
         return view.wmc() != intValue(wmcSpinner)
                 || view.cbo() != intValue(cboSpinner)
                 || view.rfc() != intValue(rfcSpinner)
                 || view.populationSize() != intValue(populationSpinner)
-                || view.maxIterations() != intValue(iterationsSpinner);
+                || view.maxIterations() != intValue(iterationsSpinner)
+                || settings.isDebugEnabled() != debugCheckbox.isSelected();
     }
 
     @Override
@@ -99,13 +108,15 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         if (panel == null) {
             return;
         }
-        ClassTrimSettingsState.getInstance(project).updateFrom(
+        ClassTrimSettingsState settings = ClassTrimSettingsState.getInstance(project);
+        settings.updateFrom(
                 intValue(wmcSpinner),
                 intValue(cboSpinner),
                 intValue(rfcSpinner),
                 intValue(populationSpinner),
                 intValue(iterationsSpinner)
         );
+        settings.setDebugEnabled(debugCheckbox.isSelected());
     }
 
     @Override
@@ -119,6 +130,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         rfcSpinner.setValue(view.rfc());
         populationSpinner.setValue(view.populationSize());
         iterationsSpinner.setValue(view.maxIterations());
+        debugCheckbox.setSelected(ClassTrimSettingsState.getInstance(project).isDebugEnabled());
     }
 
     @Override
@@ -129,6 +141,7 @@ public final class ClassTrimSettingsConfigurable implements Configurable {
         rfcSpinner = null;
         populationSpinner = null;
         iterationsSpinner = null;
+        debugCheckbox = null;
     }
 
     private static int intValue(JSpinner spinner) {
