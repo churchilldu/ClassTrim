@@ -1,0 +1,16 @@
+# Application configuration
+
+# The path of your maven repository.
+mavenRepo=C:/Users/jesse/.m2/repository/
+
+# The path of dataset root.
+datasetRoot=C:/codeRefactoring/dataset/
+
+# The path to store output result.
+outputFolder=output
+
+# The path to store the serialized project file.
+projectCacheFolder=.project
+
+# The URL to notify.
+notifyUrl=https://ntfy.sh/codeRefactoring
