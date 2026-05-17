@@ -13,6 +13,7 @@
                            isLogByDefault="true"/>
         <projectService serviceImplementation="org.classtrim.plugin.settings.ClassTrimSettingsState"/>
         <projectService serviceImplementation="org.classtrim.plugin.AnalysisCoordinator"/>
+        <projectService serviceImplementation="org.classtrim.plugin.ClassTrimConsole"/>
         <projectConfigurable instance="org.classtrim.plugin.settings.ClassTrimSettingsConfigurable"
                              displayName="ClassTrim"
                              id="org.classtrim.plugin.settings"/>

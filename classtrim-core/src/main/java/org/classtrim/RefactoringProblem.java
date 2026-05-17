@@ -23,8 +23,8 @@ public class RefactoringProblem extends AbstractIntegerProblem {
     @Getter
     private final JavaProject project;
     private final Threshold threshold;
-    private final ObjectiveCalculator objectiveCalculator;
     private final boolean useGuidingObjectives;
+    private final ObjectiveCalculator objectiveCalculator;
 
     public RefactoringProblem(DatasetEnum dataset) {
         this(JavaProject.load(dataset), dataset.getThreshold(), true);

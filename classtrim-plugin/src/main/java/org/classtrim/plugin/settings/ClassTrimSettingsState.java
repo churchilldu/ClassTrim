@@ -114,6 +114,14 @@ public final class ClassTrimSettingsState implements PersistentStateComponent<Cl
         return state.useGuidingObjectives;
     }
 
+    public void setUseGuidingObjectives(boolean use) {
+        state.useGuidingObjectives = use;
+    }
+
+    public boolean isUseGuidingObjectives() {
+        return state.useGuidingObjectives;
+    }
+
     public void setUseGuidingObjectives(boolean enabled) {
         state.useGuidingObjectives = enabled;
     }

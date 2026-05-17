@@ -232,8 +232,13 @@ public final class AnalysisCoordinator {
         }
 
         boolean debug = ClassTrimSettingsState.getInstance(project).isDebugEnabled();
-        if (debug) LOG.info("[ClassTrim DEBUG] requestRun called. moduleScope="
-                + (moduleScope == null ? "<project-wide>" : moduleScope.getName()));
+        ClassTrimConsole console = ClassTrimConsole.getInstance(project);
+        if (debug) {
+            LOG.info("[ClassTrim DEBUG] requestRun called. moduleScope="
+                    + (moduleScope == null ? "<project-wide>" : moduleScope.getName()));
+            console.log("requestRun called. moduleScope="
+                    + (moduleScope == null ? "<project-wide>" : moduleScope.getName()));
+        }
 
         // (2) Slot reservation (R4.5/R4.7). Reserve with a placeholder
         // indicator; the real ProgressIndicator replaces the placeholder
@@ -253,7 +258,10 @@ public final class AnalysisCoordinator {
             List<String> roots = (moduleScope == null)
                     ? CompilerOutputResolver.resolve(project)
                     : CompilerOutputResolver.resolve(moduleScope);
-            if (debug) LOG.info("[ClassTrim DEBUG] Resolved roots: " + roots);
+            if (debug) {
+                LOG.info("[ClassTrim DEBUG] Resolved roots: " + roots);
+                console.log("Resolved roots: " + roots);
+            }
             if (roots.isEmpty()) {
                 String body = (moduleScope == null)
                         ? BUILD_BEFORE_RUN_MESSAGE
@@ -274,20 +282,29 @@ public final class AnalysisCoordinator {
             String sourceName = (moduleScope == null)
                     ? project.getName()
                     : project.getName() + ":" + moduleScope.getName();
-            if (debug) LOG.info("[ClassTrim DEBUG] sourceName=" + sourceName
-                    + ", settings=" + settings.view());
+            if (debug) {
+                LOG.info("[ClassTrim DEBUG] sourceName=" + sourceName
+                        + ", settings=" + settings.view());
+                console.log("sourceName=" + sourceName + ", settings=" + settings.view());
+            }
             Result<RunInputs, ValidationError> result =
                     AnalysisRunFactory.validate(settings.view(), roots, sourceName,
                             settings.isUseGuidingObjectives());
             if (result.isFailure()) {
                 ValidationError err = result.error().orElseThrow();
-                if (debug) LOG.info("[ClassTrim DEBUG] Validation failed: " + err);
+                if (debug) {
+                    LOG.info("[ClassTrim DEBUG] Validation failed: " + err);
+                    console.log("Validation failed: " + err);
+                }
                 notifier.error(project, NOTIFICATION_TITLE, formatValidationError(err));
                 releaseSlot();
                 return;
             }
             RunInputs inputs = result.value().orElseThrow();
-            if (debug) LOG.info("[ClassTrim DEBUG] Validation passed. Scheduling background task.");
+            if (debug) {
+                LOG.info("[ClassTrim DEBUG] Validation passed. Scheduling background task.");
+                console.log("Validation passed. Scheduling background task.");
+            }
 
             // (5) Schedule the background task.
             String taskTitle = (moduleScope == null)
@@ -301,32 +318,49 @@ public final class AnalysisCoordinator {
                     try {
                         indicator.checkCanceled();
 
-                        if (debug) LOG.info("[ClassTrim DEBUG] Constructing service stack...");
+                        if (debug) {
+                            LOG.info("[ClassTrim DEBUG] Constructing service stack...");
+                            console.log("Constructing service stack...");
+                        }
                         InMemoryProjectRepository repository = new InMemoryProjectRepository();
                         StandardProjectAnalyzer analyzer = new StandardProjectAnalyzer(repository);
                         NSGAIIIRefactoringEngine engine = new NSGAIIIRefactoringEngine();
                         ClassTrimService service = new ClassTrimService(analyzer, engine);
 
-                        if (debug) LOG.info("[ClassTrim DEBUG] Starting analysis...");
+                        if (debug) {
+                            LOG.info("[ClassTrim DEBUG] Starting analysis...");
+                            console.log("Starting analysis...");
+                        }
                         long startMs = System.currentTimeMillis();
                         RefactoringResult result = service.analyze(inputs.source(), inputs.config());
                         long elapsedMs = System.currentTimeMillis() - startMs;
 
                         indicator.checkCanceled();
 
-                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis completed in " + elapsedMs
-                                + " ms. Suggestions: " + result.getSuggestions().size());
+                        if (debug) {
+                            LOG.info("[ClassTrim DEBUG] Analysis completed in " + elapsedMs
+                                    + " ms. Suggestions: " + result.getSuggestions().size());
+                            console.log("Analysis completed in " + elapsedMs
+                                    + " ms. Suggestions: " + result.getSuggestions().size());
+                        }
 
                         ClassTrimToolWindowPanel.updateSuggestions(project, result.getSuggestions());
                         notifier.info(project, NOTIFICATION_TITLE,
                                 ClassTrimNotifier.formatSuccessBody(result.getSuggestions().size()));
                     } catch (ProcessCanceledException pce) {
-                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis cancelled by user.");
+                        if (debug) {
+                            LOG.info("[ClassTrim DEBUG] Analysis cancelled by user.");
+                            console.log("Analysis cancelled by user.");
+                        }
                         notifier.info(project, NOTIFICATION_TITLE, ANALYSIS_CANCELLED_MESSAGE);
                         throw pce;
                     } catch (Throwable t) {
-                        if (debug) LOG.info("[ClassTrim DEBUG] Analysis failed: "
-                                + t.getClass().getName() + ": " + t.getMessage());
+                        if (debug) {
+                            LOG.info("[ClassTrim DEBUG] Analysis failed: "
+                                    + t.getClass().getName() + ": " + t.getMessage());
+                            console.error("Analysis failed: "
+                                    + t.getClass().getName() + ": " + t.getMessage());
+                        }
                         Logger.getInstance(AnalysisCoordinator.class).error(t);
                         notifier.error(project, NOTIFICATION_TITLE,
                                 ClassTrimNotifier.formatFailureBody(
@@ -336,14 +370,21 @@ public final class AnalysisCoordinator {
 
                 @Override
                 public void onFinished() {
-                    if (debug) LOG.info("[ClassTrim DEBUG] Task finished. Releasing slot.");
+                    if (debug) {
+                        LOG.info("[ClassTrim DEBUG] Task finished. Releasing slot.");
+                        console.log("Task finished. Releasing slot.");
+                    }
                     releaseSlot();
                 }
             };
             ProgressManager.getInstance().run(task);
         } catch (Throwable t) {
-            if (debug) LOG.info("[ClassTrim DEBUG] Precondition pipeline threw: "
-                    + t.getClass().getName() + ": " + t.getMessage());
+            if (debug) {
+                LOG.info("[ClassTrim DEBUG] Precondition pipeline threw: "
+                        + t.getClass().getName() + ": " + t.getMessage());
+                console.error("Precondition pipeline threw: "
+                        + t.getClass().getName() + ": " + t.getMessage());
+            }
             releaseSlot();
             notifier.error(project, NOTIFICATION_TITLE,
                     ClassTrimNotifier.formatFailureBody(t.getClass().getName(), t.getMessage()));
