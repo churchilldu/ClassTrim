@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.classtrim</groupId>
+        <artifactId>classtrim-parent</artifactId>
+        <version>1.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <artifactId>smelly-demo</artifactId>
+    <packaging>jar</packaging>
+    <name>Smelly Demo Project</name>
+    <description>
+        Hand-authored e-commerce fixture codebase deliberately seeded with code smells
+        (Feature Envy, God Class, Inappropriate Intimacy, Shotgun Surgery) used as
+        bytecode input for the classtrim NSGA-III refactoring engine. Ships no tests
+        and no runtime dependencies beyond the Java 17 standard library.
+    </description>
+
+    <properties>
+        <!-- Override the parent's Java 11 compiler settings: this module targets Java 17. -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+    </properties>
+</project>
