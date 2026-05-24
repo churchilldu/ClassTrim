@@ -221,7 +221,7 @@ public class ClassTrimMcpServer {
         // Use the project's toMap() to get class → declared methods mapping,
         // then use MetricUtils to compute proper WMC/CBO/RFC per class.
         Map<JavaClass, List<JavaMethod>> methodsByClass = project.toMap();
-        org.classtrim.common.Metric overallMetric =
+        org.classtrim.common.ThresholdViolationCounts overallMetric =
                 org.classtrim.util.MetricUtils.calculateMetric(methodsByClass, threshold);
         Map<JavaClass, org.classtrim.common.ClassMetrics> perClassMetrics =
                 org.classtrim.util.MetricUtils.computePerClassMetrics(methodsByClass);
@@ -251,9 +251,9 @@ public class ClassTrimMcpServer {
         return Map.of(
                 "classes", classes,
                 "totalClasses", project.getClassCanRefactor().size(),
-                "classesExceedingWmc", overallMetric.getWmcOverThreshold(),
-                "classesExceedingCbo", overallMetric.getCboOverThreshold(),
-                "classesExceedingRfc", overallMetric.getRfcOverThreshold()
+                "classesExceedingWmc", overallMetric.getClassesExceedingWmc(),
+                "classesExceedingCbo", overallMetric.getClassesExceedingCbo(),
+                "classesExceedingRfc", overallMetric.getClassesExceedingRfc()
         );
     }
 

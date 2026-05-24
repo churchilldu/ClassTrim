@@ -2,7 +2,7 @@ package org.classtrim.util;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.classtrim.common.AlgorithmParameter;
-import org.classtrim.common.Metric;
+import org.classtrim.common.ThresholdViolationCounts;
 import org.classtrim.model.JavaClass;
 import org.classtrim.model.JavaMethod;
 import org.slf4j.Logger;
@@ -196,7 +196,7 @@ public class FileUtils {
 
    
 
-    public static void appendToBaselineTsv(String fileName, String datasetName, Metric metric) {
+    public static void appendToBaselineTsv(String fileName, String datasetName, ThresholdViolationCounts counts) {
         Path baselineFile = Paths.get("baseline", fileName, fileName + ".tsv");
         boolean isNewFile = !Files.exists(baselineFile);
 
@@ -212,7 +212,7 @@ public class FileUtils {
 
             // Write dataset results
             writer.write(String.format("%s" + TAB + "%d" + TAB + "%d" + TAB + "%d", 
-                datasetName, metric.getWmcOverThreshold(), metric.getCboOverThreshold(), metric.getRfcOverThreshold()));
+                datasetName, counts.getClassesExceedingWmc(), counts.getClassesExceedingCbo(), counts.getClassesExceedingRfc()));
             writer.newLine();
         } catch (IOException e) {
             throw new RuntimeException("Failed to write to baseline.tsv", e);

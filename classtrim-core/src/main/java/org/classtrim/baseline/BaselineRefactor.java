@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
 import org.classtrim.common.BaselineEnum;
 import org.classtrim.common.DatasetEnum;
-import org.classtrim.common.Metric;
+import org.classtrim.common.ThresholdViolationCounts;
 import org.classtrim.model.JavaClass;
 import org.classtrim.model.JavaMethod;
 import org.classtrim.model.JavaProject;
@@ -42,15 +42,15 @@ public class BaselineRefactor {
                     dataset.getName() + ".tsv");
             if (!Files.exists(file)) {
                 log.warn("Project {}, no suggestion: {}", dataset.getName(), file);
-                FileUtils.appendToBaselineTsv(baseline.getName(), dataset.getName()+"*", Metric.ZERO);
+                FileUtils.appendToBaselineTsv(baseline.getName(), dataset.getName()+"*", ThresholdViolationCounts.ZERO);
                 continue;
             }
 
             List<Pair<JavaMethod, JavaClass>> suggestions = parser.parse(file, project);
             Map<JavaClass, List<JavaMethod>> methodsByClass = applySuggestions(project, suggestions);
 
-            Metric metric = MetricUtils.calculateMetric(methodsByClass, dataset.getThreshold());
-            FileUtils.appendToBaselineTsv(baseline.getName(), dataset.getName(), metric);
+            ThresholdViolationCounts counts = MetricUtils.calculateMetric(methodsByClass, dataset.getThreshold());
+            FileUtils.appendToBaselineTsv(baseline.getName(), dataset.getName(), counts);
         }
     }
 

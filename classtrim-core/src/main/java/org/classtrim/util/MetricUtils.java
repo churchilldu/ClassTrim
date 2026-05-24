@@ -2,7 +2,7 @@ package org.classtrim.util;
 
 import org.apache.commons.lang3.tuple.Triple;
 import org.classtrim.common.ClassMetrics;
-import org.classtrim.common.Metric;
+import org.classtrim.common.ThresholdViolationCounts;
 import org.classtrim.common.Threshold;
 import org.classtrim.model.JavaClass;
 import org.classtrim.model.JavaMethod;
@@ -41,18 +41,18 @@ public class MetricUtils {
 
     /**
      * Counts how many classes exceed each threshold and returns the result as a
-     * {@link Metric} (one count per metric type).
+     * {@link ThresholdViolationCounts} (one count per metric type).
      *
      * @param methodsByClass class → declared methods mapping
      * @param threshold      the WMC/CBO/RFC thresholds to compare against
      * @return counts of classes exceeding each threshold
      */
-    public static Metric calculateMetric(Map<JavaClass, List<JavaMethod>> methodsByClass, Threshold threshold) {
+    public static ThresholdViolationCounts calculateMetric(Map<JavaClass, List<JavaMethod>> methodsByClass, Threshold threshold) {
         long wmcOverThreshold = countClassWmcOverThreshold(methodsByClass, threshold.getWMC());
         long cboOverThreshold = countClassCboOverThreshold(methodsByClass, threshold.getCBO());
         long rfcOverThreshold = countClassRfcOverThreshold(methodsByClass, threshold.getRFC());
 
-        return Metric.of(wmcOverThreshold, cboOverThreshold, rfcOverThreshold);
+        return ThresholdViolationCounts.of(wmcOverThreshold, cboOverThreshold, rfcOverThreshold);
     }
 
     // =========================================================================
