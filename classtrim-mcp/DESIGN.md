@@ -57,6 +57,23 @@ A Model Context Protocol (MCP) server that exposes ClassTrim's move-method refac
 └─────────────────────────────────────────────────────────────────────┘
 ```
 
+```
+classtrim-mcp/
+├── tools:
+│   ├── analyze_project(roots, thresholds, algorithm, populationSize, maxIterations)
+│   │   → { suggestions: [{method, from, to}], computingTimeMs, classCount, methodCount }
+│   │
+│   ├── get_metrics(roots, thresholds)
+│   │   → { classes: [{name, wmc, cbo, rfc, exceedsThreshold}] }
+│   │
+│   ├── list_algorithms()
+│   │   → ["NSGA-III", "NSGA-II"]
+│   │
+│   └── explain_suggestion(method, sourceClass, targetClass)
+│       → { reason: "method couples to 5 fields in targetClass vs 1 in sourceClass", couplingDetails: [...] }
+
+```
+
 ## Module Layout
 
 ```

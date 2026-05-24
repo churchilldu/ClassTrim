@@ -13,6 +13,7 @@
     <modules>
         <module>classtrim-core</module>
         <module>classtrim-cli</module>
+        <module>classtrim-mcp</module>
         <module>smelly-demo</module>
         <!-- classtrim-plugin builds with Gradle (IntelliJ Platform Gradle Plugin
              requires the IDE distribution as a ZIP, which Maven cannot resolve).
