@@ -1,11 +1,9 @@
-package org.classtrim.util;
+package org.classtrim.core.metric;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.classtrim.common.ClassMetrics;
-import org.classtrim.common.ThresholdViolationCounts;
-import org.classtrim.common.Threshold;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.util.ASMUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +17,7 @@ import java.util.stream.Stream;
  *
  * <p>All methods operate on a {@code Map<JavaClass, List<JavaMethod>>} that maps
  * each refactorable class to its declared methods. This map can be obtained from
- * {@link org.classtrim.model.JavaProject#toMap()} for the original project state,
+ * {@link org.classtrim.core.model.JavaProject#toMap()} for the original project state,
  * or from the optimizer's solution encoding for a refactored state.</p>
  *
  * <h2>Metrics</h2>
@@ -220,7 +218,7 @@ public class MetricUtils {
      * Returns the list of classes that a method is coupled to (through invocations
      * and parameter/return type references).
      */
-    static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
+    public static List<JavaClass> getCouplingOfMethod(JavaMethod method) {
         List<JavaClass> couplings = method.getInvokeMethods().stream()
                 .map(JavaMethod::getClazz)
                 .collect(Collectors.toList());

@@ -4,10 +4,10 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Test;
 import org.classtrim.baseline.JDeodorantParser;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
 
 import java.io.File;
 import java.io.IOException;

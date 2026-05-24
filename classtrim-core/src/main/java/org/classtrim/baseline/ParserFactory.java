@@ -1,6 +1,6 @@
 package org.classtrim.baseline;
 
-import org.classtrim.common.BaselineEnum;
+import org.classtrim.baseline.BaselineEnum;
 
 public final class ParserFactory {
     private ParserFactory() {}

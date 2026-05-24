@@ -1,17 +1,17 @@
-package org.classtrim.model;
+package org.classtrim.core.model;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.SerializationUtils;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.common.Threshold;
-import org.classtrim.util.ASMUtils;
-import org.classtrim.util.AppProperties;
-import org.classtrim.util.FileUtils;
-import org.classtrim.visitor.ClazzVisitor;
-import org.classtrim.visitor.CouplingVisitor;
-import org.classtrim.visitor.MethodInvocationVisitor;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.metric.Threshold;
+import org.classtrim.core.util.ASMUtils;
+import org.classtrim.core.util.AppProperties;
+import org.classtrim.core.util.FileUtils;
+import org.classtrim.core.parser.ClazzVisitor;
+import org.classtrim.core.parser.CouplingVisitor;
+import org.classtrim.core.parser.MethodInvocationVisitor;
 
 import java.io.*;
 import java.nio.file.Files;

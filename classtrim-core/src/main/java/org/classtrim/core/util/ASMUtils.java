@@ -1,10 +1,10 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
-import org.classtrim.model.JavaClass;
+import org.classtrim.core.model.JavaClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -1,8 +1,8 @@
 package org.classtrim.core.engine;
 
 import lombok.Getter;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
 
 @Getter
 public class RefactoringSuggestion {

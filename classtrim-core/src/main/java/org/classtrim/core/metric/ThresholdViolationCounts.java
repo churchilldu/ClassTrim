@@ -1,4 +1,4 @@
-package org.classtrim.common;
+package org.classtrim.core.metric;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,13 +1,13 @@
-package org.classtrim;
+package org.classtrim.core.engine;
 
 import lombok.Getter;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.common.Threshold;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
-import org.classtrim.util.MetricUtils;
-import org.classtrim.util.ProjectUtils;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.metric.Threshold;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
+import org.classtrim.core.metric.MetricUtils;
+import org.classtrim.core.metric.ProjectUtils;
 import org.uma.jmetal.problem.integerproblem.impl.AbstractIntegerProblem;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.JMetalLogger;

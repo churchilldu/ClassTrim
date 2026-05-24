@@ -5,7 +5,7 @@ import org.classtrim.core.config.RefactoringConfig;
 import org.classtrim.core.engine.RefactoringEngine;
 import org.classtrim.core.engine.RefactoringResult;
 import org.classtrim.core.model.ProjectSource;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaProject;
 
 public class ClassTrimService {
     private final ProjectAnalyzer projectAnalyzer;

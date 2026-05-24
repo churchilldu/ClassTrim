@@ -1,7 +1,7 @@
 package org.classtrim.core.config;
 
 import lombok.Getter;
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 
 @Getter
 public class RefactoringConfig {

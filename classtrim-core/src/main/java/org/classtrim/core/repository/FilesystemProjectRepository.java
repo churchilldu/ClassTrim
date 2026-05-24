@@ -2,7 +2,7 @@ package org.classtrim.core.repository;
 
 import org.apache.commons.lang3.SerializationUtils;
 import org.classtrim.core.config.Configuration;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaProject;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;

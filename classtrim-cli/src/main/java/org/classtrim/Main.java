@@ -1,8 +1,8 @@
-package org.classtrim;
+package org.classtrim.core.engine;
 
 import lombok.extern.slf4j.Slf4j;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.util.Stopwatch;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.util.Stopwatch;
 
 @Slf4j
 public class Main {

@@ -1,6 +1,6 @@
 package org.classtrim.core.model;
 
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 
 import java.util.Collection;
 import java.util.List;

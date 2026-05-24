@@ -1,4 +1,4 @@
-package org.classtrim.model;
+package org.classtrim.core.model;
 
 import lombok.Getter;
 import org.apache.commons.lang3.StringUtils;

@@ -1,6 +1,6 @@
 package org.classtrim.core.repository;
 
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaProject;
 
 import java.util.Map;
 import java.util.Optional;

@@ -1,10 +1,10 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
 import org.apache.commons.lang3.tuple.Triple;
-import org.classtrim.common.AlgorithmParameter;
-import org.classtrim.common.ThresholdViolationCounts;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
+import org.classtrim.core.config.AlgorithmParameter;
+import org.classtrim.core.metric.ThresholdViolationCounts;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

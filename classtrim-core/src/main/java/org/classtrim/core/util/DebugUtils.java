@@ -1,6 +1,8 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
-import org.classtrim.model.JavaClass;
+
+import org.classtrim.core.metric.MetricUtils;
+import org.classtrim.core.model.JavaClass;
 
 import java.util.List;
 import java.util.function.Predicate;

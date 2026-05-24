@@ -1,8 +1,8 @@
-package org.classtrim.model;
+package org.classtrim.core.model;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.classtrim.util.ASMUtils;
+import org.classtrim.core.util.ASMUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;

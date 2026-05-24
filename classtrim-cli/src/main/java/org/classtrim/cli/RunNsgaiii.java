@@ -1,6 +1,6 @@
 package org.classtrim.cli;
 
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 import org.classtrim.core.analyzer.ProjectAnalyzer;
 import org.classtrim.core.analyzer.StandardProjectAnalyzer;
 import org.classtrim.core.config.RefactoringConfig;

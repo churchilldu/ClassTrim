@@ -1,8 +1,8 @@
-package org.classtrim;
+package org.classtrim.core.engine;
 
-import org.classtrim.common.AlgorithmParameter;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.util.RefactorOutput;
+import org.classtrim.core.config.AlgorithmParameter;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.util.RefactorOutput;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaiii.NSGAIIIBuilder;

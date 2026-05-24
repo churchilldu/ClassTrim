@@ -1,4 +1,4 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
 // Source - https://stackoverflow.com/a/28177737
 // Posted by msysmilu

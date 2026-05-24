@@ -2,7 +2,7 @@ package org.classtrim.core.analyzer;
 
 import org.classtrim.core.model.ProjectSource;
 import org.classtrim.core.repository.ProjectRepository;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaProject;
 
 public class StandardProjectAnalyzer implements ProjectAnalyzer {
     private final ProjectRepository projectRepository;

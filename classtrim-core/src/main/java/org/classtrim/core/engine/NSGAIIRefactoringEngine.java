@@ -1,10 +1,10 @@
 package org.classtrim.core.engine;
 
-import org.classtrim.RefactoringProblem;
+import org.classtrim.core.engine.RefactoringProblem;
 import org.classtrim.core.config.RefactoringConfig;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
 import org.uma.jmetal.algorithm.Algorithm;
 import org.uma.jmetal.algorithm.examples.AlgorithmRunner;
 import org.uma.jmetal.algorithm.multiobjective.nsgaii.NSGAIIBuilder;

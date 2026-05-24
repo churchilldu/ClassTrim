@@ -1,9 +1,9 @@
-package org.classtrim.util;
+package org.classtrim.core.metric;
 
 
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

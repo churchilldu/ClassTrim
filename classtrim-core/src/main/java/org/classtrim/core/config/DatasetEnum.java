@@ -1,7 +1,8 @@
-package org.classtrim.common;
+package org.classtrim.core.config;
 
 import lombok.Getter;
-import org.classtrim.util.AppProperties;
+import org.classtrim.core.metric.Threshold;
+import org.classtrim.core.util.AppProperties;
 
 import java.util.Arrays;
 

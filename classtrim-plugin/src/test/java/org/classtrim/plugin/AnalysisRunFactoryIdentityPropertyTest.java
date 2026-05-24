@@ -12,7 +12,7 @@ import net.jqwik.api.Tag;
 import net.jqwik.api.constraints.IntRange;
 import net.jqwik.api.constraints.Size;
 import net.jqwik.api.constraints.StringLength;
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 import org.classtrim.core.config.RefactoringConfig;
 import org.classtrim.core.model.BinaryPathProjectSource;
 import org.classtrim.core.model.ProjectSource;

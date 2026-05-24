@@ -1,11 +1,13 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
+
+import org.classtrim.core.metric.MetricUtils;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
-import org.classtrim.common.AlgorithmParameter;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.config.AlgorithmParameter;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
 import org.uma.jmetal.solution.Solution;
 import org.uma.jmetal.solution.integersolution.IntegerSolution;
 import org.uma.jmetal.util.fileoutput.SolutionListOutput;

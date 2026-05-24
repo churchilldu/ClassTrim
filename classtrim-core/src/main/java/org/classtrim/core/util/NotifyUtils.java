@@ -1,4 +1,4 @@
-package org.classtrim.util;
+package org.classtrim.core.util;
 
 import java.io.OutputStream;
 import java.net.HttpURLConnection;

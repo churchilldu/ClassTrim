@@ -2,14 +2,14 @@ package org.classtrim.baseline;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
-import org.classtrim.common.BaselineEnum;
-import org.classtrim.common.DatasetEnum;
-import org.classtrim.common.ThresholdViolationCounts;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
-import org.classtrim.util.FileUtils;
-import org.classtrim.util.MetricUtils;
+import org.classtrim.baseline.BaselineEnum;
+import org.classtrim.core.config.DatasetEnum;
+import org.classtrim.core.metric.ThresholdViolationCounts;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
+import org.classtrim.core.util.FileUtils;
+import org.classtrim.core.metric.MetricUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

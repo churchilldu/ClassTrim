@@ -1,7 +1,7 @@
 package org.classtrim.mcp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 import org.classtrim.core.analyzer.StandardProjectAnalyzer;
 import org.classtrim.core.config.RefactoringConfig;
 import org.classtrim.core.engine.AlgorithmType;
@@ -11,9 +11,9 @@ import org.classtrim.core.engine.RefactoringSuggestion;
 import org.classtrim.core.model.BinaryPathProjectSource;
 import org.classtrim.core.repository.InMemoryProjectRepository;
 import org.classtrim.core.service.ClassTrimService;
-import org.classtrim.model.JavaClass;
-import org.classtrim.model.JavaMethod;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaClass;
+import org.classtrim.core.model.JavaMethod;
+import org.classtrim.core.model.JavaProject;
 
 import java.io.*;
 import java.util.*;
@@ -221,16 +221,16 @@ public class ClassTrimMcpServer {
         // Use the project's toMap() to get class → declared methods mapping,
         // then use MetricUtils to compute proper WMC/CBO/RFC per class.
         Map<JavaClass, List<JavaMethod>> methodsByClass = project.toMap();
-        org.classtrim.common.ThresholdViolationCounts overallMetric =
-                org.classtrim.util.MetricUtils.calculateMetric(methodsByClass, threshold);
-        Map<JavaClass, org.classtrim.common.ClassMetrics> perClassMetrics =
-                org.classtrim.util.MetricUtils.computePerClassMetrics(methodsByClass);
+        org.classtrim.core.metric.ThresholdViolationCounts overallMetric =
+                org.classtrim.core.metric.MetricUtils.calculateMetric(methodsByClass, threshold);
+        Map<JavaClass, org.classtrim.core.metric.ClassMetrics> perClassMetrics =
+                org.classtrim.core.metric.MetricUtils.computePerClassMetrics(methodsByClass);
 
         List<Map<String, Object>> classes = new ArrayList<>();
 
-        for (Map.Entry<JavaClass, org.classtrim.common.ClassMetrics> entry : perClassMetrics.entrySet()) {
+        for (Map.Entry<JavaClass, org.classtrim.core.metric.ClassMetrics> entry : perClassMetrics.entrySet()) {
             JavaClass clazz = entry.getKey();
-            org.classtrim.common.ClassMetrics m = entry.getValue();
+            org.classtrim.core.metric.ClassMetrics m = entry.getValue();
 
             long refactorableCount = clazz.getDeclaredMethods().stream()
                     .filter(JavaMethod::canRefactor).count();

@@ -1,4 +1,4 @@
-package org.classtrim.common;
+package org.classtrim.baseline;
 
 import lombok.Getter;
 import org.classtrim.baseline.*;

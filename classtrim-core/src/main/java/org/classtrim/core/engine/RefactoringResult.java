@@ -1,7 +1,7 @@
 package org.classtrim.core.engine;
 
 import lombok.Getter;
-import org.classtrim.model.JavaProject;
+import org.classtrim.core.model.JavaProject;
 
 import java.util.List;
 

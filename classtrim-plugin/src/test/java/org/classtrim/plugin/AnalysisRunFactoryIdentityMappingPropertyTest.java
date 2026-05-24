@@ -9,7 +9,7 @@ import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 import net.jqwik.api.Tag;
 import net.jqwik.api.constraints.IntRange;
-import org.classtrim.common.Threshold;
+import org.classtrim.core.metric.Threshold;
 import org.classtrim.core.config.RefactoringConfig;
 import org.classtrim.core.model.BinaryPathProjectSource;
 import org.classtrim.core.model.ProjectSource;

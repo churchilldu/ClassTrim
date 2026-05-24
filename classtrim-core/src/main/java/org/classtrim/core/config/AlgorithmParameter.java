@@ -1,9 +1,9 @@
-package org.classtrim.common;
+package org.classtrim.core.config;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static org.classtrim.util.FileUtils.TAB;
+import static org.classtrim.core.util.FileUtils.TAB;
 
 @Getter
 @AllArgsConstructor
