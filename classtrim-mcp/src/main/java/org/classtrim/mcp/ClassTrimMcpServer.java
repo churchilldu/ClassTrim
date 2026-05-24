@@ -223,36 +223,26 @@ public class ClassTrimMcpServer {
         Map<JavaClass, List<JavaMethod>> methodsByClass = project.toMap();
         org.classtrim.common.Metric overallMetric =
                 org.classtrim.util.MetricUtils.calculateMetric(methodsByClass, threshold);
-        Map<JavaClass, org.apache.commons.lang3.tuple.Triple<Integer, Integer, Integer>> perClassMetrics =
-                org.classtrim.util.MetricUtils.getMetricsOfClass(methodsByClass);
+        Map<JavaClass, org.classtrim.common.ClassMetrics> perClassMetrics =
+                org.classtrim.util.MetricUtils.computePerClassMetrics(methodsByClass);
 
         List<Map<String, Object>> classes = new ArrayList<>();
-        int exceedingCount = 0;
 
-        for (Map.Entry<JavaClass, org.apache.commons.lang3.tuple.Triple<Integer, Integer, Integer>> entry
-                : perClassMetrics.entrySet()) {
+        for (Map.Entry<JavaClass, org.classtrim.common.ClassMetrics> entry : perClassMetrics.entrySet()) {
             JavaClass clazz = entry.getKey();
-            int wmc = entry.getValue().getLeft();   // WMC = method count
-            int cbo = entry.getValue().getMiddle(); // CBO = coupling between objects
-            int rfc = entry.getValue().getRight();  // RFC = response for class
-
-            boolean exceedsWmc = wmc > wmcThreshold;
-            boolean exceedsCbo = cbo > cboThreshold;
-            boolean exceedsRfc = rfc > rfcThreshold;
-            boolean exceeds = exceedsWmc || exceedsCbo || exceedsRfc;
-            if (exceeds) exceedingCount++;
+            org.classtrim.common.ClassMetrics m = entry.getValue();
 
             long refactorableCount = clazz.getDeclaredMethods().stream()
                     .filter(JavaMethod::canRefactor).count();
 
             classes.add(Map.of(
                     "name", clazz.toString(),
-                    "wmc", wmc,
-                    "cbo", cbo,
-                    "rfc", rfc,
-                    "exceedsWmc", exceedsWmc,
-                    "exceedsCbo", exceedsCbo,
-                    "exceedsRfc", exceedsRfc,
+                    "wmc", m.getWmc(),
+                    "cbo", m.getCbo(),
+                    "rfc", m.getRfc(),
+                    "exceedsWmc", m.exceedsWmc(threshold),
+                    "exceedsCbo", m.exceedsCbo(threshold),
+                    "exceedsRfc", m.exceedsRfc(threshold),
                     "methodCount", clazz.getDeclaredMethods().size(),
                     "refactorableMethodCount", refactorableCount
             ));
@@ -261,10 +251,9 @@ public class ClassTrimMcpServer {
         return Map.of(
                 "classes", classes,
                 "totalClasses", project.getClassCanRefactor().size(),
-                "classesExceedingThreshold", exceedingCount,
-                "overallWmcOverThreshold", overallMetric.getWmcOverThreshold(),
-                "overallCboOverThreshold", overallMetric.getCboOverThreshold(),
-                "overallRfcOverThreshold", overallMetric.getRfcOverThreshold()
+                "classesExceedingWmc", overallMetric.getWmcOverThreshold(),
+                "classesExceedingCbo", overallMetric.getCboOverThreshold(),
+                "classesExceedingRfc", overallMetric.getRfcOverThreshold()
         );
     }
 
