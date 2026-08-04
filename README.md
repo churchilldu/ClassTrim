@@ -1,7 +1,10 @@
 # ClassTrim
 
-ClassTrim is a framework to recommend move method refactoring using Non-dominated Sorting Genetic Algorithm-III (
-NSGA-III) to minimizing the number of classes that exceed predefined metric thresholds.
+ClassTrim is a framework to recommend move method refactoring using Non-dominated Sorting Genetic
+Algorithm-II/III (NSGA-II / NSGA-III) to minimize the number of classes that exceed predefined metric
+thresholds. After the algorithm produces a Pareto front of candidate refactorings, a single
+**knee solution** (the one with the best overall trade-off across objectives) is automatically
+selected as the recommended refactoring.
 
 Raw experiment data doi: 10.17632/8b3fd45kp6.1
 
@@ -84,6 +87,52 @@ provide reference suggestions and artifacts to compare against this project's NS
 6. Keeps dependencies minimal
 7. Automatically records experiment results and summaries (summary may be improved by using a database)
 8. Includes unit tests
+
+## Knee-point selection
+
+NSGA only outputs a set of non-dominated (Pareto) solutions; ClassTrim's `RefactorOutput` then
+selects the **knee** of that front as the single recommended refactoring, following
+
+> Das, I., *"On characterizing the 'knee' of the Pareto curve based on Normal-Boundary
+> Intersection"*, Structural Optimization 18, 107–115 (1999). doi:10.1007/BF01195985
+
+**How the knee is chosen** (`org.classtrim.core.util.KneeSelection`):
+
+1. Compute the **ideal (utopian) point** — the per-objective minimum across the front.
+2. Find the **anchor** solutions — the front member minimizing each objective alone (the pay-off rows).
+3. Build the **CHIM** hyperplane (Convex Hull of Individual Minima) through the anchors.
+4. Pick the front point of **maximum bulge** — farthest from the CHIM on the side of the ideal
+   point. This is the point where each objective trade-off is most balanced. The construction is
+   invariant to (global) rescaling of the objectives and generalizes to any number of objectives.
+
+Selection uses **only the 3 real objectives (WMC, CBO, RFC)**; the NSGA-III guiding objectives are
+search heuristics and are intentionally excluded. Degenerate fronts whose anchors collapse to a
+point fall back to choosing the solution closest to the ideal point.
+
+**Output:** the knee is placed first, so `diff-01` / `metrics-01` are the recommended refactoring, and
+an explicit `KNEE.csv` marks its objective values. The full front is still preserved in
+`FUN.csv` / `VAR.csv`.
+
+Unit tests: `KneeSelectionTest`
+
+## Human evaluation
+
+The quality of ClassTrim's Move-Method suggestions is assessed through a **blinded expert
+questionnaire** (full plan in `human-evaluation-plan.md`, results in `human-eval/` and
+`human-eval/report.md`). Executive summary:
+
+- **5 tools compared** — ours (ClassTrim) vs HMove, JDeodorant, JMove, REsolution.
+- **100 suggestions** (20 per tool) sampled with a fixed seed; ClassTrim is deliberately sampled at an
+  *average* level (standout feature-envy cases excluded) to avoid cherry-picking.
+- **Blinding:** suggestions are shuffled into neutral IDs `S001`–`S100`; reviewers never see the tool,
+  metrics, or internal bookkeeping.
+- **20 expert reviewers** (senior Java developer personas) judge items on a fixed questionnaire
+  (RQ1-Q5): acceptance, usefulness (1-5), diagnostic value (worth inspecting?), rejection reasons,
+  and free-text comments.
+- **Each item is reviewed by exactly 2 experts** (balanced 20x10 assignment) to measure inter-rater
+  agreement / Cohen's kappa.
+- **Analysis:** acceptance rates and Q2/Q3 means per tool, ClassTrim-vs-baseline deltas, the
+  "detects what not where" hypothesis (Q3 vs Q1), and cross-checks vs `output/baseline-overlap.md`.
 
 ## Thanks
 
