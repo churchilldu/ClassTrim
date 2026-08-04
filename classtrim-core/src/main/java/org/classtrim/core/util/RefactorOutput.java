@@ -54,15 +54,24 @@ public class RefactorOutput {
     }
 
     public void write() {
+        // Select the knee of the Pareto front (Das 1999, NBI) and put it first so that the
+        // recommended refactoring is diff-01 / metrics-01. Only the 3 real objectives
+        // (WMC, CBO, RFC) take part; guiding objectives are search heuristics only.
+        List<IntegerSolution> ordered = new ArrayList<>(this.solutions);
+        IntegerSolution knee = KneeSelection.select(ordered, 3);
+        ordered.remove(knee);
+        ordered.add(0, knee);
+
         algorithmResultOutput();
-        solutionOutput();
-        metricsOutput();
+        solutionOutput(ordered);
+        metricsOutput(ordered);
+        kneeOutput(knee);
     }
 
-    private void metricsOutput() {
+    private void metricsOutput(List<IntegerSolution> ordered) {
         Map<JavaClass, List<JavaMethod>> before = this.project.toMap();
         int seq = 1;
-        for (IntegerSolution solution : this.solutions) {
+        for (IntegerSolution solution : ordered) {
             Map<JavaClass, List<JavaMethod>> after = convertSolution(this.project, solution.variables());
             FileUtils.writeMetrics(getMetriceFilePath(seq),
                     MetricUtils.getMetricsOfClass(before), MetricUtils.getMetricsOfClass(after));
@@ -75,9 +84,9 @@ public class RefactorOutput {
                 + ".tsv");
     }
 
-    private void solutionOutput() {
+    private void solutionOutput(List<IntegerSolution> ordered) {
         int seq = 1;
-        for (IntegerSolution solution : this.solutions) {
+        for (IntegerSolution solution : ordered) {
             List<Triple<JavaMethod, JavaClass, JavaClass>> diff = new ArrayList<>();
             convertSolution(this.project, solution.variables()).forEach((clazz, methods) ->
                     {
@@ -98,6 +107,24 @@ public class RefactorOutput {
                 + ".tsv");
     }
 
+
+    /**
+     * Writes the objectives of the selected knee to KNEE.csv (a single-row CSV), so downstream
+     * consumers (e.g. the Minecraft plugin / human-eval pipeline) can identify the recommended
+     * solution without re-deriving the knee.
+     */
+    private void kneeOutput(IntegerSolution knee) {
+        try (java.io.BufferedWriter writer = java.nio.file.Files.newBufferedWriter(
+                Paths.get(AppProperties.getString("outputFolder"), projectName,
+                        projectName + "-" + "KNEE.csv"),
+                java.nio.charset.StandardCharsets.UTF_8)) {
+            writer.write("WMC" + "," + "CBO" + "," + "RFC");
+            writer.newLine();
+            writer.write(knee.objectives()[0] + "," + knee.objectives()[1] + "," + knee.objectives()[2]);
+        } catch (java.io.IOException e) {
+            throw new RuntimeException("Failed to write knee output", e);
+        }
+    }
 
     @SuppressWarnings("rawtypes")
     // Append population size, generation, algorithm name, wmc, cbo, rfc, folderName.
